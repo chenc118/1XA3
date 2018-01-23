@@ -2,3 +2,4 @@
 local Commit time - 12:19
 Actual time pushed - 12:50ish
 >>uses local time for commits
+>>delta since last >> correct, time committed on Github>> Incorrect, further testing to see if restarts will change the delta
