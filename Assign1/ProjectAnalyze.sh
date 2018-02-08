@@ -3,6 +3,9 @@
 # random variable, not sure if I'll use it
 UPTODATE=$(git pull)
 
+
+#----Find uncommitted changes----
+
 #first sed cleans blank lines, second cleans mess in brackets, third cleans first line telling status of branch
 STATUSCLEAN="/^ *$/d;/(*)/d;/^On branch*/,2d"
 Test="/^ *$/d"
@@ -17,15 +20,20 @@ untracked=$( git status | grep "Untracked files:" | wc -l )
 # clear changes.log
 $( > "changes.log")
 
-
+# if there are untracked files
 if [ $untracked -eq 1 ]
 then
 	#adds untracked tag to untracked files, after getting them
-	$( git status | sed -e "$STATUSCLEAN;/Untracked files:/d;s/^/untracked:/g" > "changes.log" )
+	$( git status | sed -e "$STATUSCLEAN;/Untracked files:/d;/:/d;s/^	/	untracked:  /g" > "changes.log" )
 	STATUSCLEAN="$STATUSCLEAN;/Untracked files:/,\$d" # delete all after line sourced from https://stackoverflow.com/questions/5227295/how-do-i-delete-all-lines-in-a-file-starting-from-after-a-matching-line 
 fi
 
 # get other changes
 $( git status | sed "$STATUSCLEAN;/Changes to be committed:/d;/Changes not staged for commit:/d" >> "changes.log" )
+
+
+#---- FIND TODO ----
+
+
 
 
