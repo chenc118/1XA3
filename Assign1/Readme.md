@@ -8,4 +8,5 @@ Directory for assignment 1 stuffs
 
 #### Features
 1. uncommitted files (including staged) will be displayed at the beginning of changes.log (cause I can't be bothered to just toss out those couple hours of work)
+2. Git diff is "fancy" (I'll count this as a feature since no one else is doing something like this, at least from the git repo names I can guess)
 
