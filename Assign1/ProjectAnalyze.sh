@@ -90,18 +90,18 @@ while read -r line; do
 			ANum=$(echo "$line" | sed -e "s/^@@ -[0-9]*,[0-9]* +\([0-9]*\),.*/\1/")
 			RCodeCount=$(echo "$line" | sed -e "s/^@@ -[0-9]*,\([0-9]*\) .*/\1/")
 			ACodeCount=$(echo "$line" | sed -e "s/^@@ -[0-9]*,[0-9]* +[0-9]*,\([0-9]*\).*/\1/")
-			#TODO print stuff to changelog
-
+		elif [ "$Status" -eq "3" ]
+		then
+			Rem=$(echo "$line" | sed -e "s/^--- a\///;s:/:\\\/:g") # file removed to fix def/null issue
 		elif [ "$Status" -eq "4" ]
 		then
 			# dump the file name into the changelog
 			$(echo >> changes.log)
-			$(echo "$line" | sed -e "s/^+++ b\//File diff: /" >> changes.log)
+			$(echo "$line" | sed -e "s/^+++ b\//File diff: /;s/+++ \/dev\/null/File deleted: $Rem/" >> changes.log)
 		fi
 
 	elif [ $Code == "True" ]
 	then
-		
 		#Print lines, numbering etc
 		Start=$(echo $line | sed -e "s/\(.\).*/\1/")
 		if [ "$Start" = "+" ]
