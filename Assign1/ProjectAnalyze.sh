@@ -25,29 +25,28 @@ rm changes.log
 untracked=$( git status | grep "Untracked files:" | wc -l )
 
 Status=$(git status)
-
+Diff=$( git diff )
 
 # clear changes.log
-$( echo "The following files have not been committed" > "changes.log")
+$( echo "The following files have not been committed" > "$Changelog")
 
 # if there are untracked files
 if [ $untracked -eq 1 ]
 then
 	#adds untracked tag to untracked files, after getting them
-	$( echo "$Status" | sed -e "$STATUSCLEAN;/Untracked files:/d;/:/d;s/^	/	untracked:  /g" > "changes.log" )
+	$( echo "$Status" | sed -e "$STATUSCLEAN;/Untracked files:/d;/:/d;s/^	/	untracked:  /g" >> "$Changelog" )
 	STATUSCLEAN="$STATUSCLEAN;/Untracked files:/,\$d" # delete all after line sourced from https://stackoverflow.com/questions/5227295/how-do-i-delete-all-lines-in-a-file-starting-from-after-a-matching-line 
 fi
 
 # get other changes
-$( echo "$Status" | sed "$STATUSCLEAN;/Changes to be committed:/d;/Changes not staged for commit:/d" >> "changes.log" )
+$( echo "$Status" | sed "$STATUSCLEAN;/Changes to be committed:/d;/Changes not staged for commit:/d" >> "$Changelog" )
 
 
 #---- Find uncommitted changes II ----
 #uses git diff prints in a cleaner style than default with lines numbered and all that
 
-Diff=$( git diff )
 
-$(echo "Current git diff:" >> changes.log)
+$(echo "Current git diff:" >> "$Changelog")
 
 #iterate over lines https://superuser.com/questions/284187/bash-iterating-over-lines-in-a-variable
 
@@ -68,6 +67,16 @@ PadL=6
 
 #iterate over the lines of the diff stuff
 while read -r line; do
+	if [ $ACodeCount -lt 1 -a $RCodeCount -lt 1 ]
+	then
+		if [ $Code = "True" ]
+		then
+			$(printf '%0.1s' "_"{1..25} >> "$Changelog") # so it's much clearer where the code fragments are
+			$(echo >> "$Changelog") # nl cause printf%n doesn't work for some reason
+		fi
+		Code="False"
+	fi
+
 	#non code lines either of 5 types
 	if [ "$Code" == "False" ]
 	then
@@ -92,42 +101,33 @@ while read -r line; do
 
 	elif [ $Code == "True" ]
 	then
-		if [ $ACodeCount -eq 0 -a $RCodeCount -eq 0 ]
+		
+		#Print lines, numbering etc
+		Start=$(echo $line | sed -e "s/\(.\).*/\1/")
+		if [ "$Start" = "+" ]
 		then
-			Code="False"
-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+			PadA=$(( $PadL - ${#ANum} ))
+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
+			ANum=$(( $ANum + 1 ))
+			ACodeCount=$(( $ACodeCount - 1 ))
+		elif [ "$Start" = "-" ]
+		then
+			PadR=$(( $PadL - ${#RNum} ))
+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> changes.log)
+			RNum=$(( $RNum + 1 ))
+			RCodeCount=$(( $RCodeCount - 1 ))
 		else
-			#Print lines, numbering etc
-			Start=$(echo $line | sed -e "s/\(.\).*/\1/")
-			if [ "$Start" = "+" ]
-			then
-				PadA=$(( $PadL - ${#ANum} ))
-				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
-				ANum=$(( $ANum + 1 ))
-				ACodeCount=$(( $ACodeCount - 1 ))
-			elif [ "$Start" = "-" ]
-			then
-				PadR=$(( $PadL - ${#RNum} ))
-				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> changes.log)
-				RNum=$(( $RNum + 1 ))
-				RCodeCount=$(( $RCodeCount - 1 ))
-			else
-				PadR=$(( $PadL - ${#RNum} ))
-				PadA=$(( $PadL - ${#ANum} ))
-				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
-				#increment decrement stuff
-				RNum=$(( $RNum + 1 ))
-				ANum=$(( $ANum + 1 ))
-				RCodeCount=$(( $RCodeCount - 1 ))
-				ACodeCount=$(( $ACodeCount - 1 ))
-
-			fi
-			
-			$(echo >> changes.log) #to add newline
-
-
+			PadR=$(( $PadL - ${#RNum} ))
+			PadA=$(( $PadL - ${#ANum} ))
+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
+			#increment decrement stuff
+			RNum=$(( $RNum + 1 ))
+			ANum=$(( $ANum + 1 ))
+			RCodeCount=$(( $RCodeCount - 1 ))
+			ACodeCount=$(( $ACodeCount - 1 ))
 		fi
-
+			
+		$(echo >> changes.log) #to add newline
 	fi
 
 done <<< $Diff
