@@ -1,31 +1,98 @@
 The following files have not been committed
+	untracked:  todo.log
 	modified:   ProjectAnalyze.sh
 	deleted:    changes.log
+	modified:   testscript.sh
 Current git diff:
 
 File diff: Assign1/ProjectAnalyze.sh
-    90|    90|ANum=$(echo "$line" | sed -e "s/^@@ -[0-9]*,[0-9]* +\([0-9]*\),.*/\1/")
-    91|    91|RCodeCount=$(echo "$line" | sed -e "s/^@@ -[0-9]*,\([0-9]*\) .*/\1/")
-    92|    92|ACodeCount=$(echo "$line" | sed -e "s/^@@ -[0-9]*,[0-9]* +[0-9]*,\([0-9]*\).*/\1/")
-    93|      |-			#TODO print stuff to changelog
-    94|      |-
-      |    93|+		elif [ "$Status" -eq "3" ]
-      |    94|+		then
-      |    95|+			Rem=$(echo "$line" | sed -e "s/^--- a\///;s:/:\\\/:g") # file removed to fix def/null issue
-    95|    96|elif [ "$Status" -eq "4" ]
-    96|    97|then
-    97|    98|# dump the file name into the changelog
-    98|    99|$(echo >> changes.log)
-    99|      |-			$(echo "$line" | sed -e "s/^+++ b\//File diff: /" >> changes.log)
-      |   100|+			$(echo "$line" | sed -e "s/^+++ b\//File diff: /;s/+++ \/dev\/null/File deleted: $Rem/" >> changes.log)
-   100|   101|fi
-   101|   102|
-   102|   103|elif [ $Code == "True" ]
-   103|   104|then
-   104|      |-
-   105|   105|#Print lines, numbering etc
-   106|   106|Start=$(echo $line | sed -e "s/\(.\).*/\1/")
-   107|   107|if [ "$Start" = "+" ]
+     1|     1| #!/git-bash.exe
+     2|     2| 
+      |     3|+#change git-bash to bash.exe @NotAProfDalves, stuff is broken on my computer so only the github cli bash works
+      |     4|+
+     3|     5| #Potential feature turning some of this stuff into HTML if -report flag in args?
+     4|     6| 
+      |     7|+#----Arugment Parsing----
+      |     8|+#sourced from https://stackoverflow.com/questions/255898/how-to-iterate-over-arguments-in-a-bash-script
+      |     9|+for arg in "$@"
+      |    10|+do
+      |    11|+	Nothing="Nothing" #here to avoid errors for the moment
+      |    12|+	#TODO stuff to parse the arguments
+      |    13|+done
+      |    14|+
+      |    15|+
+      |    16|+
+      |    17|+
+     5|    18| # random variable, not sure if I'll use it
+     6|    19| UPTODATE=$(git pull)
+     7|    20| 
+_________________________
+    66|    79| PadL=6
+    67|    80| 
+    68|    81| #iterate over the lines of the diff stuff
+    69|      |-while read -r line; do
+      |    82|+#IFS keep leading spaces from https://stackoverflow.com/questions/29689172/bash-read-line-does-not-read-leading-spaces 
+      |    83|+while IFS= read -r line; do
+    70|    84| 	if [ $ACodeCount -lt 1 -a $RCodeCount -lt 1 ]
+    71|    85| 	then
+    72|    86| 		if [ $Code = "True" ]
+_________________________
+    96|   110| 		elif [ "$Status" -eq "4" ]
+    97|   111| 		then
+    98|   112| 			# dump the file name into the changelog
+    99|      |-			$(echo >> changes.log)
+   100|      |-			$(echo "$line" | sed -e "s/^+++ b\//File diff: /;s/+++ \/dev\/null/File deleted: $Rem/" >> changes.log)
+      |   113|+			$(echo >> "$Changelog")
+      |   114|+			$(echo "$line" | sed -e "s/^+++ b\//File diff: /;s/+++ \/dev\/null/File deleted: $Rem/" >> "$Changelog" )
+   101|   115| 		fi
+   102|   116| 
+   103|   117| 	elif [ $Code == "True" ]
+_________________________
+   107|   121| 		if [ "$Start" = "+" ]
+   108|   122| 		then
+   109|   123| 			PadA=$(( $PadL - ${#ANum} ))
+   110|      |-			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
+      |   124|+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> "$Changelog")
+   111|   125| 			ANum=$(( $ANum + 1 ))
+   112|   126| 			ACodeCount=$(( $ACodeCount - 1 ))
+   113|   127| 		elif [ "$Start" = "-" ]
+   114|   128| 		then
+   115|   129| 			PadR=$(( $PadL - ${#RNum} ))
+   116|      |-			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> changes.log)
+      |   130|+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> "$Changelog")
+   117|   131| 			RNum=$(( $RNum + 1 ))
+   118|   132| 			RCodeCount=$(( $RCodeCount - 1 ))
+   119|   133| 		else
+   120|   134| 			PadR=$(( $PadL - ${#RNum} ))
+   121|   135| 			PadA=$(( $PadL - ${#ANum} ))
+   122|      |-			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
+      |   136|+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> "$Changelog")
+   123|   137| 			#increment decrement stuff
+   124|   138| 			RNum=$(( $RNum + 1 ))
+   125|   139| 			ANum=$(( $ANum + 1 ))
+_________________________
+   127|   141| 			ACodeCount=$(( $ACodeCount - 1 ))
+   128|   142| 		fi
+   129|   143| 			
+   130|      |-		$(echo >> changes.log) #to add newline
+      |   144|+		$(echo >> "$Changelog") #to add newline
+   131|   145| 	fi
+   132|   146| 
+   133|   147| done <<< $Diff
+   134|   148| #---- FIND TODO ----
+   135|   149| 
+      |   150|+TodoLog="todo.log"
+      |   151|+> $TodoLog #clears log
+      |   152|+
+      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   136|   155| 
+      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   137|   157| 
+      |   158|+#----Count Code Lines----
+      |   159|+#Cause literally this is a command I use all the time
+   138|   160| 
+      |   161|+#TODO
 _________________________
 
 File deleted: Assign1/changes.log
@@ -35,228 +102,269 @@ File deleted: Assign1/changes.log
      4|      |-Current git diff:
      5|      |-
      6|      |-File diff: Assign1/ProjectAnalyze.sh
-     7|      |-    25|    25|untracked=$( git status | grep "Untracked files:" | wc -l )
-     8|      |-    26|    26|
-     9|      |-    27|    27|Status=$(git status)
-    10|      |-    28|      |-
-    11|      |-      |    28|+Diff=$( git diff )
-    12|      |-    29|    29|
-    13|      |-    30|    30|# clear changes.log
-    14|      |-    31|      |-$( echo "The following files have not been committed" > "changes.log")
-    15|      |-      |    31|+$( echo "The following files have not been committed" > "$Changelog")
-    16|      |-    32|    32|
-    17|      |-    33|    33|# if there are untracked files
-    18|      |-    34|    34|if [ $untracked -eq 1 ]
-    19|      |-    35|    35|then
-    20|      |-    36|    36|#adds untracked tag to untracked files, after getting them
-    21|      |-    37|      |-	$( echo "$Status" | sed -e "$STATUSCLEAN;/Untracked files:/d;/:/d;s/^	/	untracked:  /g" > "changes.log" )
-    22|      |-      |    37|+	$( echo "$Status" | sed -e "$STATUSCLEAN;/Untracked files:/d;/:/d;s/^	/	untracked:  /g" >> "$Changelog" )
-    23|      |-    38|    38|STATUSCLEAN="$STATUSCLEAN;/Untracked files:/,\$d" # delete all after line sourced from https://stackoverflow.com/questions/5227295/how-do-i-delete-all-lines-in-a-file-starting-from-after-a-matching-line
-    24|      |-    39|    39|fi
-    25|      |-    40|    40|
-    26|      |-    41|    41|# get other changes
-    27|      |-    42|      |-$( echo "$Status" | sed "$STATUSCLEAN;/Changes to be committed:/d;/Changes not staged for commit:/d" >> "changes.log" )
-    28|      |-      |    42|+$( echo "$Status" | sed "$STATUSCLEAN;/Changes to be committed:/d;/Changes not staged for commit:/d" >> "$Changelog" )
-    29|      |-    43|    43|
-    30|      |-    44|    44|
-    31|      |-    45|    45|#---- Find uncommitted changes II ----
-    32|      |-    46|    46|#uses git diff prints in a cleaner style than default with lines numbered and all that
-    33|      |-    47|    47|
-    34|      |-    48|      |-Diff=$( git diff )
-    35|      |-    49|    48|
-    36|      |-    50|      |-$(echo "Current git diff:" >> changes.log)
-    37|      |-      |    49|+$(echo "Current git diff:" >> "$Changelog")
-    38|      |-    51|    50|
-    39|      |-    52|    51|#iterate over lines https://superuser.com/questions/284187/bash-iterating-over-lines-in-a-variable
-    40|      |-    53|    52|
-    41|      |-_________________________
-    42|      |-    68|    67|
-    43|      |-    69|    68|#iterate over the lines of the diff stuff
-    44|      |-    70|    69|while read -r line; do
-    45|      |-      |    70|+	if [ $ACodeCount -lt 1 -a $RCodeCount -lt 1 ]
-    46|      |-      |    71|+	then
-    47|      |-      |    72|+		if [ $Code = "True" ]
-    48|      |-      |    73|+		then
-    49|      |-      |    74|+			$(printf '%0.1s' "_"{1..25} >> "$Changelog") # so it's much clearer where the code fragments are
-    50|      |-      |    75|+			$(echo >> "$Changelog") # nl cause printf%n doesn't work for some reason
-    51|      |-      |    76|+		fi
-    52|      |-      |    77|+		Code="False"
-    53|      |-      |    78|+	fi
-    54|      |-      |    79|+
-    55|      |-    71|    80|#non code lines either of 5 types
-    56|      |-    72|    81|if [ "$Code" == "False" ]
-    57|      |-    73|    82|then
-    58|      |-_________________________
-    59|      |-    92|   101|
-    60|      |-    93|   102|elif [ $Code == "True" ]
-    61|      |-    94|   103|then
-    62|      |-    95|      |-		if [ $ACodeCount -eq 0 -a $RCodeCount -eq 0 ]
-    63|      |-      |   104|+
-    64|      |-      |   105|+		#Print lines, numbering etc
-    65|      |-      |   106|+		Start=$(echo $line | sed -e "s/\(.\).*/\1/")
-    66|      |-      |   107|+		if [ "$Start" = "+" ]
-    67|      |-      |   108|+		then
-    68|      |-      |   109|+			PadA=$(( $PadL - ${#ANum} ))
-    69|      |-      |   110|+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
-    70|      |-      |   111|+			ANum=$(( $ANum + 1 ))
-    71|      |-      |   112|+			ACodeCount=$(( $ACodeCount - 1 ))
-    72|      |-      |   113|+		elif [ "$Start" = "-" ]
-    73|      |-    96|   114|then
-    74|      |-    97|      |-			Code="False"
-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-    76|      |-      |   115|+			PadR=$(( $PadL - ${#RNum} ))
-    77|      |-      |   116|+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> changes.log)
-    78|      |-      |   117|+			RNum=$(( $RNum + 1 ))
-    79|      |-      |   118|+			RCodeCount=$(( $RCodeCount - 1 ))
-    80|      |-    99|   119|else
-    81|      |-   100|      |-			#Print lines, numbering etc
-    82|      |-   101|      |-			Start=$(echo $line | sed -e "s/\(.\).*/\1/")
-    83|      |-   102|      |-			if [ "$Start" = "+" ]
-    84|      |-   103|      |-			then
-    85|      |-   104|      |-				PadA=$(( $PadL - ${#ANum} ))
-    86|      |-   105|      |-				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
-    87|      |-   106|      |-				ANum=$(( $ANum + 1 ))
-    88|      |-   107|      |-				ACodeCount=$(( $ACodeCount - 1 ))
-    89|      |-   108|      |-			elif [ "$Start" = "-" ]
-    90|      |-   109|      |-			then
-    91|      |-   110|      |-				PadR=$(( $PadL - ${#RNum} ))
-    92|      |-   111|      |-				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> changes.log)
-    93|      |-   112|      |-				RNum=$(( $RNum + 1 ))
-    94|      |-   113|      |-				RCodeCount=$(( $RCodeCount - 1 ))
-    95|      |-   114|      |-			else
-    96|      |-   115|      |-				PadR=$(( $PadL - ${#RNum} ))
-    97|      |-   116|      |-				PadA=$(( $PadL - ${#ANum} ))
-    98|      |-   117|      |-				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
-    99|      |-   118|      |-				#increment decrement stuff
-   100|      |-   119|      |-				RNum=$(( $RNum + 1 ))
-   101|      |-   120|      |-				ANum=$(( $ANum + 1 ))
-   102|      |-   121|      |-				RCodeCount=$(( $RCodeCount - 1 ))
-   103|      |-   122|      |-				ACodeCount=$(( $ACodeCount - 1 ))
-   104|      |-   123|      |-
-   105|      |-   124|      |-			fi
-   106|      |-   125|      |-
-   107|      |-   126|      |-			$(echo >> changes.log) #to add newline
-   108|      |-   127|      |-
-   109|      |-   128|      |-
-   110|      |-      |   120|+			PadR=$(( $PadL - ${#RNum} ))
-   111|      |-      |   121|+			PadA=$(( $PadL - ${#ANum} ))
-   112|      |-      |   122|+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
-   113|      |-      |   123|+			#increment decrement stuff
-   114|      |-      |   124|+			RNum=$(( $RNum + 1 ))
-   115|      |-      |   125|+			ANum=$(( $ANum + 1 ))
-   116|      |-      |   126|+			RCodeCount=$(( $RCodeCount - 1 ))
-   117|      |-      |   127|+			ACodeCount=$(( $ACodeCount - 1 ))
-   118|      |-   129|   128|fi
-   119|      |-   130|      |-
-   120|      |-      |   129|+
-   121|      |-      |   130|+		$(echo >> changes.log) #to add newline
-   122|      |-   131|   131|fi
-   123|      |-   132|   132|
-   124|      |-   133|   133|done <<< $Diff
-   125|      |-_________________________
-   126|      |-
-   127|      |-+++ /dev/null
-   128|      |-     1|      |-	untracked:  change.log
-   129|      |-     2|      |-	modified:   ProjectAnalyze.sh
-   130|      |-     3|      |-	modified:   testscript.sh
-   131|      |-     4|      |-Current git diff:
-   132|      |-     5|      |-
-   133|      |-     6|      |-File diff: Assign1/ProjectAnalyze.sh
-   134|      |-     7|      |-     1|     1|#!/git-bash.exe
-   135|      |-     8|      |-     2|     2|
-   136|      |-     9|      |-      |     3|+#Potential feature turning some of this stuff into HTML if -report flag in args?
-   137|      |-    10|      |-      |     4|+
-   138|      |-    11|      |-     3|     5|# random variable, not sure if I'll use it
-   139|      |-    12|      |-     4|     6|UPTODATE=$(git pull)
-   140|      |-    13|      |-     5|     7|
-   141|      |-    14|      |-    58|    60|#Numbers to count code line
-   142|      |-    15|      |-    59|    61|RNum="0"
-   143|      |-    16|      |-    60|    62|ANum="0"
-   144|      |-    17|      |-    61|      |-
-   145|      |-    18|      |-      |    63|+#padding altered from the following https://stackoverflow.com/questions/4409399/padding-characters-in-printf
-   146|      |-    19|      |-      |    64|+#literally just a bunch of spaces
-   147|      |-    20|      |-      |    65|+Pad=$(printf '%0.1s' " "{1..60})
-   148|      |-    21|      |-      |    66|+#length to pad the numbers
-   149|      |-    22|      |-      |    67|+PadL=6
-   150|      |-    23|      |-    62|    68|
-   151|      |-    24|      |-    63|    69|#iterate over the lines of the diff stuff
-   152|      |-    25|      |-    64|    70|while read -r line; do
-   153|      |-    26|      |-    65|    71|#non code lines either of 5 types
-   154|      |-    27|      |-    66|      |-	if [ $Code == "False" ]
-   155|      |-    28|      |-      |    72|+	if [ "$Code" == "False" ]
-   156|      |-    29|      |-    67|    73|then
-   157|      |-    30|      |-    68|    74|#use multi sed command to get what exactly the non code line is
-   158|      |-    31|      |-    69|      |-		Status=$(echo $line | sed -e "s/^diff --git.*/1/;s/^index.*/2/;s/^---.*/3/;s/^+++.*/4/;s/^@@.*/5/;s/[^1-5]/6/;s/\(.\).*/\1/")
-   159|      |-    32|      |-      |    75|+		Status=$(echo "$line" | sed -e "s/^diff --git.*/1/;s/^index.*/2/;s/^---.*/3/;s/^+++.*/4/;s/^@@.*/5/;s/[^1-5]/6/;s/\(.\).*/\1/;s/^$/6/")
-   160|      |-    33|      |-    70|    76|#1 = first line 2 = index objects 3 = --- 4 = +++ 5 = @@ aka start of code 6 = mode or something, too difficult to match easily
-   161|      |-    34|      |-    71|      |-		if [ $Status -eq 5 ]
-   162|      |-    35|      |-      |    77|+		if [ "$Status" -eq "5" ]
-   163|      |-    36|      |-    72|    78|then
-   164|      |-    37|      |-    73|    79|Code="True"
-   165|      |-    38|      |-    74|      |-			RNum=$(echo $line | sed -e "s/^@@ -\([0-9]*\),.*/\1/")
-   166|      |-    39|      |-    75|      |-			ANum=$(echo $line | sed -e "s/^@@ -[0-9]*,[0-9]* +\([0-9]*\),.*/\1/")
-   167|      |-    40|      |-    76|      |-			RCodeCount=$(echo $line | sed -e "s/^@@ -[0-9]*,\([0-9]*\) .*/\1/")
-   168|      |-    41|      |-    77|      |-			ACodeCount=$(echo $line | sed -e "s/^@@ -[0-9]*,[0-9]* +[0-9]*,\([0-9]*\).*/\1/")
-   169|      |-    42|      |-      |    80|+			RNum=$(echo "$line" | sed -e "s/^@@ -\([0-9]*\),.*/\1/")
-   170|      |-    43|      |-      |    81|+			ANum=$(echo "$line" | sed -e "s/^@@ -[0-9]*,[0-9]* +\([0-9]*\),.*/\1/")
-   171|      |-    44|      |-      |    82|+			RCodeCount=$(echo "$line" | sed -e "s/^@@ -[0-9]*,\([0-9]*\) .*/\1/")
-   172|      |-    45|      |-      |    83|+			ACodeCount=$(echo "$line" | sed -e "s/^@@ -[0-9]*,[0-9]* +[0-9]*,\([0-9]*\).*/\1/")
-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
-   174|      |-    47|      |-    79|    85|
-   175|      |-    48|      |-    80|      |-		elif [$Status -eq 4]
-   176|      |-    49|      |-      |    86|+		elif [ "$Status" -eq "4" ]
-   177|      |-    50|      |-    81|    87|then
-   178|      |-    51|      |-    82|    88|# dump the file name into the changelog
-   179|      |-    52|      |-    83|      |-			$(echo $line | sed -e "s/^+++ b\//File diff: /" >> changes.log)
-   180|      |-    53|      |-      |    89|+			$(echo >> changes.log)
-   181|      |-    54|      |-      |    90|+			$(echo "$line" | sed -e "s/^+++ b\//File diff: /" >> changes.log)
-   182|      |-    55|      |-    84|    91|fi
-   183|      |-    56|      |-    85|      |-		echo $Status
-   184|      |-    57|      |-    86|    92|
-   185|      |-    58|      |-    87|    93|elif [ $Code == "True" ]
-   186|      |-    59|      |-    88|    94|then
-   187|      |-    60|      |-    89|      |-		if [ $CodeCount -eq 0 ]
-   188|      |-    61|      |-      |    95|+		if [ $ACodeCount -eq 0 -a $RCodeCount -eq 0 ]
-   189|      |-    62|      |-    90|    96|then
-   190|      |-    63|      |-    91|    97|Code="False"
-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-   192|      |-    65|      |-      |    99|+		else
-   193|      |-    66|      |-      |   100|+			#Print lines, numbering etc
-   194|      |-    67|      |-      |   101|+			Start=$(echo $line | sed -e "s/\(.\).*/\1/")
-   195|      |-    68|      |-      |   102|+			if [ "$Start" = "+" ]
-   196|      |-    69|      |-      |   103|+			then
-   197|      |-    70|      |-      |   104|+				PadA=$(( $PadL - ${#ANum} ))
-   198|      |-    71|      |-      |   105|+				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
-   199|      |-    72|      |-      |   106|+				ANum=$(( $ANum + 1 ))
-   200|      |-    73|      |-      |   107|+				ACodeCount=$(( $ACodeCount - 1 ))
-   201|      |-    74|      |-      |   108|+			elif [ "$Start" = "-" ]
-   202|      |-    75|      |-      |   109|+			then
-   203|      |-    76|      |-      |   110|+				PadR=$(( $PadL - ${#RNum} ))
-   204|      |-    77|      |-      |   111|+				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> changes.log)
-   205|      |-    78|      |-      |   112|+				RNum=$(( $RNum + 1 ))
-   206|      |-    79|      |-      |   113|+				RCodeCount=$(( $RCodeCount - 1 ))
-   207|      |-    80|      |-      |   114|+			else
-   208|      |-    81|      |-      |   115|+				PadR=$(( $PadL - ${#RNum} ))
-   209|      |-    82|      |-      |   116|+				PadA=$(( $PadL - ${#ANum} ))
-   210|      |-    83|      |-      |   117|+				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
-   211|      |-    84|      |-      |   118|+				#increment decrement stuff
-   212|      |-    85|      |-      |   119|+				RNum=$(( $RNum + 1 ))
-   213|      |-    86|      |-      |   120|+				ANum=$(( $ANum + 1 ))
-   214|      |-    87|      |-      |   121|+				RCodeCount=$(( $RCodeCount - 1 ))
-   215|      |-    88|      |-      |   122|+				ACodeCount=$(( $ACodeCount - 1 ))
-   216|      |-    89|      |-      |   123|+
-   217|      |-    90|      |-      |   124|+			fi
-   218|      |-    91|      |-      |   125|+
-   219|      |-    92|      |-      |   126|+			$(echo >> changes.log) #to add newline
-   220|      |-    93|      |-      |   127|+
-   221|      |-    94|      |-      |   128|+
-   222|      |-    95|      |-    93|   129|fi
-   223|      |-    96|      |-    94|   130|
-   224|      |-    97|      |-    95|   131|fi
-   225|      |-    98|      |-
-   226|      |-    99|      |-File diff: Assign1/testscript.sh
-   227|      |-   100|      |-     1|     1|#!/git-bash.exe
-   228|      |-   101|      |-     2|     2|
-   229|      |-   102|      |-     3|      |-Status=$(sed -e "s/^diff --git.*/1/;s/^index.*/2/;s/^---.*/3/;s/^+++.*/4/;s/^@@.*/5/;s/[^1-5]/6/;s/\(.\).*/\1/" < test.txt)
-   230|      |-   103|      |-      |     3|+Status=$(echo >> changes.log)
-   231|      |-   104|      |-     4|     4|echo $Status
+     7|      |-    90|    90|ANum=$(echo "$line" | sed -e "s/^@@ -[0-9]*,[0-9]* +\([0-9]*\),.*/\1/")
+     8|      |-    91|    91|RCodeCount=$(echo "$line" | sed -e "s/^@@ -[0-9]*,\([0-9]*\) .*/\1/")
+     9|      |-    92|    92|ACodeCount=$(echo "$line" | sed -e "s/^@@ -[0-9]*,[0-9]* +[0-9]*,\([0-9]*\).*/\1/")
+    10|      |-    93|      |-			#TODO print stuff to changelog
+    11|      |-    94|      |-
+    12|      |-      |    93|+		elif [ "$Status" -eq "3" ]
+    13|      |-      |    94|+		then
+    14|      |-      |    95|+			Rem=$(echo "$line" | sed -e "s/^--- a\///;s:/:\\\/:g") # file removed to fix def/null issue
+    15|      |-    95|    96|elif [ "$Status" -eq "4" ]
+    16|      |-    96|    97|then
+    17|      |-    97|    98|# dump the file name into the changelog
+    18|      |-    98|    99|$(echo >> changes.log)
+    19|      |-    99|      |-			$(echo "$line" | sed -e "s/^+++ b\//File diff: /" >> changes.log)
+    20|      |-      |   100|+			$(echo "$line" | sed -e "s/^+++ b\//File diff: /;s/+++ \/dev\/null/File deleted: $Rem/" >> changes.log)
+    21|      |-   100|   101|fi
+    22|      |-   101|   102|
+    23|      |-   102|   103|elif [ $Code == "True" ]
+    24|      |-   103|   104|then
+    25|      |-   104|      |-
+    26|      |-   105|   105|#Print lines, numbering etc
+    27|      |-   106|   106|Start=$(echo $line | sed -e "s/\(.\).*/\1/")
+    28|      |-   107|   107|if [ "$Start" = "+" ]
+    29|      |-_________________________
+    30|      |-
+    31|      |-File deleted: Assign1/changes.log
+    32|      |-     1|      |-The following files have not been committed
+    33|      |-     2|      |-	modified:   ProjectAnalyze.sh
+    34|      |-     3|      |-	deleted:    changes.log
+    35|      |-     4|      |-Current git diff:
+    36|      |-     5|      |-
+    37|      |-     6|      |-File diff: Assign1/ProjectAnalyze.sh
+    38|      |-     7|      |-    25|    25|untracked=$( git status | grep "Untracked files:" | wc -l )
+    39|      |-     8|      |-    26|    26|
+    40|      |-     9|      |-    27|    27|Status=$(git status)
+    41|      |-    10|      |-    28|      |-
+    42|      |-    11|      |-      |    28|+Diff=$( git diff )
+    43|      |-    12|      |-    29|    29|
+    44|      |-    13|      |-    30|    30|# clear changes.log
+    45|      |-    14|      |-    31|      |-$( echo "The following files have not been committed" > "changes.log")
+    46|      |-    15|      |-      |    31|+$( echo "The following files have not been committed" > "$Changelog")
+    47|      |-    16|      |-    32|    32|
+    48|      |-    17|      |-    33|    33|# if there are untracked files
+    49|      |-    18|      |-    34|    34|if [ $untracked -eq 1 ]
+    50|      |-    19|      |-    35|    35|then
+    51|      |-    20|      |-    36|    36|#adds untracked tag to untracked files, after getting them
+    52|      |-    21|      |-    37|      |-	$( echo "$Status" | sed -e "$STATUSCLEAN;/Untracked files:/d;/:/d;s/^	/	untracked:  /g" > "changes.log" )
+    53|      |-    22|      |-      |    37|+	$( echo "$Status" | sed -e "$STATUSCLEAN;/Untracked files:/d;/:/d;s/^	/	untracked:  /g" >> "$Changelog" )
+    54|      |-    23|      |-    38|    38|STATUSCLEAN="$STATUSCLEAN;/Untracked files:/,\$d" # delete all after line sourced from https://stackoverflow.com/questions/5227295/how-do-i-delete-all-lines-in-a-file-starting-from-after-a-matching-line
+    55|      |-    24|      |-    39|    39|fi
+    56|      |-    25|      |-    40|    40|
+    57|      |-    26|      |-    41|    41|# get other changes
+    58|      |-    27|      |-    42|      |-$( echo "$Status" | sed "$STATUSCLEAN;/Changes to be committed:/d;/Changes not staged for commit:/d" >> "changes.log" )
+    59|      |-    28|      |-      |    42|+$( echo "$Status" | sed "$STATUSCLEAN;/Changes to be committed:/d;/Changes not staged for commit:/d" >> "$Changelog" )
+    60|      |-    29|      |-    43|    43|
+    61|      |-    30|      |-    44|    44|
+    62|      |-    31|      |-    45|    45|#---- Find uncommitted changes II ----
+    63|      |-    32|      |-    46|    46|#uses git diff prints in a cleaner style than default with lines numbered and all that
+    64|      |-    33|      |-    47|    47|
+    65|      |-    34|      |-    48|      |-Diff=$( git diff )
+    66|      |-    35|      |-    49|    48|
+    67|      |-    36|      |-    50|      |-$(echo "Current git diff:" >> changes.log)
+    68|      |-    37|      |-      |    49|+$(echo "Current git diff:" >> "$Changelog")
+    69|      |-    38|      |-    51|    50|
+    70|      |-    39|      |-    52|    51|#iterate over lines https://superuser.com/questions/284187/bash-iterating-over-lines-in-a-variable
+    71|      |-    40|      |-    53|    52|
+    72|      |-    41|      |-_________________________
+    73|      |-    42|      |-    68|    67|
+    74|      |-    43|      |-    69|    68|#iterate over the lines of the diff stuff
+    75|      |-    44|      |-    70|    69|while read -r line; do
+    76|      |-    45|      |-      |    70|+	if [ $ACodeCount -lt 1 -a $RCodeCount -lt 1 ]
+    77|      |-    46|      |-      |    71|+	then
+    78|      |-    47|      |-      |    72|+		if [ $Code = "True" ]
+    79|      |-    48|      |-      |    73|+		then
+    80|      |-    49|      |-      |    74|+			$(printf '%0.1s' "_"{1..25} >> "$Changelog") # so it's much clearer where the code fragments are
+    81|      |-    50|      |-      |    75|+			$(echo >> "$Changelog") # nl cause printf%n doesn't work for some reason
+    82|      |-    51|      |-      |    76|+		fi
+    83|      |-    52|      |-      |    77|+		Code="False"
+    84|      |-    53|      |-      |    78|+	fi
+    85|      |-    54|      |-      |    79|+
+    86|      |-    55|      |-    71|    80|#non code lines either of 5 types
+    87|      |-    56|      |-    72|    81|if [ "$Code" == "False" ]
+    88|      |-    57|      |-    73|    82|then
+    89|      |-    58|      |-_________________________
+    90|      |-    59|      |-    92|   101|
+    91|      |-    60|      |-    93|   102|elif [ $Code == "True" ]
+    92|      |-    61|      |-    94|   103|then
+    93|      |-    62|      |-    95|      |-		if [ $ACodeCount -eq 0 -a $RCodeCount -eq 0 ]
+    94|      |-    63|      |-      |   104|+
+    95|      |-    64|      |-      |   105|+		#Print lines, numbering etc
+    96|      |-    65|      |-      |   106|+		Start=$(echo $line | sed -e "s/\(.\).*/\1/")
+    97|      |-    66|      |-      |   107|+		if [ "$Start" = "+" ]
+    98|      |-    67|      |-      |   108|+		then
+    99|      |-    68|      |-      |   109|+			PadA=$(( $PadL - ${#ANum} ))
+   100|      |-    69|      |-      |   110|+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
+   101|      |-    70|      |-      |   111|+			ANum=$(( $ANum + 1 ))
+   102|      |-    71|      |-      |   112|+			ACodeCount=$(( $ACodeCount - 1 ))
+   103|      |-    72|      |-      |   113|+		elif [ "$Start" = "-" ]
+   104|      |-    73|      |-    96|   114|then
+   105|      |-    74|      |-    97|      |-			Code="False"
+   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   107|      |-    76|      |-      |   115|+			PadR=$(( $PadL - ${#RNum} ))
+   108|      |-    77|      |-      |   116|+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> changes.log)
+   109|      |-    78|      |-      |   117|+			RNum=$(( $RNum + 1 ))
+   110|      |-    79|      |-      |   118|+			RCodeCount=$(( $RCodeCount - 1 ))
+   111|      |-    80|      |-    99|   119|else
+   112|      |-    81|      |-   100|      |-			#Print lines, numbering etc
+   113|      |-    82|      |-   101|      |-			Start=$(echo $line | sed -e "s/\(.\).*/\1/")
+   114|      |-    83|      |-   102|      |-			if [ "$Start" = "+" ]
+   115|      |-    84|      |-   103|      |-			then
+   116|      |-    85|      |-   104|      |-				PadA=$(( $PadL - ${#ANum} ))
+   117|      |-    86|      |-   105|      |-				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
+   118|      |-    87|      |-   106|      |-				ANum=$(( $ANum + 1 ))
+   119|      |-    88|      |-   107|      |-				ACodeCount=$(( $ACodeCount - 1 ))
+   120|      |-    89|      |-   108|      |-			elif [ "$Start" = "-" ]
+   121|      |-    90|      |-   109|      |-			then
+   122|      |-    91|      |-   110|      |-				PadR=$(( $PadL - ${#RNum} ))
+   123|      |-    92|      |-   111|      |-				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> changes.log)
+   124|      |-    93|      |-   112|      |-				RNum=$(( $RNum + 1 ))
+   125|      |-    94|      |-   113|      |-				RCodeCount=$(( $RCodeCount - 1 ))
+   126|      |-    95|      |-   114|      |-			else
+   127|      |-    96|      |-   115|      |-				PadR=$(( $PadL - ${#RNum} ))
+   128|      |-    97|      |-   116|      |-				PadA=$(( $PadL - ${#ANum} ))
+   129|      |-    98|      |-   117|      |-				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
+   130|      |-    99|      |-   118|      |-				#increment decrement stuff
+   131|      |-   100|      |-   119|      |-				RNum=$(( $RNum + 1 ))
+   132|      |-   101|      |-   120|      |-				ANum=$(( $ANum + 1 ))
+   133|      |-   102|      |-   121|      |-				RCodeCount=$(( $RCodeCount - 1 ))
+   134|      |-   103|      |-   122|      |-				ACodeCount=$(( $ACodeCount - 1 ))
+   135|      |-   104|      |-   123|      |-
+   136|      |-   105|      |-   124|      |-			fi
+   137|      |-   106|      |-   125|      |-
+   138|      |-   107|      |-   126|      |-			$(echo >> changes.log) #to add newline
+   139|      |-   108|      |-   127|      |-
+   140|      |-   109|      |-   128|      |-
+   141|      |-   110|      |-      |   120|+			PadR=$(( $PadL - ${#RNum} ))
+   142|      |-   111|      |-      |   121|+			PadA=$(( $PadL - ${#ANum} ))
+   143|      |-   112|      |-      |   122|+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
+   144|      |-   113|      |-      |   123|+			#increment decrement stuff
+   145|      |-   114|      |-      |   124|+			RNum=$(( $RNum + 1 ))
+   146|      |-   115|      |-      |   125|+			ANum=$(( $ANum + 1 ))
+   147|      |-   116|      |-      |   126|+			RCodeCount=$(( $RCodeCount - 1 ))
+   148|      |-   117|      |-      |   127|+			ACodeCount=$(( $ACodeCount - 1 ))
+   149|      |-   118|      |-   129|   128|fi
+   150|      |-   119|      |-   130|      |-
+   151|      |-   120|      |-      |   129|+
+   152|      |-   121|      |-      |   130|+		$(echo >> changes.log) #to add newline
+   153|      |-   122|      |-   131|   131|fi
+   154|      |-   123|      |-   132|   132|
+   155|      |-   124|      |-   133|   133|done <<< $Diff
+   156|      |-   125|      |-_________________________
+   157|      |-   126|      |-
+   158|      |-   127|      |-+++ /dev/null
+   159|      |-   128|      |-     1|      |-	untracked:  change.log
+   160|      |-   129|      |-     2|      |-	modified:   ProjectAnalyze.sh
+   161|      |-   130|      |-     3|      |-	modified:   testscript.sh
+   162|      |-   131|      |-     4|      |-Current git diff:
+   163|      |-   132|      |-     5|      |-
+   164|      |-   133|      |-     6|      |-File diff: Assign1/ProjectAnalyze.sh
+   165|      |-   134|      |-     7|      |-     1|     1|#!/git-bash.exe
+   166|      |-   135|      |-     8|      |-     2|     2|
+   167|      |-   136|      |-     9|      |-      |     3|+#Potential feature turning some of this stuff into HTML if -report flag in args?
+   168|      |-   137|      |-    10|      |-      |     4|+
+   169|      |-   138|      |-    11|      |-     3|     5|# random variable, not sure if I'll use it
+   170|      |-   139|      |-    12|      |-     4|     6|UPTODATE=$(git pull)
+   171|      |-   140|      |-    13|      |-     5|     7|
+   172|      |-   141|      |-    14|      |-    58|    60|#Numbers to count code line
+   173|      |-   142|      |-    15|      |-    59|    61|RNum="0"
+   174|      |-   143|      |-    16|      |-    60|    62|ANum="0"
+   175|      |-   144|      |-    17|      |-    61|      |-
+   176|      |-   145|      |-    18|      |-      |    63|+#padding altered from the following https://stackoverflow.com/questions/4409399/padding-characters-in-printf
+   177|      |-   146|      |-    19|      |-      |    64|+#literally just a bunch of spaces
+   178|      |-   147|      |-    20|      |-      |    65|+Pad=$(printf '%0.1s' " "{1..60})
+   179|      |-   148|      |-    21|      |-      |    66|+#length to pad the numbers
+   180|      |-   149|      |-    22|      |-      |    67|+PadL=6
+   181|      |-   150|      |-    23|      |-    62|    68|
+   182|      |-   151|      |-    24|      |-    63|    69|#iterate over the lines of the diff stuff
+   183|      |-   152|      |-    25|      |-    64|    70|while read -r line; do
+   184|      |-   153|      |-    26|      |-    65|    71|#non code lines either of 5 types
+   185|      |-   154|      |-    27|      |-    66|      |-	if [ $Code == "False" ]
+   186|      |-   155|      |-    28|      |-      |    72|+	if [ "$Code" == "False" ]
+   187|      |-   156|      |-    29|      |-    67|    73|then
+   188|      |-   157|      |-    30|      |-    68|    74|#use multi sed command to get what exactly the non code line is
+   189|      |-   158|      |-    31|      |-    69|      |-		Status=$(echo $line | sed -e "s/^diff --git.*/1/;s/^index.*/2/;s/^---.*/3/;s/^+++.*/4/;s/^@@.*/5/;s/[^1-5]/6/;s/\(.\).*/\1/")
+   190|      |-   159|      |-    32|      |-      |    75|+		Status=$(echo "$line" | sed -e "s/^diff --git.*/1/;s/^index.*/2/;s/^---.*/3/;s/^+++.*/4/;s/^@@.*/5/;s/[^1-5]/6/;s/\(.\).*/\1/;s/^$/6/")
+   191|      |-   160|      |-    33|      |-    70|    76|#1 = first line 2 = index objects 3 = --- 4 = +++ 5 = @@ aka start of code 6 = mode or something, too difficult to match easily
+   192|      |-   161|      |-    34|      |-    71|      |-		if [ $Status -eq 5 ]
+   193|      |-   162|      |-    35|      |-      |    77|+		if [ "$Status" -eq "5" ]
+   194|      |-   163|      |-    36|      |-    72|    78|then
+   195|      |-   164|      |-    37|      |-    73|    79|Code="True"
+   196|      |-   165|      |-    38|      |-    74|      |-			RNum=$(echo $line | sed -e "s/^@@ -\([0-9]*\),.*/\1/")
+   197|      |-   166|      |-    39|      |-    75|      |-			ANum=$(echo $line | sed -e "s/^@@ -[0-9]*,[0-9]* +\([0-9]*\),.*/\1/")
+   198|      |-   167|      |-    40|      |-    76|      |-			RCodeCount=$(echo $line | sed -e "s/^@@ -[0-9]*,\([0-9]*\) .*/\1/")
+   199|      |-   168|      |-    41|      |-    77|      |-			ACodeCount=$(echo $line | sed -e "s/^@@ -[0-9]*,[0-9]* +[0-9]*,\([0-9]*\).*/\1/")
+   200|      |-   169|      |-    42|      |-      |    80|+			RNum=$(echo "$line" | sed -e "s/^@@ -\([0-9]*\),.*/\1/")
+   201|      |-   170|      |-    43|      |-      |    81|+			ANum=$(echo "$line" | sed -e "s/^@@ -[0-9]*,[0-9]* +\([0-9]*\),.*/\1/")
+   202|      |-   171|      |-    44|      |-      |    82|+			RCodeCount=$(echo "$line" | sed -e "s/^@@ -[0-9]*,\([0-9]*\) .*/\1/")
+   203|      |-   172|      |-    45|      |-      |    83|+			ACodeCount=$(echo "$line" | sed -e "s/^@@ -[0-9]*,[0-9]* +[0-9]*,\([0-9]*\).*/\1/")
+   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+   205|      |-   174|      |-    47|      |-    79|    85|
+   206|      |-   175|      |-    48|      |-    80|      |-		elif [$Status -eq 4]
+   207|      |-   176|      |-    49|      |-      |    86|+		elif [ "$Status" -eq "4" ]
+   208|      |-   177|      |-    50|      |-    81|    87|then
+   209|      |-   178|      |-    51|      |-    82|    88|# dump the file name into the changelog
+   210|      |-   179|      |-    52|      |-    83|      |-			$(echo $line | sed -e "s/^+++ b\//File diff: /" >> changes.log)
+   211|      |-   180|      |-    53|      |-      |    89|+			$(echo >> changes.log)
+   212|      |-   181|      |-    54|      |-      |    90|+			$(echo "$line" | sed -e "s/^+++ b\//File diff: /" >> changes.log)
+   213|      |-   182|      |-    55|      |-    84|    91|fi
+   214|      |-   183|      |-    56|      |-    85|      |-		echo $Status
+   215|      |-   184|      |-    57|      |-    86|    92|
+   216|      |-   185|      |-    58|      |-    87|    93|elif [ $Code == "True" ]
+   217|      |-   186|      |-    59|      |-    88|    94|then
+   218|      |-   187|      |-    60|      |-    89|      |-		if [ $CodeCount -eq 0 ]
+   219|      |-   188|      |-    61|      |-      |    95|+		if [ $ACodeCount -eq 0 -a $RCodeCount -eq 0 ]
+   220|      |-   189|      |-    62|      |-    90|    96|then
+   221|      |-   190|      |-    63|      |-    91|    97|Code="False"
+   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   223|      |-   192|      |-    65|      |-      |    99|+		else
+   224|      |-   193|      |-    66|      |-      |   100|+			#Print lines, numbering etc
+   225|      |-   194|      |-    67|      |-      |   101|+			Start=$(echo $line | sed -e "s/\(.\).*/\1/")
+   226|      |-   195|      |-    68|      |-      |   102|+			if [ "$Start" = "+" ]
+   227|      |-   196|      |-    69|      |-      |   103|+			then
+   228|      |-   197|      |-    70|      |-      |   104|+				PadA=$(( $PadL - ${#ANum} ))
+   229|      |-   198|      |-    71|      |-      |   105|+				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
+   230|      |-   199|      |-    72|      |-      |   106|+				ANum=$(( $ANum + 1 ))
+   231|      |-   200|      |-    73|      |-      |   107|+				ACodeCount=$(( $ACodeCount - 1 ))
+   232|      |-   201|      |-    74|      |-      |   108|+			elif [ "$Start" = "-" ]
+   233|      |-   202|      |-    75|      |-      |   109|+			then
+   234|      |-   203|      |-    76|      |-      |   110|+				PadR=$(( $PadL - ${#RNum} ))
+   235|      |-   204|      |-    77|      |-      |   111|+				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> changes.log)
+   236|      |-   205|      |-    78|      |-      |   112|+				RNum=$(( $RNum + 1 ))
+   237|      |-   206|      |-    79|      |-      |   113|+				RCodeCount=$(( $RCodeCount - 1 ))
+   238|      |-   207|      |-    80|      |-      |   114|+			else
+   239|      |-   208|      |-    81|      |-      |   115|+				PadR=$(( $PadL - ${#RNum} ))
+   240|      |-   209|      |-    82|      |-      |   116|+				PadA=$(( $PadL - ${#ANum} ))
+   241|      |-   210|      |-    83|      |-      |   117|+				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
+   242|      |-   211|      |-    84|      |-      |   118|+				#increment decrement stuff
+   243|      |-   212|      |-    85|      |-      |   119|+				RNum=$(( $RNum + 1 ))
+   244|      |-   213|      |-    86|      |-      |   120|+				ANum=$(( $ANum + 1 ))
+   245|      |-   214|      |-    87|      |-      |   121|+				RCodeCount=$(( $RCodeCount - 1 ))
+   246|      |-   215|      |-    88|      |-      |   122|+				ACodeCount=$(( $ACodeCount - 1 ))
+   247|      |-   216|      |-    89|      |-      |   123|+
+   248|      |-   217|      |-    90|      |-      |   124|+			fi
+   249|      |-   218|      |-    91|      |-      |   125|+
+   250|      |-   219|      |-    92|      |-      |   126|+			$(echo >> changes.log) #to add newline
+   251|      |-   220|      |-    93|      |-      |   127|+
+   252|      |-   221|      |-    94|      |-      |   128|+
+   253|      |-   222|      |-    95|      |-    93|   129|fi
+   254|      |-   223|      |-    96|      |-    94|   130|
+   255|      |-   224|      |-    97|      |-    95|   131|fi
+   256|      |-   225|      |-    98|      |-
+   257|      |-   226|      |-    99|      |-File diff: Assign1/testscript.sh
+   258|      |-   227|      |-   100|      |-     1|     1|#!/git-bash.exe
+   259|      |-   228|      |-   101|      |-     2|     2|
+   260|      |-   229|      |-   102|      |-     3|      |-Status=$(sed -e "s/^diff --git.*/1/;s/^index.*/2/;s/^---.*/3/;s/^+++.*/4/;s/^@@.*/5/;s/[^1-5]/6/;s/\(.\).*/\1/" < test.txt)
+   261|      |-   230|      |-   103|      |-      |     3|+Status=$(echo >> changes.log)
+   262|      |-   231|      |-   104|      |-     4|     4|echo $Status
+_________________________
+
+File diff: Assign1/testscript.sh
+     1|     1| #!/git-bash.exe
+     2|     2| 
+     3|      |-Status=$(echo >> changes.log)
+      |     3|+PadLength=15
+      |     4|+String="test"
+      |     5|+printf '%0.*s%s' $PadLength "$(printf '%0.1s' " "{1..100})" "$String"
+     4|     6| echo $Status

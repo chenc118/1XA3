@@ -1,6 +1,19 @@
 #!/git-bash.exe
 
+#change git-bash to bash.exe @NotAProfDalves, stuff is broken on my computer so only the github cli bash works
+
 #Potential feature turning some of this stuff into HTML if -report flag in args?
+
+#----Arugment Parsing----
+#sourced from https://stackoverflow.com/questions/255898/how-to-iterate-over-arguments-in-a-bash-script
+for arg in "$@"
+do
+	Nothing="Nothing" #here to avoid errors for the moment
+	#TODO stuff to parse the arguments
+done
+
+
+
 
 # random variable, not sure if I'll use it
 UPTODATE=$(git pull)
@@ -66,7 +79,8 @@ Pad=$(printf '%0.1s' " "{1..60})
 PadL=6
 
 #iterate over the lines of the diff stuff
-while read -r line; do
+#IFS keep leading spaces from https://stackoverflow.com/questions/29689172/bash-read-line-does-not-read-leading-spaces 
+while IFS= read -r line; do
 	if [ $ACodeCount -lt 1 -a $RCodeCount -lt 1 ]
 	then
 		if [ $Code = "True" ]
@@ -96,8 +110,8 @@ while read -r line; do
 		elif [ "$Status" -eq "4" ]
 		then
 			# dump the file name into the changelog
-			$(echo >> changes.log)
-			$(echo "$line" | sed -e "s/^+++ b\//File diff: /;s/+++ \/dev\/null/File deleted: $Rem/" >> changes.log)
+			$(echo >> "$Changelog")
+			$(echo "$line" | sed -e "s/^+++ b\//File diff: /;s/+++ \/dev\/null/File deleted: $Rem/" >> "$Changelog" )
 		fi
 
 	elif [ $Code == "True" ]
@@ -107,19 +121,19 @@ while read -r line; do
 		if [ "$Start" = "+" ]
 		then
 			PadA=$(( $PadL - ${#ANum} ))
-			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> "$Changelog")
 			ANum=$(( $ANum + 1 ))
 			ACodeCount=$(( $ACodeCount - 1 ))
 		elif [ "$Start" = "-" ]
 		then
 			PadR=$(( $PadL - ${#RNum} ))
-			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> changes.log)
+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> "$Changelog")
 			RNum=$(( $RNum + 1 ))
 			RCodeCount=$(( $RCodeCount - 1 ))
 		else
 			PadR=$(( $PadL - ${#RNum} ))
 			PadA=$(( $PadL - ${#ANum} ))
-			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> "$Changelog")
 			#increment decrement stuff
 			RNum=$(( $RNum + 1 ))
 			ANum=$(( $ANum + 1 ))
@@ -127,12 +141,21 @@ while read -r line; do
 			ACodeCount=$(( $ACodeCount - 1 ))
 		fi
 			
-		$(echo >> changes.log) #to add newline
+		$(echo >> "$Changelog") #to add newline
 	fi
 
 done <<< $Diff
 #---- FIND TODO ----
 
+TodoLog="todo.log"
+> $TodoLog #clears log
 
+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
 
+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
 
+#----Count Code Lines----
+#Cause literally this is a command I use all the time
+
+#TODO
