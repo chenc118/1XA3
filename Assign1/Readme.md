@@ -15,3 +15,9 @@ Directory for assignment 1 stuffs
 5.(maybe) report arg will result in logs created being in html format and viewable as such, (for more editing options using CSS/HTML)
 6. Arguments to change things someday
 
+##### Notes:
+
+Some things that are different from other's cause of the intended useage
+
+1. No prompts cause I'll maybe add this to some sort of other script thingy if I ever use it and have it execute w/ just cli args, prompts makes things easier to mess up
+2. Does everything at once for the same above reason(easier to run as a part of some other code), may add args to supress certain behaviors
