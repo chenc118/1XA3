@@ -1,0 +1,16 @@
+File: changes.log
+   12|      |    20|+#TODO fix this part
+   26|   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   27|   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   28|      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+   50|   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   58|   161|   185| #TODO
+   81|    20|      |-      |    12|+	#TODO stuff to parse the arguments
+  148|    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  149|    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  151|    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  156|    95|      |-      |   161|+#TODO
+  169|   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+  265|   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  363|   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+  381|   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state

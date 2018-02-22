@@ -17,7 +17,7 @@ done
 
 # random variable, not sure if I'll use it
 UPTODATE=$(git pull)
-
+#TODO fix this part
 
 #----Find uncommitted changes I ----
 #AKA feature # 1 adds the stuff form git status to the diff stuff
@@ -147,15 +147,39 @@ while IFS= read -r line; do
 done <<< $Diff
 #---- FIND TODO ----
 
+
+PadL=5 # new padding length for this part
+
 TodoLog="todo.log"
 > $TodoLog #clears log
 
-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+
+LastFile=">>Null" #>> cause that's illegal in filenames
+while IFS= read -r line; do
+	if [ -n "$line" ]
+	then
+		#get the general content from the grep strings
+		File=$(echo "$line" | sed -re "s/([^:]*).*/\1/")
+		LineNum=$(echo "$line" | sed -re "s/[^:]*:([0-9]*):.*/\1/")
+		Content=$(echo "$line" | sed -re "s/[^:]*:[0-9]*:(.*)/\1/")
+		if [ "$File" != "$LastFile" ]
+		then
+			echo "File: $File" >> "$TodoLog"
+			LastFile=$File
+		fi
+		PadN=$(( $PadL - ${#LineNum} ))
+		$(printf '%0.*s%s|%s' "$PadN" "$Pad" "$LineNum" "$Content" >> "$TodoLog")
+		echo >> "$TodoLog"
+	fi
+
+done <<< $Todo
 
 #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
 
 #----Count Code Lines----
-#Cause literally this is a command I use all the time
+#Cause literally this is a command I use all the time to see how close I am to 10k lines
+
+echo "Lines of code = $(find -name "*.hs" -print0 | xargs -0 wc -l )"
 
 #TODO
