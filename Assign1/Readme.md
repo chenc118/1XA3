@@ -8,14 +8,13 @@ Directory for assignment 1 stuffs
 4. Haskell stuff
 5. See features for all the "features" included, apparently the OP people are doing 5+
 
-#### Features
+#### Additional Features
 1. uncommitted files (including staged) will be displayed at the beginning of changes.log (cause I can't be bothered to just toss out those couple hours of work)
-2. Git diff is "fancy" (I'll count this as a feature since no one else is doing something like this, at least from the git repo names I can guess)
-3. TODO is "fancy" (Again cause literally no one else is doing anything special except copying a grep command)
-4. requirement 3 has // as well for practicality reasons as I code in java
-5.(maybe) report arg will result in logs created being in html format and viewable as such, (for more editing options using CSS/HTML)
-6. Arguments to change things someday
-7. Implmentation of https://www.xkcd.com/801/ (planned, got java code to modify for this)
+2. Literally every required feature is "fancy" making the input slightly more readable etc, and also resolving some errors
+3. requirement 3 has // as well for practicality reasons as I code in java
+4.(maybe) report arg will result in logs created being in html format and viewable as such, (for more editing options using CSS/HTML)
+5. Arguments to change things someday
+6. Implmentation of https://www.xkcd.com/801/ (planned, got java code to modify for this)
 
 ##### Notes:
 
