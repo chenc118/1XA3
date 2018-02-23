@@ -1,663 +1,700 @@
 The following files have not been committed
-	untracked:  error.log
-	untracked:  rand.hs
 	modified:   ProjectAnalyze.sh
 	deleted:    changes.log
-	modified:   test.hs
-	modified:   testscript.sh
-	modified:   todo.log
 Current git diff:
 
 File diff: Assign1/ProjectAnalyze.sh
-   180|   180| #----Count Code Lines----
-   181|   181| #Cause literally this is a command I use all the time to see how close I am to 10k lines
-   182|   182| 
-   183|      |-echo "Lines of code = $(find -name "*.hs" -print0 | xargs -0 wc -l )"
-      |   183|+echo "Lines of code = $(find -name "*.hs" -print0 | xargs -0 wc -l | grep total)"
-   184|   184| 
-   185|   185| #----Haskell Eror Check----
    186|   186| 
    187|   187| ErrorLog="error.log"
-      |   188|+> "$ErrorLog" # clear log ofc
-      |   189|+Cleanup="False" #if to clean up a temporary insert of main undefined
-   188|   190| 
-   189|      |-AllValid="False"
-   190|      |-
-   191|      |-while [ "$AllValid" = "False" ]
-      |   191|+shopt -s nullglob
-      |   192|+for hsFile in *.hs
-   192|   193| do
-   193|      |-	HSErr=ghc -fno-code *.hs &>> "$ErrorLog"
-   194|      |-	
-      |   194|+	#error capture from https://stackoverflow.com/questions/962255/how-to-store-standard-error-in-a-variable-in-a-bash-script
-      |   195|+	HSErr=$(ghc -fno-code "$hsFile" 2>&1 >/dev/null)
-      |   196|+	#contains test from https://stackoverflow.com/questions/229551/string-contains-in-bash answer # 2
-      |   197|+	if [[ $HSErr =~ .*The\ IO\ action\ .main.\ is\ not\ defined\ [i]n\ module\ .Main..*  ]]
-      |   198|+	then
-      |   199|+		# if main undefined, create it momentarily
-      |   200|+		echo "main = undefined" >> "$hsFile"
-      |   201|+		HSErr=$(ghc -fno-code "$hsFile" 2>&1 >/dev/null)
-      |   202|+		Cleanup="True"
-      |   203|+	fi
-      |   204|+	echo "File: $hsFile" >> "$ErrorLog"
-      |   205|+	echo "$HSErr" >> "$ErrorLog"
-      |   206|+
-      |   207|+	# line drop from https://stackoverflow.com/questions/4881930/remove-the-last-line-from-a-file-in-bash
-      |   208|+	if [ "$Cleanup" = "True" ]
-      |   209|+		then
-      |   210|+		head -n -1 "$hsFile" > tmp.hs; mv tmp.hs "$hsFile"
-      |   211|+		Cleanup="False"
-      |   212|+	fi
-   195|   213| done
-   196|   214| 
+   188|   188| > "$ErrorLog" # clear log ofc
+   189|      |-Cleanup="False" #if to clean up a temporary insert of main undefined
+      |   189|+
+   190|   190| 
+   191|   191| shopt -s nullglob
+   192|   192| for hsFile in *.hs
+_________________________
+   199|   199| 		# if main undefined, create it momentarily
+   200|   200| 		echo "main = undefined" >> "$hsFile"
+   201|   201| 		HSErr=$(ghc -fno-code "$hsFile" 2>&1 >/dev/null)
+   202|      |-		Cleanup="True"
+      |   202|+		# line drop from https://stackoverflow.com/questions/4881930/remove-the-last-line-from-a-file-in-bash
+      |   203|+		head -n -1 "$hsFile" > tmp.hs; mv tmp.hs "$hsFile"
+   203|   204| 	fi
+   204|   205| 	echo "File: $hsFile" >> "$ErrorLog"
+   205|   206| 	echo "$HSErr" >> "$ErrorLog"
+   206|   207| 
+   207|      |-	# line drop from https://stackoverflow.com/questions/4881930/remove-the-last-line-from-a-file-in-bash
+   208|      |-	if [ "$Cleanup" = "True" ]
+   209|      |-		then
+   210|      |-		head -n -1 "$hsFile" > tmp.hs; mv tmp.hs "$hsFile"
+   211|      |-		Cleanup="False"
+   212|      |-	fi
+      |   208|+	
+   213|   209| done
+   214|   210| 
 _________________________
 
 File deleted: Assign1/changes.log
      1|      |-The following files have not been committed
-     2|      |-	untracked:  todo.log
-     3|      |-	modified:   ProjectAnalyze.sh
-     4|      |-	deleted:    changes.log
-     5|      |-Current git diff:
-     6|      |-
-     7|      |-File diff: Assign1/ProjectAnalyze.sh
-     8|      |-    17|    17| 
-     9|      |-    18|    18| # random variable, not sure if I'll use it
-    10|      |-    19|    19| UPTODATE=$(git pull)
-    11|      |-    20|      |-
-    12|      |-      |    20|+#TODO fix this part
-    13|      |-    21|    21| 
-    14|      |-    22|    22| #----Find uncommitted changes I ----
-    15|      |-    23|    23| #AKA feature # 1 adds the stuff form git status to the diff stuff
-    16|      |-_________________________
-    17|      |-   147|   147| done <<< $Diff
-    18|      |-   148|   148| #---- FIND TODO ----
-    19|      |-   149|   149| 
-    20|      |-      |   150|+
-    21|      |-      |   151|+PadL=5 # new padding length for this part
-    22|      |-      |   152|+
-    23|      |-   150|   153| TodoLog="todo.log"
-    24|      |-   151|   154| > $TodoLog #clears log
-    25|      |-   152|   155| 
-    26|      |-   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-    27|      |-   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-    28|      |-      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
-    29|      |-      |   157|+
-    30|      |-      |   158|+LastFile=">>Null" #>> cause that's illegal in filenames
-    31|      |-      |   159|+while IFS= read -r line; do
-    32|      |-      |   160|+	if [ -n "$line" ]
-    33|      |-      |   161|+	then
-    34|      |-      |   162|+		#get the general content from the grep strings
-    35|      |-      |   163|+		File=$(echo "$line" | sed -re "s/([^:]*).*/\1/")
-    36|      |-      |   164|+		LineNum=$(echo "$line" | sed -re "s/[^:]*:([0-9]*):.*/\1/")
-    37|      |-      |   165|+		Content=$(echo "$line" | sed -re "s/[^:]*:[0-9]*:(.*)/\1/")
-    38|      |-      |   166|+		if [ "$File" != "$LastFile" ]
-    39|      |-      |   167|+		then
-    40|      |-      |   168|+			echo "File: $File" >> "$TodoLog"
-    41|      |-      |   169|+			LastFile=$File
-    42|      |-      |   170|+		fi
-    43|      |-      |   171|+		PadN=$(( $PadL - ${#LineNum} ))
-    44|      |-      |   172|+		$(printf '%0.*s%s|%s' "$PadN" "$Pad" "$LineNum" "$Content" >> "$TodoLog")
-    45|      |-      |   173|+		echo >> "$TodoLog"
-    46|      |-      |   174|+	fi
-    47|      |-      |   175|+
-    48|      |-      |   176|+done <<< $Todo
-    49|      |-   155|   177| 
-    50|      |-   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-    51|      |-   157|   179| 
-    52|      |-   158|   180| #----Count Code Lines----
-    53|      |-   159|      |-#Cause literally this is a command I use all the time
-    54|      |-      |   181|+#Cause literally this is a command I use all the time to see how close I am to 10k lines
-    55|      |-      |   182|+
-    56|      |-      |   183|+echo "Lines of code = $(find -name "*.hs" -print0 | xargs -0 wc -l )"
-    57|      |-   160|   184| 
-    58|      |-   161|   185| #TODO
-    59|      |-_________________________
-    60|      |-
-    61|      |-File deleted: Assign1/changes.log
-    62|      |-     1|      |-The following files have not been committed
-    63|      |-     2|      |-	untracked:  todo.log
-    64|      |-     3|      |-	modified:   ProjectAnalyze.sh
-    65|      |-     4|      |-	deleted:    changes.log
-    66|      |-     5|      |-	modified:   testscript.sh
-    67|      |-     6|      |-Current git diff:
-    68|      |-     7|      |-
-    69|      |-     8|      |-File diff: Assign1/ProjectAnalyze.sh
-    70|      |-     9|      |-     1|     1| #!/git-bash.exe
-    71|      |-    10|      |-     2|     2| 
-    72|      |-    11|      |-      |     3|+#change git-bash to bash.exe @NotAProfDalves, stuff is broken on my computer so only the github cli bash works
-    73|      |-    12|      |-      |     4|+
-    74|      |-    13|      |-     3|     5| #Potential feature turning some of this stuff into HTML if -report flag in args?
-    75|      |-    14|      |-     4|     6| 
-    76|      |-    15|      |-      |     7|+#----Arugment Parsing----
-    77|      |-    16|      |-      |     8|+#sourced from https://stackoverflow.com/questions/255898/how-to-iterate-over-arguments-in-a-bash-script
-    78|      |-    17|      |-      |     9|+for arg in "$@"
-    79|      |-    18|      |-      |    10|+do
-    80|      |-    19|      |-      |    11|+	Nothing="Nothing" #here to avoid errors for the moment
-    81|      |-    20|      |-      |    12|+	#TODO stuff to parse the arguments
-    82|      |-    21|      |-      |    13|+done
-    83|      |-    22|      |-      |    14|+
-    84|      |-    23|      |-      |    15|+
-    85|      |-    24|      |-      |    16|+
-    86|      |-    25|      |-      |    17|+
-    87|      |-    26|      |-     5|    18| # random variable, not sure if I'll use it
-    88|      |-    27|      |-     6|    19| UPTODATE=$(git pull)
-    89|      |-    28|      |-     7|    20| 
-    90|      |-    29|      |-_________________________
-    91|      |-    30|      |-    66|    79| PadL=6
-    92|      |-    31|      |-    67|    80| 
-    93|      |-    32|      |-    68|    81| #iterate over the lines of the diff stuff
-    94|      |-    33|      |-    69|      |-while read -r line; do
-    95|      |-    34|      |-      |    82|+#IFS keep leading spaces from https://stackoverflow.com/questions/29689172/bash-read-line-does-not-read-leading-spaces 
-    96|      |-    35|      |-      |    83|+while IFS= read -r line; do
-    97|      |-    36|      |-    70|    84| 	if [ $ACodeCount -lt 1 -a $RCodeCount -lt 1 ]
-    98|      |-    37|      |-    71|    85| 	then
-    99|      |-    38|      |-    72|    86| 		if [ $Code = "True" ]
-   100|      |-    39|      |-_________________________
-   101|      |-    40|      |-    96|   110| 		elif [ "$Status" -eq "4" ]
-   102|      |-    41|      |-    97|   111| 		then
-   103|      |-    42|      |-    98|   112| 			# dump the file name into the changelog
-   104|      |-    43|      |-    99|      |-			$(echo >> changes.log)
-   105|      |-    44|      |-   100|      |-			$(echo "$line" | sed -e "s/^+++ b\//File diff: /;s/+++ \/dev\/null/File deleted: $Rem/" >> changes.log)
-   106|      |-    45|      |-      |   113|+			$(echo >> "$Changelog")
-   107|      |-    46|      |-      |   114|+			$(echo "$line" | sed -e "s/^+++ b\//File diff: /;s/+++ \/dev\/null/File deleted: $Rem/" >> "$Changelog" )
-   108|      |-    47|      |-   101|   115| 		fi
-   109|      |-    48|      |-   102|   116| 
-   110|      |-    49|      |-   103|   117| 	elif [ $Code == "True" ]
-   111|      |-    50|      |-_________________________
-   112|      |-    51|      |-   107|   121| 		if [ "$Start" = "+" ]
-   113|      |-    52|      |-   108|   122| 		then
-   114|      |-    53|      |-   109|   123| 			PadA=$(( $PadL - ${#ANum} ))
-   115|      |-    54|      |-   110|      |-			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
-   116|      |-    55|      |-      |   124|+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> "$Changelog")
-   117|      |-    56|      |-   111|   125| 			ANum=$(( $ANum + 1 ))
-   118|      |-    57|      |-   112|   126| 			ACodeCount=$(( $ACodeCount - 1 ))
-   119|      |-    58|      |-   113|   127| 		elif [ "$Start" = "-" ]
-   120|      |-    59|      |-   114|   128| 		then
-   121|      |-    60|      |-   115|   129| 			PadR=$(( $PadL - ${#RNum} ))
-   122|      |-    61|      |-   116|      |-			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> changes.log)
-   123|      |-    62|      |-      |   130|+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> "$Changelog")
-   124|      |-    63|      |-   117|   131| 			RNum=$(( $RNum + 1 ))
-   125|      |-    64|      |-   118|   132| 			RCodeCount=$(( $RCodeCount - 1 ))
-   126|      |-    65|      |-   119|   133| 		else
-   127|      |-    66|      |-   120|   134| 			PadR=$(( $PadL - ${#RNum} ))
-   128|      |-    67|      |-   121|   135| 			PadA=$(( $PadL - ${#ANum} ))
-   129|      |-    68|      |-   122|      |-			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
-   130|      |-    69|      |-      |   136|+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> "$Changelog")
-   131|      |-    70|      |-   123|   137| 			#increment decrement stuff
-   132|      |-    71|      |-   124|   138| 			RNum=$(( $RNum + 1 ))
-   133|      |-    72|      |-   125|   139| 			ANum=$(( $ANum + 1 ))
-   134|      |-    73|      |-_________________________
-   135|      |-    74|      |-   127|   141| 			ACodeCount=$(( $ACodeCount - 1 ))
-   136|      |-    75|      |-   128|   142| 		fi
-   137|      |-    76|      |-   129|   143| 			
-   138|      |-    77|      |-   130|      |-		$(echo >> changes.log) #to add newline
-   139|      |-    78|      |-      |   144|+		$(echo >> "$Changelog") #to add newline
-   140|      |-    79|      |-   131|   145| 	fi
-   141|      |-    80|      |-   132|   146| 
-   142|      |-    81|      |-   133|   147| done <<< $Diff
-   143|      |-    82|      |-   134|   148| #---- FIND TODO ----
-   144|      |-    83|      |-   135|   149| 
-   145|      |-    84|      |-      |   150|+TodoLog="todo.log"
-   146|      |-    85|      |-      |   151|+> $TodoLog #clears log
-   147|      |-    86|      |-      |   152|+
-   148|      |-    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-   149|      |-    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-   150|      |-    89|      |-   136|   155| 
-   151|      |-    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-   152|      |-    91|      |-   137|   157| 
-   153|      |-    92|      |-      |   158|+#----Count Code Lines----
-   154|      |-    93|      |-      |   159|+#Cause literally this is a command I use all the time
-   155|      |-    94|      |-   138|   160| 
-   156|      |-    95|      |-      |   161|+#TODO
-   157|      |-    96|      |-_________________________
-   158|      |-    97|      |-
-   159|      |-    98|      |-File deleted: Assign1/changes.log
-   160|      |-    99|      |-     1|      |-The following files have not been committed
-   161|      |-   100|      |-     2|      |-	modified:   ProjectAnalyze.sh
-   162|      |-   101|      |-     3|      |-	deleted:    changes.log
-   163|      |-   102|      |-     4|      |-Current git diff:
-   164|      |-   103|      |-     5|      |-
-   165|      |-   104|      |-     6|      |-File diff: Assign1/ProjectAnalyze.sh
-   166|      |-   105|      |-     7|      |-    90|    90|ANum=$(echo "$line" | sed -e "s/^@@ -[0-9]*,[0-9]* +\([0-9]*\),.*/\1/")
-   167|      |-   106|      |-     8|      |-    91|    91|RCodeCount=$(echo "$line" | sed -e "s/^@@ -[0-9]*,\([0-9]*\) .*/\1/")
-   168|      |-   107|      |-     9|      |-    92|    92|ACodeCount=$(echo "$line" | sed -e "s/^@@ -[0-9]*,[0-9]* +[0-9]*,\([0-9]*\).*/\1/")
-   169|      |-   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
-   170|      |-   109|      |-    11|      |-    94|      |-
-   171|      |-   110|      |-    12|      |-      |    93|+		elif [ "$Status" -eq "3" ]
-   172|      |-   111|      |-    13|      |-      |    94|+		then
-   173|      |-   112|      |-    14|      |-      |    95|+			Rem=$(echo "$line" | sed -e "s/^--- a\///;s:/:\\\/:g") # file removed to fix def/null issue
-   174|      |-   113|      |-    15|      |-    95|    96|elif [ "$Status" -eq "4" ]
-   175|      |-   114|      |-    16|      |-    96|    97|then
-   176|      |-   115|      |-    17|      |-    97|    98|# dump the file name into the changelog
-   177|      |-   116|      |-    18|      |-    98|    99|$(echo >> changes.log)
-   178|      |-   117|      |-    19|      |-    99|      |-			$(echo "$line" | sed -e "s/^+++ b\//File diff: /" >> changes.log)
-   179|      |-   118|      |-    20|      |-      |   100|+			$(echo "$line" | sed -e "s/^+++ b\//File diff: /;s/+++ \/dev\/null/File deleted: $Rem/" >> changes.log)
-   180|      |-   119|      |-    21|      |-   100|   101|fi
-   181|      |-   120|      |-    22|      |-   101|   102|
-   182|      |-   121|      |-    23|      |-   102|   103|elif [ $Code == "True" ]
-   183|      |-   122|      |-    24|      |-   103|   104|then
-   184|      |-   123|      |-    25|      |-   104|      |-
-   185|      |-   124|      |-    26|      |-   105|   105|#Print lines, numbering etc
-   186|      |-   125|      |-    27|      |-   106|   106|Start=$(echo $line | sed -e "s/\(.\).*/\1/")
-   187|      |-   126|      |-    28|      |-   107|   107|if [ "$Start" = "+" ]
-   188|      |-   127|      |-    29|      |-_________________________
-   189|      |-   128|      |-    30|      |-
-   190|      |-   129|      |-    31|      |-File deleted: Assign1/changes.log
-   191|      |-   130|      |-    32|      |-     1|      |-The following files have not been committed
-   192|      |-   131|      |-    33|      |-     2|      |-	modified:   ProjectAnalyze.sh
-   193|      |-   132|      |-    34|      |-     3|      |-	deleted:    changes.log
-   194|      |-   133|      |-    35|      |-     4|      |-Current git diff:
-   195|      |-   134|      |-    36|      |-     5|      |-
-   196|      |-   135|      |-    37|      |-     6|      |-File diff: Assign1/ProjectAnalyze.sh
-   197|      |-   136|      |-    38|      |-     7|      |-    25|    25|untracked=$( git status | grep "Untracked files:" | wc -l )
-   198|      |-   137|      |-    39|      |-     8|      |-    26|    26|
-   199|      |-   138|      |-    40|      |-     9|      |-    27|    27|Status=$(git status)
-   200|      |-   139|      |-    41|      |-    10|      |-    28|      |-
-   201|      |-   140|      |-    42|      |-    11|      |-      |    28|+Diff=$( git diff )
-   202|      |-   141|      |-    43|      |-    12|      |-    29|    29|
-   203|      |-   142|      |-    44|      |-    13|      |-    30|    30|# clear changes.log
-   204|      |-   143|      |-    45|      |-    14|      |-    31|      |-$( echo "The following files have not been committed" > "changes.log")
-   205|      |-   144|      |-    46|      |-    15|      |-      |    31|+$( echo "The following files have not been committed" > "$Changelog")
-   206|      |-   145|      |-    47|      |-    16|      |-    32|    32|
-   207|      |-   146|      |-    48|      |-    17|      |-    33|    33|# if there are untracked files
-   208|      |-   147|      |-    49|      |-    18|      |-    34|    34|if [ $untracked -eq 1 ]
-   209|      |-   148|      |-    50|      |-    19|      |-    35|    35|then
-   210|      |-   149|      |-    51|      |-    20|      |-    36|    36|#adds untracked tag to untracked files, after getting them
-   211|      |-   150|      |-    52|      |-    21|      |-    37|      |-	$( echo "$Status" | sed -e "$STATUSCLEAN;/Untracked files:/d;/:/d;s/^	/	untracked:  /g" > "changes.log" )
-   212|      |-   151|      |-    53|      |-    22|      |-      |    37|+	$( echo "$Status" | sed -e "$STATUSCLEAN;/Untracked files:/d;/:/d;s/^	/	untracked:  /g" >> "$Changelog" )
-   213|      |-   152|      |-    54|      |-    23|      |-    38|    38|STATUSCLEAN="$STATUSCLEAN;/Untracked files:/,\$d" # delete all after line sourced from https://stackoverflow.com/questions/5227295/how-do-i-delete-all-lines-in-a-file-starting-from-after-a-matching-line
-   214|      |-   153|      |-    55|      |-    24|      |-    39|    39|fi
-   215|      |-   154|      |-    56|      |-    25|      |-    40|    40|
-   216|      |-   155|      |-    57|      |-    26|      |-    41|    41|# get other changes
-   217|      |-   156|      |-    58|      |-    27|      |-    42|      |-$( echo "$Status" | sed "$STATUSCLEAN;/Changes to be committed:/d;/Changes not staged for commit:/d" >> "changes.log" )
-   218|      |-   157|      |-    59|      |-    28|      |-      |    42|+$( echo "$Status" | sed "$STATUSCLEAN;/Changes to be committed:/d;/Changes not staged for commit:/d" >> "$Changelog" )
-   219|      |-   158|      |-    60|      |-    29|      |-    43|    43|
-   220|      |-   159|      |-    61|      |-    30|      |-    44|    44|
-   221|      |-   160|      |-    62|      |-    31|      |-    45|    45|#---- Find uncommitted changes II ----
-   222|      |-   161|      |-    63|      |-    32|      |-    46|    46|#uses git diff prints in a cleaner style than default with lines numbered and all that
-   223|      |-   162|      |-    64|      |-    33|      |-    47|    47|
-   224|      |-   163|      |-    65|      |-    34|      |-    48|      |-Diff=$( git diff )
-   225|      |-   164|      |-    66|      |-    35|      |-    49|    48|
-   226|      |-   165|      |-    67|      |-    36|      |-    50|      |-$(echo "Current git diff:" >> changes.log)
-   227|      |-   166|      |-    68|      |-    37|      |-      |    49|+$(echo "Current git diff:" >> "$Changelog")
-   228|      |-   167|      |-    69|      |-    38|      |-    51|    50|
-   229|      |-   168|      |-    70|      |-    39|      |-    52|    51|#iterate over lines https://superuser.com/questions/284187/bash-iterating-over-lines-in-a-variable
-   230|      |-   169|      |-    71|      |-    40|      |-    53|    52|
-   231|      |-   170|      |-    72|      |-    41|      |-_________________________
-   232|      |-   171|      |-    73|      |-    42|      |-    68|    67|
-   233|      |-   172|      |-    74|      |-    43|      |-    69|    68|#iterate over the lines of the diff stuff
-   234|      |-   173|      |-    75|      |-    44|      |-    70|    69|while read -r line; do
-   235|      |-   174|      |-    76|      |-    45|      |-      |    70|+	if [ $ACodeCount -lt 1 -a $RCodeCount -lt 1 ]
-   236|      |-   175|      |-    77|      |-    46|      |-      |    71|+	then
-   237|      |-   176|      |-    78|      |-    47|      |-      |    72|+		if [ $Code = "True" ]
-   238|      |-   177|      |-    79|      |-    48|      |-      |    73|+		then
-   239|      |-   178|      |-    80|      |-    49|      |-      |    74|+			$(printf '%0.1s' "_"{1..25} >> "$Changelog") # so it's much clearer where the code fragments are
-   240|      |-   179|      |-    81|      |-    50|      |-      |    75|+			$(echo >> "$Changelog") # nl cause printf%n doesn't work for some reason
-   241|      |-   180|      |-    82|      |-    51|      |-      |    76|+		fi
-   242|      |-   181|      |-    83|      |-    52|      |-      |    77|+		Code="False"
-   243|      |-   182|      |-    84|      |-    53|      |-      |    78|+	fi
-   244|      |-   183|      |-    85|      |-    54|      |-      |    79|+
-   245|      |-   184|      |-    86|      |-    55|      |-    71|    80|#non code lines either of 5 types
-   246|      |-   185|      |-    87|      |-    56|      |-    72|    81|if [ "$Code" == "False" ]
-   247|      |-   186|      |-    88|      |-    57|      |-    73|    82|then
-   248|      |-   187|      |-    89|      |-    58|      |-_________________________
-   249|      |-   188|      |-    90|      |-    59|      |-    92|   101|
-   250|      |-   189|      |-    91|      |-    60|      |-    93|   102|elif [ $Code == "True" ]
-   251|      |-   190|      |-    92|      |-    61|      |-    94|   103|then
-   252|      |-   191|      |-    93|      |-    62|      |-    95|      |-		if [ $ACodeCount -eq 0 -a $RCodeCount -eq 0 ]
-   253|      |-   192|      |-    94|      |-    63|      |-      |   104|+
-   254|      |-   193|      |-    95|      |-    64|      |-      |   105|+		#Print lines, numbering etc
-   255|      |-   194|      |-    96|      |-    65|      |-      |   106|+		Start=$(echo $line | sed -e "s/\(.\).*/\1/")
-   256|      |-   195|      |-    97|      |-    66|      |-      |   107|+		if [ "$Start" = "+" ]
-   257|      |-   196|      |-    98|      |-    67|      |-      |   108|+		then
-   258|      |-   197|      |-    99|      |-    68|      |-      |   109|+			PadA=$(( $PadL - ${#ANum} ))
-   259|      |-   198|      |-   100|      |-    69|      |-      |   110|+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
-   260|      |-   199|      |-   101|      |-    70|      |-      |   111|+			ANum=$(( $ANum + 1 ))
-   261|      |-   200|      |-   102|      |-    71|      |-      |   112|+			ACodeCount=$(( $ACodeCount - 1 ))
-   262|      |-   201|      |-   103|      |-    72|      |-      |   113|+		elif [ "$Start" = "-" ]
-   263|      |-   202|      |-   104|      |-    73|      |-    96|   114|then
-   264|      |-   203|      |-   105|      |-    74|      |-    97|      |-			Code="False"
-   265|      |-   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-   266|      |-   205|      |-   107|      |-    76|      |-      |   115|+			PadR=$(( $PadL - ${#RNum} ))
-   267|      |-   206|      |-   108|      |-    77|      |-      |   116|+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> changes.log)
-   268|      |-   207|      |-   109|      |-    78|      |-      |   117|+			RNum=$(( $RNum + 1 ))
-   269|      |-   208|      |-   110|      |-    79|      |-      |   118|+			RCodeCount=$(( $RCodeCount - 1 ))
-   270|      |-   209|      |-   111|      |-    80|      |-    99|   119|else
-   271|      |-   210|      |-   112|      |-    81|      |-   100|      |-			#Print lines, numbering etc
-   272|      |-   211|      |-   113|      |-    82|      |-   101|      |-			Start=$(echo $line | sed -e "s/\(.\).*/\1/")
-   273|      |-   212|      |-   114|      |-    83|      |-   102|      |-			if [ "$Start" = "+" ]
-   274|      |-   213|      |-   115|      |-    84|      |-   103|      |-			then
-   275|      |-   214|      |-   116|      |-    85|      |-   104|      |-				PadA=$(( $PadL - ${#ANum} ))
-   276|      |-   215|      |-   117|      |-    86|      |-   105|      |-				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
-   277|      |-   216|      |-   118|      |-    87|      |-   106|      |-				ANum=$(( $ANum + 1 ))
-   278|      |-   217|      |-   119|      |-    88|      |-   107|      |-				ACodeCount=$(( $ACodeCount - 1 ))
-   279|      |-   218|      |-   120|      |-    89|      |-   108|      |-			elif [ "$Start" = "-" ]
-   280|      |-   219|      |-   121|      |-    90|      |-   109|      |-			then
-   281|      |-   220|      |-   122|      |-    91|      |-   110|      |-				PadR=$(( $PadL - ${#RNum} ))
-   282|      |-   221|      |-   123|      |-    92|      |-   111|      |-				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> changes.log)
-   283|      |-   222|      |-   124|      |-    93|      |-   112|      |-				RNum=$(( $RNum + 1 ))
-   284|      |-   223|      |-   125|      |-    94|      |-   113|      |-				RCodeCount=$(( $RCodeCount - 1 ))
-   285|      |-   224|      |-   126|      |-    95|      |-   114|      |-			else
-   286|      |-   225|      |-   127|      |-    96|      |-   115|      |-				PadR=$(( $PadL - ${#RNum} ))
-   287|      |-   226|      |-   128|      |-    97|      |-   116|      |-				PadA=$(( $PadL - ${#ANum} ))
-   288|      |-   227|      |-   129|      |-    98|      |-   117|      |-				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
-   289|      |-   228|      |-   130|      |-    99|      |-   118|      |-				#increment decrement stuff
-   290|      |-   229|      |-   131|      |-   100|      |-   119|      |-				RNum=$(( $RNum + 1 ))
-   291|      |-   230|      |-   132|      |-   101|      |-   120|      |-				ANum=$(( $ANum + 1 ))
-   292|      |-   231|      |-   133|      |-   102|      |-   121|      |-				RCodeCount=$(( $RCodeCount - 1 ))
-   293|      |-   232|      |-   134|      |-   103|      |-   122|      |-				ACodeCount=$(( $ACodeCount - 1 ))
-   294|      |-   233|      |-   135|      |-   104|      |-   123|      |-
-   295|      |-   234|      |-   136|      |-   105|      |-   124|      |-			fi
-   296|      |-   235|      |-   137|      |-   106|      |-   125|      |-
-   297|      |-   236|      |-   138|      |-   107|      |-   126|      |-			$(echo >> changes.log) #to add newline
-   298|      |-   237|      |-   139|      |-   108|      |-   127|      |-
-   299|      |-   238|      |-   140|      |-   109|      |-   128|      |-
-   300|      |-   239|      |-   141|      |-   110|      |-      |   120|+			PadR=$(( $PadL - ${#RNum} ))
-   301|      |-   240|      |-   142|      |-   111|      |-      |   121|+			PadA=$(( $PadL - ${#ANum} ))
-   302|      |-   241|      |-   143|      |-   112|      |-      |   122|+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
-   303|      |-   242|      |-   144|      |-   113|      |-      |   123|+			#increment decrement stuff
-   304|      |-   243|      |-   145|      |-   114|      |-      |   124|+			RNum=$(( $RNum + 1 ))
-   305|      |-   244|      |-   146|      |-   115|      |-      |   125|+			ANum=$(( $ANum + 1 ))
-   306|      |-   245|      |-   147|      |-   116|      |-      |   126|+			RCodeCount=$(( $RCodeCount - 1 ))
-   307|      |-   246|      |-   148|      |-   117|      |-      |   127|+			ACodeCount=$(( $ACodeCount - 1 ))
-   308|      |-   247|      |-   149|      |-   118|      |-   129|   128|fi
-   309|      |-   248|      |-   150|      |-   119|      |-   130|      |-
-   310|      |-   249|      |-   151|      |-   120|      |-      |   129|+
-   311|      |-   250|      |-   152|      |-   121|      |-      |   130|+		$(echo >> changes.log) #to add newline
-   312|      |-   251|      |-   153|      |-   122|      |-   131|   131|fi
-   313|      |-   252|      |-   154|      |-   123|      |-   132|   132|
-   314|      |-   253|      |-   155|      |-   124|      |-   133|   133|done <<< $Diff
-   315|      |-   254|      |-   156|      |-   125|      |-_________________________
-   316|      |-   255|      |-   157|      |-   126|      |-
-   317|      |-   256|      |-   158|      |-   127|      |-+++ /dev/null
-   318|      |-   257|      |-   159|      |-   128|      |-     1|      |-	untracked:  change.log
-   319|      |-   258|      |-   160|      |-   129|      |-     2|      |-	modified:   ProjectAnalyze.sh
-   320|      |-   259|      |-   161|      |-   130|      |-     3|      |-	modified:   testscript.sh
-   321|      |-   260|      |-   162|      |-   131|      |-     4|      |-Current git diff:
-   322|      |-   261|      |-   163|      |-   132|      |-     5|      |-
-   323|      |-   262|      |-   164|      |-   133|      |-     6|      |-File diff: Assign1/ProjectAnalyze.sh
-   324|      |-   263|      |-   165|      |-   134|      |-     7|      |-     1|     1|#!/git-bash.exe
-   325|      |-   264|      |-   166|      |-   135|      |-     8|      |-     2|     2|
-   326|      |-   265|      |-   167|      |-   136|      |-     9|      |-      |     3|+#Potential feature turning some of this stuff into HTML if -report flag in args?
-   327|      |-   266|      |-   168|      |-   137|      |-    10|      |-      |     4|+
-   328|      |-   267|      |-   169|      |-   138|      |-    11|      |-     3|     5|# random variable, not sure if I'll use it
-   329|      |-   268|      |-   170|      |-   139|      |-    12|      |-     4|     6|UPTODATE=$(git pull)
-   330|      |-   269|      |-   171|      |-   140|      |-    13|      |-     5|     7|
-   331|      |-   270|      |-   172|      |-   141|      |-    14|      |-    58|    60|#Numbers to count code line
-   332|      |-   271|      |-   173|      |-   142|      |-    15|      |-    59|    61|RNum="0"
-   333|      |-   272|      |-   174|      |-   143|      |-    16|      |-    60|    62|ANum="0"
-   334|      |-   273|      |-   175|      |-   144|      |-    17|      |-    61|      |-
-   335|      |-   274|      |-   176|      |-   145|      |-    18|      |-      |    63|+#padding altered from the following https://stackoverflow.com/questions/4409399/padding-characters-in-printf
-   336|      |-   275|      |-   177|      |-   146|      |-    19|      |-      |    64|+#literally just a bunch of spaces
-   337|      |-   276|      |-   178|      |-   147|      |-    20|      |-      |    65|+Pad=$(printf '%0.1s' " "{1..60})
-   338|      |-   277|      |-   179|      |-   148|      |-    21|      |-      |    66|+#length to pad the numbers
-   339|      |-   278|      |-   180|      |-   149|      |-    22|      |-      |    67|+PadL=6
-   340|      |-   279|      |-   181|      |-   150|      |-    23|      |-    62|    68|
-   341|      |-   280|      |-   182|      |-   151|      |-    24|      |-    63|    69|#iterate over the lines of the diff stuff
-   342|      |-   281|      |-   183|      |-   152|      |-    25|      |-    64|    70|while read -r line; do
-   343|      |-   282|      |-   184|      |-   153|      |-    26|      |-    65|    71|#non code lines either of 5 types
-   344|      |-   283|      |-   185|      |-   154|      |-    27|      |-    66|      |-	if [ $Code == "False" ]
-   345|      |-   284|      |-   186|      |-   155|      |-    28|      |-      |    72|+	if [ "$Code" == "False" ]
-   346|      |-   285|      |-   187|      |-   156|      |-    29|      |-    67|    73|then
-   347|      |-   286|      |-   188|      |-   157|      |-    30|      |-    68|    74|#use multi sed command to get what exactly the non code line is
-   348|      |-   287|      |-   189|      |-   158|      |-    31|      |-    69|      |-		Status=$(echo $line | sed -e "s/^diff --git.*/1/;s/^index.*/2/;s/^---.*/3/;s/^+++.*/4/;s/^@@.*/5/;s/[^1-5]/6/;s/\(.\).*/\1/")
-   349|      |-   288|      |-   190|      |-   159|      |-    32|      |-      |    75|+		Status=$(echo "$line" | sed -e "s/^diff --git.*/1/;s/^index.*/2/;s/^---.*/3/;s/^+++.*/4/;s/^@@.*/5/;s/[^1-5]/6/;s/\(.\).*/\1/;s/^$/6/")
-   350|      |-   289|      |-   191|      |-   160|      |-    33|      |-    70|    76|#1 = first line 2 = index objects 3 = --- 4 = +++ 5 = @@ aka start of code 6 = mode or something, too difficult to match easily
-   351|      |-   290|      |-   192|      |-   161|      |-    34|      |-    71|      |-		if [ $Status -eq 5 ]
-   352|      |-   291|      |-   193|      |-   162|      |-    35|      |-      |    77|+		if [ "$Status" -eq "5" ]
-   353|      |-   292|      |-   194|      |-   163|      |-    36|      |-    72|    78|then
-   354|      |-   293|      |-   195|      |-   164|      |-    37|      |-    73|    79|Code="True"
-   355|      |-   294|      |-   196|      |-   165|      |-    38|      |-    74|      |-			RNum=$(echo $line | sed -e "s/^@@ -\([0-9]*\),.*/\1/")
-   356|      |-   295|      |-   197|      |-   166|      |-    39|      |-    75|      |-			ANum=$(echo $line | sed -e "s/^@@ -[0-9]*,[0-9]* +\([0-9]*\),.*/\1/")
-   357|      |-   296|      |-   198|      |-   167|      |-    40|      |-    76|      |-			RCodeCount=$(echo $line | sed -e "s/^@@ -[0-9]*,\([0-9]*\) .*/\1/")
-   358|      |-   297|      |-   199|      |-   168|      |-    41|      |-    77|      |-			ACodeCount=$(echo $line | sed -e "s/^@@ -[0-9]*,[0-9]* +[0-9]*,\([0-9]*\).*/\1/")
-   359|      |-   298|      |-   200|      |-   169|      |-    42|      |-      |    80|+			RNum=$(echo "$line" | sed -e "s/^@@ -\([0-9]*\),.*/\1/")
-   360|      |-   299|      |-   201|      |-   170|      |-    43|      |-      |    81|+			ANum=$(echo "$line" | sed -e "s/^@@ -[0-9]*,[0-9]* +\([0-9]*\),.*/\1/")
-   361|      |-   300|      |-   202|      |-   171|      |-    44|      |-      |    82|+			RCodeCount=$(echo "$line" | sed -e "s/^@@ -[0-9]*,\([0-9]*\) .*/\1/")
-   362|      |-   301|      |-   203|      |-   172|      |-    45|      |-      |    83|+			ACodeCount=$(echo "$line" | sed -e "s/^@@ -[0-9]*,[0-9]* +[0-9]*,\([0-9]*\).*/\1/")
-   363|      |-   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
-   364|      |-   303|      |-   205|      |-   174|      |-    47|      |-    79|    85|
-   365|      |-   304|      |-   206|      |-   175|      |-    48|      |-    80|      |-		elif [$Status -eq 4]
-   366|      |-   305|      |-   207|      |-   176|      |-    49|      |-      |    86|+		elif [ "$Status" -eq "4" ]
-   367|      |-   306|      |-   208|      |-   177|      |-    50|      |-    81|    87|then
-   368|      |-   307|      |-   209|      |-   178|      |-    51|      |-    82|    88|# dump the file name into the changelog
-   369|      |-   308|      |-   210|      |-   179|      |-    52|      |-    83|      |-			$(echo $line | sed -e "s/^+++ b\//File diff: /" >> changes.log)
-   370|      |-   309|      |-   211|      |-   180|      |-    53|      |-      |    89|+			$(echo >> changes.log)
-   371|      |-   310|      |-   212|      |-   181|      |-    54|      |-      |    90|+			$(echo "$line" | sed -e "s/^+++ b\//File diff: /" >> changes.log)
-   372|      |-   311|      |-   213|      |-   182|      |-    55|      |-    84|    91|fi
-   373|      |-   312|      |-   214|      |-   183|      |-    56|      |-    85|      |-		echo $Status
-   374|      |-   313|      |-   215|      |-   184|      |-    57|      |-    86|    92|
-   375|      |-   314|      |-   216|      |-   185|      |-    58|      |-    87|    93|elif [ $Code == "True" ]
-   376|      |-   315|      |-   217|      |-   186|      |-    59|      |-    88|    94|then
-   377|      |-   316|      |-   218|      |-   187|      |-    60|      |-    89|      |-		if [ $CodeCount -eq 0 ]
-   378|      |-   317|      |-   219|      |-   188|      |-    61|      |-      |    95|+		if [ $ACodeCount -eq 0 -a $RCodeCount -eq 0 ]
-   379|      |-   318|      |-   220|      |-   189|      |-    62|      |-    90|    96|then
-   380|      |-   319|      |-   221|      |-   190|      |-    63|      |-    91|    97|Code="False"
-   381|      |-   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-   382|      |-   321|      |-   223|      |-   192|      |-    65|      |-      |    99|+		else
-   383|      |-   322|      |-   224|      |-   193|      |-    66|      |-      |   100|+			#Print lines, numbering etc
-   384|      |-   323|      |-   225|      |-   194|      |-    67|      |-      |   101|+			Start=$(echo $line | sed -e "s/\(.\).*/\1/")
-   385|      |-   324|      |-   226|      |-   195|      |-    68|      |-      |   102|+			if [ "$Start" = "+" ]
-   386|      |-   325|      |-   227|      |-   196|      |-    69|      |-      |   103|+			then
-   387|      |-   326|      |-   228|      |-   197|      |-    70|      |-      |   104|+				PadA=$(( $PadL - ${#ANum} ))
-   388|      |-   327|      |-   229|      |-   198|      |-    71|      |-      |   105|+				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
-   389|      |-   328|      |-   230|      |-   199|      |-    72|      |-      |   106|+				ANum=$(( $ANum + 1 ))
-   390|      |-   329|      |-   231|      |-   200|      |-    73|      |-      |   107|+				ACodeCount=$(( $ACodeCount - 1 ))
-   391|      |-   330|      |-   232|      |-   201|      |-    74|      |-      |   108|+			elif [ "$Start" = "-" ]
-   392|      |-   331|      |-   233|      |-   202|      |-    75|      |-      |   109|+			then
-   393|      |-   332|      |-   234|      |-   203|      |-    76|      |-      |   110|+				PadR=$(( $PadL - ${#RNum} ))
-   394|      |-   333|      |-   235|      |-   204|      |-    77|      |-      |   111|+				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> changes.log)
-   395|      |-   334|      |-   236|      |-   205|      |-    78|      |-      |   112|+				RNum=$(( $RNum + 1 ))
-   396|      |-   335|      |-   237|      |-   206|      |-    79|      |-      |   113|+				RCodeCount=$(( $RCodeCount - 1 ))
-   397|      |-   336|      |-   238|      |-   207|      |-    80|      |-      |   114|+			else
-   398|      |-   337|      |-   239|      |-   208|      |-    81|      |-      |   115|+				PadR=$(( $PadL - ${#RNum} ))
-   399|      |-   338|      |-   240|      |-   209|      |-    82|      |-      |   116|+				PadA=$(( $PadL - ${#ANum} ))
-   400|      |-   339|      |-   241|      |-   210|      |-    83|      |-      |   117|+				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
-   401|      |-   340|      |-   242|      |-   211|      |-    84|      |-      |   118|+				#increment decrement stuff
-   402|      |-   341|      |-   243|      |-   212|      |-    85|      |-      |   119|+				RNum=$(( $RNum + 1 ))
-   403|      |-   342|      |-   244|      |-   213|      |-    86|      |-      |   120|+				ANum=$(( $ANum + 1 ))
-   404|      |-   343|      |-   245|      |-   214|      |-    87|      |-      |   121|+				RCodeCount=$(( $RCodeCount - 1 ))
-   405|      |-   344|      |-   246|      |-   215|      |-    88|      |-      |   122|+				ACodeCount=$(( $ACodeCount - 1 ))
-   406|      |-   345|      |-   247|      |-   216|      |-    89|      |-      |   123|+
-   407|      |-   346|      |-   248|      |-   217|      |-    90|      |-      |   124|+			fi
-   408|      |-   347|      |-   249|      |-   218|      |-    91|      |-      |   125|+
-   409|      |-   348|      |-   250|      |-   219|      |-    92|      |-      |   126|+			$(echo >> changes.log) #to add newline
-   410|      |-   349|      |-   251|      |-   220|      |-    93|      |-      |   127|+
-   411|      |-   350|      |-   252|      |-   221|      |-    94|      |-      |   128|+
-   412|      |-   351|      |-   253|      |-   222|      |-    95|      |-    93|   129|fi
-   413|      |-   352|      |-   254|      |-   223|      |-    96|      |-    94|   130|
-   414|      |-   353|      |-   255|      |-   224|      |-    97|      |-    95|   131|fi
-   415|      |-   354|      |-   256|      |-   225|      |-    98|      |-
-   416|      |-   355|      |-   257|      |-   226|      |-    99|      |-File diff: Assign1/testscript.sh
-   417|      |-   356|      |-   258|      |-   227|      |-   100|      |-     1|     1|#!/git-bash.exe
-   418|      |-   357|      |-   259|      |-   228|      |-   101|      |-     2|     2|
-   419|      |-   358|      |-   260|      |-   229|      |-   102|      |-     3|      |-Status=$(sed -e "s/^diff --git.*/1/;s/^index.*/2/;s/^---.*/3/;s/^+++.*/4/;s/^@@.*/5/;s/[^1-5]/6/;s/\(.\).*/\1/" < test.txt)
-   420|      |-   359|      |-   261|      |-   230|      |-   103|      |-      |     3|+Status=$(echo >> changes.log)
-   421|      |-   360|      |-   262|      |-   231|      |-   104|      |-     4|     4|echo $Status
-   422|      |-   361|      |-_________________________
-   423|      |-   362|      |-
-   424|      |-   363|      |-File diff: Assign1/testscript.sh
-   425|      |-   364|      |-     1|     1| #!/git-bash.exe
-   426|      |-   365|      |-     2|     2| 
-   427|      |-   366|      |-     3|      |-Status=$(echo >> changes.log)
-   428|      |-   367|      |-      |     3|+PadLength=15
-   429|      |-   368|      |-      |     4|+String="test"
-   430|      |-   369|      |-      |     5|+printf '%0.*s%s' $PadLength "$(printf '%0.1s' " "{1..100})" "$String"
-   431|      |-   370|      |-     4|     6| echo $Status
-_________________________
-
-File diff: Assign1/test.hs
-     1|      |-
-     2|     1| test:: String
-     3|     2| test = "Random"
-     4|     3| 
-     5|      |-main = undefined
-_________________________
-
-File diff: Assign1/testscript.sh
-     1|     1| #!/git-bash.exe
-     2|     2| 
-     3|      |-PadLength=15
-     4|      |-String="test"
-     5|      |-printf '%0.*s%s' $PadLength "$(printf '%0.1s' " "{1..100})" "$String"
-     6|      |-echo $Status
-      |     3|+Status=$(ghc -fno-code test.hs 2>&1 >/dev/null)
-      |     4|+if [[ $Status =~ .*The\ IO\ action\ .main.\ is\ not\ defined\ [i]n\ module\ .Main..*  ]]
-      |     5|+then
-      |     6|+	echo "Found"
-      |     7|+fi
-      |     8|+
-_________________________
-
-File diff: Assign1/todo.log
-     1|     1| File: changes.log
-     2|      |-   12|      |    20|+#TODO fix this part
-     3|      |-   26|   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-     4|      |-   27|   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-     5|      |-   28|      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
-     6|      |-   50|   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-     7|      |-   58|   161|   185| #TODO
-     8|      |-   81|    20|      |-      |    12|+	#TODO stuff to parse the arguments
-     9|      |-  148|    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-    10|      |-  149|    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-    11|      |-  151|    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-    12|      |-  156|    95|      |-      |   161|+#TODO
-    13|      |-  169|   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
-    14|      |-  265|   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-    15|      |-  363|   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
-    16|      |-  381|   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-      |     2|+   66|    12|      |-      |    20|+#TODO fix this part
-      |     3|+   80|    26|      |-   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-      |     4|+   81|    27|      |-   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-      |     5|+   82|    28|      |-      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
-      |     6|+  104|    50|      |-   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-      |     7|+  112|    58|      |-   161|   185| #TODO
-      |     8|+  135|    81|      |-    20|      |-      |    12|+	#TODO stuff to parse the arguments
-      |     9|+  202|   148|      |-    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-      |    10|+  203|   149|      |-    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-      |    11|+  205|   151|      |-    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-      |    12|+  210|   156|      |-    95|      |-      |   161|+#TODO
-      |    13|+  223|   169|      |-   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
-      |    14|+  319|   265|      |-   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-      |    15|+  417|   363|      |-   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
-      |    16|+  435|   381|      |-   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-      |    17|+  513|     2|      |-   12|      |    20|+#TODO fix this part
-      |    18|+  514|     3|      |-   26|   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-      |    19|+  515|     4|      |-   27|   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-      |    20|+  516|     5|      |-   28|      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
-      |    21|+  517|     6|      |-   50|   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-      |    22|+  518|     7|      |-   58|   161|   185| #TODO
-      |    23|+  519|     8|      |-   81|    20|      |-      |    12|+	#TODO stuff to parse the arguments
-      |    24|+  520|     9|      |-  148|    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-      |    25|+  521|    10|      |-  149|    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-      |    26|+  522|    11|      |-  151|    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-      |    27|+  523|    12|      |-  156|    95|      |-      |   161|+#TODO
-      |    28|+  524|    13|      |-  169|   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
-      |    29|+  525|    14|      |-  265|   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-      |    30|+  526|    15|      |-  363|   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
-      |    31|+  527|    16|      |-  381|   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-      |    32|+  528|      |     2|+   65|    12|      |-      |    20|+#TODO fix this part
-      |    33|+  529|      |     3|+   79|    26|      |-   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-      |    34|+  530|      |     4|+   80|    27|      |-   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-      |    35|+  531|      |     5|+   81|    28|      |-      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
-      |    36|+  532|      |     6|+  103|    50|      |-   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-      |    37|+  533|      |     7|+  111|    58|      |-   161|   185| #TODO
-      |    38|+  534|      |     8|+  134|    81|      |-    20|      |-      |    12|+	#TODO stuff to parse the arguments
-      |    39|+  535|      |     9|+  201|   148|      |-    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-      |    40|+  536|      |    10|+  202|   149|      |-    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-      |    41|+  537|      |    11|+  204|   151|      |-    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-      |    42|+  538|      |    12|+  209|   156|      |-    95|      |-      |   161|+#TODO
-      |    43|+  539|      |    13|+  222|   169|      |-   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
-      |    44|+  540|      |    14|+  318|   265|      |-   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-      |    45|+  541|      |    15|+  416|   363|      |-   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
-      |    46|+  542|      |    16|+  434|   381|      |-   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-      |    47|+  543|      |    17|+  511|     2|      |-   12|      |    20|+#TODO fix this part
-      |    48|+  544|      |    18|+  512|     3|      |-   26|   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-      |    49|+  545|      |    19|+  513|     4|      |-   27|   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-      |    50|+  546|      |    20|+  514|     5|      |-   28|      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
-      |    51|+  547|      |    21|+  515|     6|      |-   50|   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-      |    52|+  548|      |    22|+  516|     7|      |-   58|   161|   185| #TODO
-      |    53|+  549|      |    23|+  517|     8|      |-   81|    20|      |-      |    12|+	#TODO stuff to parse the arguments
-      |    54|+  550|      |    24|+  518|     9|      |-  148|    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-      |    55|+  551|      |    25|+  519|    10|      |-  149|    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-      |    56|+  552|      |    26|+  520|    11|      |-  151|    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-      |    57|+  553|      |    27|+  521|    12|      |-  156|    95|      |-      |   161|+#TODO
-      |    58|+  554|      |    28|+  522|    13|      |-  169|   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
-      |    59|+  555|      |    29|+  523|    14|      |-  265|   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-      |    60|+  556|      |    30|+  524|    15|      |-  363|   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
-      |    61|+  557|      |    31|+  525|    16|      |-  381|   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-      |    62|+  558|      |    32|+  526|      |     2|+   65|    12|      |-      |    20|+#TODO fix this part
-      |    63|+  559|      |    33|+  527|      |     3|+   79|    26|      |-   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-      |    64|+  560|      |    34|+  528|      |     4|+   80|    27|      |-   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-      |    65|+  561|      |    35|+  529|      |     5|+   81|    28|      |-      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
-      |    66|+  562|      |    36|+  530|      |     6|+  103|    50|      |-   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-      |    67|+  563|      |    37|+  531|      |     7|+  111|    58|      |-   161|   185| #TODO
-      |    68|+  564|      |    38|+  532|      |     8|+  134|    81|      |-    20|      |-      |    12|+	#TODO stuff to parse the arguments
-      |    69|+  565|      |    39|+  533|      |     9|+  201|   148|      |-    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-      |    70|+  566|      |    40|+  534|      |    10|+  202|   149|      |-    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-      |    71|+  567|      |    41|+  535|      |    11|+  204|   151|      |-    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-      |    72|+  568|      |    42|+  536|      |    12|+  209|   156|      |-    95|      |-      |   161|+#TODO
-      |    73|+  569|      |    43|+  537|      |    13|+  222|   169|      |-   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
-      |    74|+  570|      |    44|+  538|      |    14|+  318|   265|      |-   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-      |    75|+  571|      |    45|+  539|      |    15|+  416|   363|      |-   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
-      |    76|+  572|      |    46|+  540|      |    16|+  434|   381|      |-   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-      |    77|+  573|      |    47|+  541|      |    17|+  511|     2|      |-   12|      |    20|+#TODO fix this part
-      |    78|+  574|      |    48|+  542|      |    18|+  512|     3|      |-   26|   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-      |    79|+  575|      |    49|+  543|      |    19|+  513|     4|      |-   27|   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-      |    80|+  576|      |    50|+  544|      |    20|+  514|     5|      |-   28|      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
-      |    81|+  577|      |    51|+  545|      |    21|+  515|     6|      |-   50|   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-      |    82|+  578|      |    52|+  546|      |    22|+  516|     7|      |-   58|   161|   185| #TODO
-      |    83|+  579|      |    53|+  547|      |    23|+  517|     8|      |-   81|    20|      |-      |    12|+	#TODO stuff to parse the arguments
-      |    84|+  580|      |    54|+  548|      |    24|+  518|     9|      |-  148|    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-      |    85|+  581|      |    55|+  549|      |    25|+  519|    10|      |-  149|    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-      |    86|+  582|      |    56|+  550|      |    26|+  520|    11|      |-  151|    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-      |    87|+  583|      |    57|+  551|      |    27|+  521|    12|      |-  156|    95|      |-      |   161|+#TODO
-      |    88|+  584|      |    58|+  552|      |    28|+  522|    13|      |-  169|   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
-      |    89|+  585|      |    59|+  553|      |    29|+  523|    14|      |-  265|   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-      |    90|+  586|      |    60|+  554|      |    30|+  524|    15|      |-  363|   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
-      |    91|+  587|      |    61|+  555|      |    31|+  525|    16|      |-  381|   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-      |    92|+  588|      |    62|+  556|      |    32|+  526|      |     2|+   59|    12|      |-      |    20|+#TODO fix this part
-      |    93|+  589|      |    63|+  557|      |    33|+  527|      |     3|+   73|    26|      |-   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-      |    94|+  590|      |    64|+  558|      |    34|+  528|      |     4|+   74|    27|      |-   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-      |    95|+  591|      |    65|+  559|      |    35|+  529|      |     5|+   75|    28|      |-      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
-      |    96|+  592|      |    66|+  560|      |    36|+  530|      |     6|+   97|    50|      |-   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-      |    97|+  593|      |    67|+  561|      |    37|+  531|      |     7|+  105|    58|      |-   161|   185| #TODO
-      |    98|+  594|      |    68|+  562|      |    38|+  532|      |     8|+  128|    81|      |-    20|      |-      |    12|+	#TODO stuff to parse the arguments
-      |    99|+  595|      |    69|+  563|      |    39|+  533|      |     9|+  195|   148|      |-    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-      |   100|+  596|      |    70|+  564|      |    40|+  534|      |    10|+  196|   149|      |-    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-      |   101|+  597|      |    71|+  565|      |    41|+  535|      |    11|+  198|   151|      |-    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-      |   102|+  598|      |    72|+  566|      |    42|+  536|      |    12|+  203|   156|      |-    95|      |-      |   161|+#TODO
-      |   103|+  599|      |    73|+  567|      |    43|+  537|      |    13|+  216|   169|      |-   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
-      |   104|+  600|      |    74|+  568|      |    44|+  538|      |    14|+  312|   265|      |-   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-      |   105|+  601|      |    75|+  569|      |    45|+  539|      |    15|+  410|   363|      |-   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
-      |   106|+  602|      |    76|+  570|      |    46|+  540|      |    16|+  428|   381|      |-   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-      |   107|+  603|      |    77|+  571|      |    47|+  541|      |    17|+  505|     2|      |-   12|      |    20|+#TODO fix this part
-      |   108|+  604|      |    78|+  572|      |    48|+  542|      |    18|+  506|     3|      |-   26|   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-      |   109|+  605|      |    79|+  573|      |    49|+  543|      |    19|+  507|     4|      |-   27|   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-      |   110|+  606|      |    80|+  574|      |    50|+  544|      |    20|+  508|     5|      |-   28|      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
-      |   111|+  607|      |    81|+  575|      |    51|+  545|      |    21|+  509|     6|      |-   50|   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-      |   112|+  608|      |    82|+  576|      |    52|+  546|      |    22|+  510|     7|      |-   58|   161|   185| #TODO
-      |   113|+  609|      |    83|+  577|      |    53|+  547|      |    23|+  511|     8|      |-   81|    20|      |-      |    12|+	#TODO stuff to parse the arguments
-      |   114|+  610|      |    84|+  578|      |    54|+  548|      |    24|+  512|     9|      |-  148|    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-      |   115|+  611|      |    85|+  579|      |    55|+  549|      |    25|+  513|    10|      |-  149|    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-      |   116|+  612|      |    86|+  580|      |    56|+  550|      |    26|+  514|    11|      |-  151|    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-      |   117|+  613|      |    87|+  581|      |    57|+  551|      |    27|+  515|    12|      |-  156|    95|      |-      |   161|+#TODO
-      |   118|+  614|      |    88|+  582|      |    58|+  552|      |    28|+  516|    13|      |-  169|   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
-      |   119|+  615|      |    89|+  583|      |    59|+  553|      |    29|+  517|    14|      |-  265|   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-      |   120|+  616|      |    90|+  584|      |    60|+  554|      |    30|+  518|    15|      |-  363|   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
-      |   121|+  617|      |    91|+  585|      |    61|+  555|      |    31|+  519|    16|      |-  381|   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-      |   122|+  618|      |    92|+  586|      |    62|+  556|      |    32|+  520|      |     2|+   58|    12|      |-      |    20|+#TODO fix this part
-      |   123|+  619|      |    93|+  587|      |    63|+  557|      |    33|+  521|      |     3|+   72|    26|      |-   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-      |   124|+  620|      |    94|+  588|      |    64|+  558|      |    34|+  522|      |     4|+   73|    27|      |-   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-      |   125|+  621|      |    95|+  589|      |    65|+  559|      |    35|+  523|      |     5|+   74|    28|      |-      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
-      |   126|+  622|      |    96|+  590|      |    66|+  560|      |    36|+  524|      |     6|+   96|    50|      |-   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-      |   127|+  623|      |    97|+  591|      |    67|+  561|      |    37|+  525|      |     7|+  104|    58|      |-   161|   185| #TODO
-      |   128|+  624|      |    98|+  592|      |    68|+  562|      |    38|+  526|      |     8|+  127|    81|      |-    20|      |-      |    12|+	#TODO stuff to parse the arguments
-      |   129|+  625|      |    99|+  593|      |    69|+  563|      |    39|+  527|      |     9|+  194|   148|      |-    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-      |   130|+  626|      |   100|+  594|      |    70|+  564|      |    40|+  528|      |    10|+  195|   149|      |-    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-      |   131|+  627|      |   101|+  595|      |    71|+  565|      |    41|+  529|      |    11|+  197|   151|      |-    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-      |   132|+  628|      |   102|+  596|      |    72|+  566|      |    42|+  530|      |    12|+  202|   156|      |-    95|      |-      |   161|+#TODO
-      |   133|+  629|      |   103|+  597|      |    73|+  567|      |    43|+  531|      |    13|+  215|   169|      |-   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
-      |   134|+  630|      |   104|+  598|      |    74|+  568|      |    44|+  532|      |    14|+  311|   265|      |-   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-      |   135|+  631|      |   105|+  599|      |    75|+  569|      |    45|+  533|      |    15|+  409|   363|      |-   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
-      |   136|+  632|      |   106|+  600|      |    76|+  570|      |    46|+  534|      |    16|+  427|   381|      |-   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+     2|      |-	untracked:  error.log
+     3|      |-	untracked:  rand.hs
+     4|      |-	modified:   ProjectAnalyze.sh
+     5|      |-	deleted:    changes.log
+     6|      |-	modified:   test.hs
+     7|      |-	modified:   testscript.sh
+     8|      |-	modified:   todo.log
+     9|      |-Current git diff:
+    10|      |-
+    11|      |-File diff: Assign1/ProjectAnalyze.sh
+    12|      |-   180|   180| #----Count Code Lines----
+    13|      |-   181|   181| #Cause literally this is a command I use all the time to see how close I am to 10k lines
+    14|      |-   182|   182| 
+    15|      |-   183|      |-echo "Lines of code = $(find -name "*.hs" -print0 | xargs -0 wc -l )"
+    16|      |-      |   183|+echo "Lines of code = $(find -name "*.hs" -print0 | xargs -0 wc -l | grep total)"
+    17|      |-   184|   184| 
+    18|      |-   185|   185| #----Haskell Eror Check----
+    19|      |-   186|   186| 
+    20|      |-   187|   187| ErrorLog="error.log"
+    21|      |-      |   188|+> "$ErrorLog" # clear log ofc
+    22|      |-      |   189|+Cleanup="False" #if to clean up a temporary insert of main undefined
+    23|      |-   188|   190| 
+    24|      |-   189|      |-AllValid="False"
+    25|      |-   190|      |-
+    26|      |-   191|      |-while [ "$AllValid" = "False" ]
+    27|      |-      |   191|+shopt -s nullglob
+    28|      |-      |   192|+for hsFile in *.hs
+    29|      |-   192|   193| do
+    30|      |-   193|      |-	HSErr=ghc -fno-code *.hs &>> "$ErrorLog"
+    31|      |-   194|      |-	
+    32|      |-      |   194|+	#error capture from https://stackoverflow.com/questions/962255/how-to-store-standard-error-in-a-variable-in-a-bash-script
+    33|      |-      |   195|+	HSErr=$(ghc -fno-code "$hsFile" 2>&1 >/dev/null)
+    34|      |-      |   196|+	#contains test from https://stackoverflow.com/questions/229551/string-contains-in-bash answer # 2
+    35|      |-      |   197|+	if [[ $HSErr =~ .*The\ IO\ action\ .main.\ is\ not\ defined\ [i]n\ module\ .Main..*  ]]
+    36|      |-      |   198|+	then
+    37|      |-      |   199|+		# if main undefined, create it momentarily
+    38|      |-      |   200|+		echo "main = undefined" >> "$hsFile"
+    39|      |-      |   201|+		HSErr=$(ghc -fno-code "$hsFile" 2>&1 >/dev/null)
+    40|      |-      |   202|+		Cleanup="True"
+    41|      |-      |   203|+	fi
+    42|      |-      |   204|+	echo "File: $hsFile" >> "$ErrorLog"
+    43|      |-      |   205|+	echo "$HSErr" >> "$ErrorLog"
+    44|      |-      |   206|+
+    45|      |-      |   207|+	# line drop from https://stackoverflow.com/questions/4881930/remove-the-last-line-from-a-file-in-bash
+    46|      |-      |   208|+	if [ "$Cleanup" = "True" ]
+    47|      |-      |   209|+		then
+    48|      |-      |   210|+		head -n -1 "$hsFile" > tmp.hs; mv tmp.hs "$hsFile"
+    49|      |-      |   211|+		Cleanup="False"
+    50|      |-      |   212|+	fi
+    51|      |-   195|   213| done
+    52|      |-   196|   214| 
+    53|      |-_________________________
+    54|      |-
+    55|      |-File deleted: Assign1/changes.log
+    56|      |-     1|      |-The following files have not been committed
+    57|      |-     2|      |-	untracked:  todo.log
+    58|      |-     3|      |-	modified:   ProjectAnalyze.sh
+    59|      |-     4|      |-	deleted:    changes.log
+    60|      |-     5|      |-Current git diff:
+    61|      |-     6|      |-
+    62|      |-     7|      |-File diff: Assign1/ProjectAnalyze.sh
+    63|      |-     8|      |-    17|    17| 
+    64|      |-     9|      |-    18|    18| # random variable, not sure if I'll use it
+    65|      |-    10|      |-    19|    19| UPTODATE=$(git pull)
+    66|      |-    11|      |-    20|      |-
+    67|      |-    12|      |-      |    20|+#TODO fix this part
+    68|      |-    13|      |-    21|    21| 
+    69|      |-    14|      |-    22|    22| #----Find uncommitted changes I ----
+    70|      |-    15|      |-    23|    23| #AKA feature # 1 adds the stuff form git status to the diff stuff
+    71|      |-    16|      |-_________________________
+    72|      |-    17|      |-   147|   147| done <<< $Diff
+    73|      |-    18|      |-   148|   148| #---- FIND TODO ----
+    74|      |-    19|      |-   149|   149| 
+    75|      |-    20|      |-      |   150|+
+    76|      |-    21|      |-      |   151|+PadL=5 # new padding length for this part
+    77|      |-    22|      |-      |   152|+
+    78|      |-    23|      |-   150|   153| TodoLog="todo.log"
+    79|      |-    24|      |-   151|   154| > $TodoLog #clears log
+    80|      |-    25|      |-   152|   155| 
+    81|      |-    26|      |-   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+    82|      |-    27|      |-   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+    83|      |-    28|      |-      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+    84|      |-    29|      |-      |   157|+
+    85|      |-    30|      |-      |   158|+LastFile=">>Null" #>> cause that's illegal in filenames
+    86|      |-    31|      |-      |   159|+while IFS= read -r line; do
+    87|      |-    32|      |-      |   160|+	if [ -n "$line" ]
+    88|      |-    33|      |-      |   161|+	then
+    89|      |-    34|      |-      |   162|+		#get the general content from the grep strings
+    90|      |-    35|      |-      |   163|+		File=$(echo "$line" | sed -re "s/([^:]*).*/\1/")
+    91|      |-    36|      |-      |   164|+		LineNum=$(echo "$line" | sed -re "s/[^:]*:([0-9]*):.*/\1/")
+    92|      |-    37|      |-      |   165|+		Content=$(echo "$line" | sed -re "s/[^:]*:[0-9]*:(.*)/\1/")
+    93|      |-    38|      |-      |   166|+		if [ "$File" != "$LastFile" ]
+    94|      |-    39|      |-      |   167|+		then
+    95|      |-    40|      |-      |   168|+			echo "File: $File" >> "$TodoLog"
+    96|      |-    41|      |-      |   169|+			LastFile=$File
+    97|      |-    42|      |-      |   170|+		fi
+    98|      |-    43|      |-      |   171|+		PadN=$(( $PadL - ${#LineNum} ))
+    99|      |-    44|      |-      |   172|+		$(printf '%0.*s%s|%s' "$PadN" "$Pad" "$LineNum" "$Content" >> "$TodoLog")
+   100|      |-    45|      |-      |   173|+		echo >> "$TodoLog"
+   101|      |-    46|      |-      |   174|+	fi
+   102|      |-    47|      |-      |   175|+
+   103|      |-    48|      |-      |   176|+done <<< $Todo
+   104|      |-    49|      |-   155|   177| 
+   105|      |-    50|      |-   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   106|      |-    51|      |-   157|   179| 
+   107|      |-    52|      |-   158|   180| #----Count Code Lines----
+   108|      |-    53|      |-   159|      |-#Cause literally this is a command I use all the time
+   109|      |-    54|      |-      |   181|+#Cause literally this is a command I use all the time to see how close I am to 10k lines
+   110|      |-    55|      |-      |   182|+
+   111|      |-    56|      |-      |   183|+echo "Lines of code = $(find -name "*.hs" -print0 | xargs -0 wc -l )"
+   112|      |-    57|      |-   160|   184| 
+   113|      |-    58|      |-   161|   185| #TODO
+   114|      |-    59|      |-_________________________
+   115|      |-    60|      |-
+   116|      |-    61|      |-File deleted: Assign1/changes.log
+   117|      |-    62|      |-     1|      |-The following files have not been committed
+   118|      |-    63|      |-     2|      |-	untracked:  todo.log
+   119|      |-    64|      |-     3|      |-	modified:   ProjectAnalyze.sh
+   120|      |-    65|      |-     4|      |-	deleted:    changes.log
+   121|      |-    66|      |-     5|      |-	modified:   testscript.sh
+   122|      |-    67|      |-     6|      |-Current git diff:
+   123|      |-    68|      |-     7|      |-
+   124|      |-    69|      |-     8|      |-File diff: Assign1/ProjectAnalyze.sh
+   125|      |-    70|      |-     9|      |-     1|     1| #!/git-bash.exe
+   126|      |-    71|      |-    10|      |-     2|     2| 
+   127|      |-    72|      |-    11|      |-      |     3|+#change git-bash to bash.exe @NotAProfDalves, stuff is broken on my computer so only the github cli bash works
+   128|      |-    73|      |-    12|      |-      |     4|+
+   129|      |-    74|      |-    13|      |-     3|     5| #Potential feature turning some of this stuff into HTML if -report flag in args?
+   130|      |-    75|      |-    14|      |-     4|     6| 
+   131|      |-    76|      |-    15|      |-      |     7|+#----Arugment Parsing----
+   132|      |-    77|      |-    16|      |-      |     8|+#sourced from https://stackoverflow.com/questions/255898/how-to-iterate-over-arguments-in-a-bash-script
+   133|      |-    78|      |-    17|      |-      |     9|+for arg in "$@"
+   134|      |-    79|      |-    18|      |-      |    10|+do
+   135|      |-    80|      |-    19|      |-      |    11|+	Nothing="Nothing" #here to avoid errors for the moment
+   136|      |-    81|      |-    20|      |-      |    12|+	#TODO stuff to parse the arguments
+   137|      |-    82|      |-    21|      |-      |    13|+done
+   138|      |-    83|      |-    22|      |-      |    14|+
+   139|      |-    84|      |-    23|      |-      |    15|+
+   140|      |-    85|      |-    24|      |-      |    16|+
+   141|      |-    86|      |-    25|      |-      |    17|+
+   142|      |-    87|      |-    26|      |-     5|    18| # random variable, not sure if I'll use it
+   143|      |-    88|      |-    27|      |-     6|    19| UPTODATE=$(git pull)
+   144|      |-    89|      |-    28|      |-     7|    20| 
+   145|      |-    90|      |-    29|      |-_________________________
+   146|      |-    91|      |-    30|      |-    66|    79| PadL=6
+   147|      |-    92|      |-    31|      |-    67|    80| 
+   148|      |-    93|      |-    32|      |-    68|    81| #iterate over the lines of the diff stuff
+   149|      |-    94|      |-    33|      |-    69|      |-while read -r line; do
+   150|      |-    95|      |-    34|      |-      |    82|+#IFS keep leading spaces from https://stackoverflow.com/questions/29689172/bash-read-line-does-not-read-leading-spaces 
+   151|      |-    96|      |-    35|      |-      |    83|+while IFS= read -r line; do
+   152|      |-    97|      |-    36|      |-    70|    84| 	if [ $ACodeCount -lt 1 -a $RCodeCount -lt 1 ]
+   153|      |-    98|      |-    37|      |-    71|    85| 	then
+   154|      |-    99|      |-    38|      |-    72|    86| 		if [ $Code = "True" ]
+   155|      |-   100|      |-    39|      |-_________________________
+   156|      |-   101|      |-    40|      |-    96|   110| 		elif [ "$Status" -eq "4" ]
+   157|      |-   102|      |-    41|      |-    97|   111| 		then
+   158|      |-   103|      |-    42|      |-    98|   112| 			# dump the file name into the changelog
+   159|      |-   104|      |-    43|      |-    99|      |-			$(echo >> changes.log)
+   160|      |-   105|      |-    44|      |-   100|      |-			$(echo "$line" | sed -e "s/^+++ b\//File diff: /;s/+++ \/dev\/null/File deleted: $Rem/" >> changes.log)
+   161|      |-   106|      |-    45|      |-      |   113|+			$(echo >> "$Changelog")
+   162|      |-   107|      |-    46|      |-      |   114|+			$(echo "$line" | sed -e "s/^+++ b\//File diff: /;s/+++ \/dev\/null/File deleted: $Rem/" >> "$Changelog" )
+   163|      |-   108|      |-    47|      |-   101|   115| 		fi
+   164|      |-   109|      |-    48|      |-   102|   116| 
+   165|      |-   110|      |-    49|      |-   103|   117| 	elif [ $Code == "True" ]
+   166|      |-   111|      |-    50|      |-_________________________
+   167|      |-   112|      |-    51|      |-   107|   121| 		if [ "$Start" = "+" ]
+   168|      |-   113|      |-    52|      |-   108|   122| 		then
+   169|      |-   114|      |-    53|      |-   109|   123| 			PadA=$(( $PadL - ${#ANum} ))
+   170|      |-   115|      |-    54|      |-   110|      |-			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
+   171|      |-   116|      |-    55|      |-      |   124|+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> "$Changelog")
+   172|      |-   117|      |-    56|      |-   111|   125| 			ANum=$(( $ANum + 1 ))
+   173|      |-   118|      |-    57|      |-   112|   126| 			ACodeCount=$(( $ACodeCount - 1 ))
+   174|      |-   119|      |-    58|      |-   113|   127| 		elif [ "$Start" = "-" ]
+   175|      |-   120|      |-    59|      |-   114|   128| 		then
+   176|      |-   121|      |-    60|      |-   115|   129| 			PadR=$(( $PadL - ${#RNum} ))
+   177|      |-   122|      |-    61|      |-   116|      |-			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> changes.log)
+   178|      |-   123|      |-    62|      |-      |   130|+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> "$Changelog")
+   179|      |-   124|      |-    63|      |-   117|   131| 			RNum=$(( $RNum + 1 ))
+   180|      |-   125|      |-    64|      |-   118|   132| 			RCodeCount=$(( $RCodeCount - 1 ))
+   181|      |-   126|      |-    65|      |-   119|   133| 		else
+   182|      |-   127|      |-    66|      |-   120|   134| 			PadR=$(( $PadL - ${#RNum} ))
+   183|      |-   128|      |-    67|      |-   121|   135| 			PadA=$(( $PadL - ${#ANum} ))
+   184|      |-   129|      |-    68|      |-   122|      |-			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
+   185|      |-   130|      |-    69|      |-      |   136|+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> "$Changelog")
+   186|      |-   131|      |-    70|      |-   123|   137| 			#increment decrement stuff
+   187|      |-   132|      |-    71|      |-   124|   138| 			RNum=$(( $RNum + 1 ))
+   188|      |-   133|      |-    72|      |-   125|   139| 			ANum=$(( $ANum + 1 ))
+   189|      |-   134|      |-    73|      |-_________________________
+   190|      |-   135|      |-    74|      |-   127|   141| 			ACodeCount=$(( $ACodeCount - 1 ))
+   191|      |-   136|      |-    75|      |-   128|   142| 		fi
+   192|      |-   137|      |-    76|      |-   129|   143| 			
+   193|      |-   138|      |-    77|      |-   130|      |-		$(echo >> changes.log) #to add newline
+   194|      |-   139|      |-    78|      |-      |   144|+		$(echo >> "$Changelog") #to add newline
+   195|      |-   140|      |-    79|      |-   131|   145| 	fi
+   196|      |-   141|      |-    80|      |-   132|   146| 
+   197|      |-   142|      |-    81|      |-   133|   147| done <<< $Diff
+   198|      |-   143|      |-    82|      |-   134|   148| #---- FIND TODO ----
+   199|      |-   144|      |-    83|      |-   135|   149| 
+   200|      |-   145|      |-    84|      |-      |   150|+TodoLog="todo.log"
+   201|      |-   146|      |-    85|      |-      |   151|+> $TodoLog #clears log
+   202|      |-   147|      |-    86|      |-      |   152|+
+   203|      |-   148|      |-    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   204|      |-   149|      |-    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   205|      |-   150|      |-    89|      |-   136|   155| 
+   206|      |-   151|      |-    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   207|      |-   152|      |-    91|      |-   137|   157| 
+   208|      |-   153|      |-    92|      |-      |   158|+#----Count Code Lines----
+   209|      |-   154|      |-    93|      |-      |   159|+#Cause literally this is a command I use all the time
+   210|      |-   155|      |-    94|      |-   138|   160| 
+   211|      |-   156|      |-    95|      |-      |   161|+#TODO
+   212|      |-   157|      |-    96|      |-_________________________
+   213|      |-   158|      |-    97|      |-
+   214|      |-   159|      |-    98|      |-File deleted: Assign1/changes.log
+   215|      |-   160|      |-    99|      |-     1|      |-The following files have not been committed
+   216|      |-   161|      |-   100|      |-     2|      |-	modified:   ProjectAnalyze.sh
+   217|      |-   162|      |-   101|      |-     3|      |-	deleted:    changes.log
+   218|      |-   163|      |-   102|      |-     4|      |-Current git diff:
+   219|      |-   164|      |-   103|      |-     5|      |-
+   220|      |-   165|      |-   104|      |-     6|      |-File diff: Assign1/ProjectAnalyze.sh
+   221|      |-   166|      |-   105|      |-     7|      |-    90|    90|ANum=$(echo "$line" | sed -e "s/^@@ -[0-9]*,[0-9]* +\([0-9]*\),.*/\1/")
+   222|      |-   167|      |-   106|      |-     8|      |-    91|    91|RCodeCount=$(echo "$line" | sed -e "s/^@@ -[0-9]*,\([0-9]*\) .*/\1/")
+   223|      |-   168|      |-   107|      |-     9|      |-    92|    92|ACodeCount=$(echo "$line" | sed -e "s/^@@ -[0-9]*,[0-9]* +[0-9]*,\([0-9]*\).*/\1/")
+   224|      |-   169|      |-   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+   225|      |-   170|      |-   109|      |-    11|      |-    94|      |-
+   226|      |-   171|      |-   110|      |-    12|      |-      |    93|+		elif [ "$Status" -eq "3" ]
+   227|      |-   172|      |-   111|      |-    13|      |-      |    94|+		then
+   228|      |-   173|      |-   112|      |-    14|      |-      |    95|+			Rem=$(echo "$line" | sed -e "s/^--- a\///;s:/:\\\/:g") # file removed to fix def/null issue
+   229|      |-   174|      |-   113|      |-    15|      |-    95|    96|elif [ "$Status" -eq "4" ]
+   230|      |-   175|      |-   114|      |-    16|      |-    96|    97|then
+   231|      |-   176|      |-   115|      |-    17|      |-    97|    98|# dump the file name into the changelog
+   232|      |-   177|      |-   116|      |-    18|      |-    98|    99|$(echo >> changes.log)
+   233|      |-   178|      |-   117|      |-    19|      |-    99|      |-			$(echo "$line" | sed -e "s/^+++ b\//File diff: /" >> changes.log)
+   234|      |-   179|      |-   118|      |-    20|      |-      |   100|+			$(echo "$line" | sed -e "s/^+++ b\//File diff: /;s/+++ \/dev\/null/File deleted: $Rem/" >> changes.log)
+   235|      |-   180|      |-   119|      |-    21|      |-   100|   101|fi
+   236|      |-   181|      |-   120|      |-    22|      |-   101|   102|
+   237|      |-   182|      |-   121|      |-    23|      |-   102|   103|elif [ $Code == "True" ]
+   238|      |-   183|      |-   122|      |-    24|      |-   103|   104|then
+   239|      |-   184|      |-   123|      |-    25|      |-   104|      |-
+   240|      |-   185|      |-   124|      |-    26|      |-   105|   105|#Print lines, numbering etc
+   241|      |-   186|      |-   125|      |-    27|      |-   106|   106|Start=$(echo $line | sed -e "s/\(.\).*/\1/")
+   242|      |-   187|      |-   126|      |-    28|      |-   107|   107|if [ "$Start" = "+" ]
+   243|      |-   188|      |-   127|      |-    29|      |-_________________________
+   244|      |-   189|      |-   128|      |-    30|      |-
+   245|      |-   190|      |-   129|      |-    31|      |-File deleted: Assign1/changes.log
+   246|      |-   191|      |-   130|      |-    32|      |-     1|      |-The following files have not been committed
+   247|      |-   192|      |-   131|      |-    33|      |-     2|      |-	modified:   ProjectAnalyze.sh
+   248|      |-   193|      |-   132|      |-    34|      |-     3|      |-	deleted:    changes.log
+   249|      |-   194|      |-   133|      |-    35|      |-     4|      |-Current git diff:
+   250|      |-   195|      |-   134|      |-    36|      |-     5|      |-
+   251|      |-   196|      |-   135|      |-    37|      |-     6|      |-File diff: Assign1/ProjectAnalyze.sh
+   252|      |-   197|      |-   136|      |-    38|      |-     7|      |-    25|    25|untracked=$( git status | grep "Untracked files:" | wc -l )
+   253|      |-   198|      |-   137|      |-    39|      |-     8|      |-    26|    26|
+   254|      |-   199|      |-   138|      |-    40|      |-     9|      |-    27|    27|Status=$(git status)
+   255|      |-   200|      |-   139|      |-    41|      |-    10|      |-    28|      |-
+   256|      |-   201|      |-   140|      |-    42|      |-    11|      |-      |    28|+Diff=$( git diff )
+   257|      |-   202|      |-   141|      |-    43|      |-    12|      |-    29|    29|
+   258|      |-   203|      |-   142|      |-    44|      |-    13|      |-    30|    30|# clear changes.log
+   259|      |-   204|      |-   143|      |-    45|      |-    14|      |-    31|      |-$( echo "The following files have not been committed" > "changes.log")
+   260|      |-   205|      |-   144|      |-    46|      |-    15|      |-      |    31|+$( echo "The following files have not been committed" > "$Changelog")
+   261|      |-   206|      |-   145|      |-    47|      |-    16|      |-    32|    32|
+   262|      |-   207|      |-   146|      |-    48|      |-    17|      |-    33|    33|# if there are untracked files
+   263|      |-   208|      |-   147|      |-    49|      |-    18|      |-    34|    34|if [ $untracked -eq 1 ]
+   264|      |-   209|      |-   148|      |-    50|      |-    19|      |-    35|    35|then
+   265|      |-   210|      |-   149|      |-    51|      |-    20|      |-    36|    36|#adds untracked tag to untracked files, after getting them
+   266|      |-   211|      |-   150|      |-    52|      |-    21|      |-    37|      |-	$( echo "$Status" | sed -e "$STATUSCLEAN;/Untracked files:/d;/:/d;s/^	/	untracked:  /g" > "changes.log" )
+   267|      |-   212|      |-   151|      |-    53|      |-    22|      |-      |    37|+	$( echo "$Status" | sed -e "$STATUSCLEAN;/Untracked files:/d;/:/d;s/^	/	untracked:  /g" >> "$Changelog" )
+   268|      |-   213|      |-   152|      |-    54|      |-    23|      |-    38|    38|STATUSCLEAN="$STATUSCLEAN;/Untracked files:/,\$d" # delete all after line sourced from https://stackoverflow.com/questions/5227295/how-do-i-delete-all-lines-in-a-file-starting-from-after-a-matching-line
+   269|      |-   214|      |-   153|      |-    55|      |-    24|      |-    39|    39|fi
+   270|      |-   215|      |-   154|      |-    56|      |-    25|      |-    40|    40|
+   271|      |-   216|      |-   155|      |-    57|      |-    26|      |-    41|    41|# get other changes
+   272|      |-   217|      |-   156|      |-    58|      |-    27|      |-    42|      |-$( echo "$Status" | sed "$STATUSCLEAN;/Changes to be committed:/d;/Changes not staged for commit:/d" >> "changes.log" )
+   273|      |-   218|      |-   157|      |-    59|      |-    28|      |-      |    42|+$( echo "$Status" | sed "$STATUSCLEAN;/Changes to be committed:/d;/Changes not staged for commit:/d" >> "$Changelog" )
+   274|      |-   219|      |-   158|      |-    60|      |-    29|      |-    43|    43|
+   275|      |-   220|      |-   159|      |-    61|      |-    30|      |-    44|    44|
+   276|      |-   221|      |-   160|      |-    62|      |-    31|      |-    45|    45|#---- Find uncommitted changes II ----
+   277|      |-   222|      |-   161|      |-    63|      |-    32|      |-    46|    46|#uses git diff prints in a cleaner style than default with lines numbered and all that
+   278|      |-   223|      |-   162|      |-    64|      |-    33|      |-    47|    47|
+   279|      |-   224|      |-   163|      |-    65|      |-    34|      |-    48|      |-Diff=$( git diff )
+   280|      |-   225|      |-   164|      |-    66|      |-    35|      |-    49|    48|
+   281|      |-   226|      |-   165|      |-    67|      |-    36|      |-    50|      |-$(echo "Current git diff:" >> changes.log)
+   282|      |-   227|      |-   166|      |-    68|      |-    37|      |-      |    49|+$(echo "Current git diff:" >> "$Changelog")
+   283|      |-   228|      |-   167|      |-    69|      |-    38|      |-    51|    50|
+   284|      |-   229|      |-   168|      |-    70|      |-    39|      |-    52|    51|#iterate over lines https://superuser.com/questions/284187/bash-iterating-over-lines-in-a-variable
+   285|      |-   230|      |-   169|      |-    71|      |-    40|      |-    53|    52|
+   286|      |-   231|      |-   170|      |-    72|      |-    41|      |-_________________________
+   287|      |-   232|      |-   171|      |-    73|      |-    42|      |-    68|    67|
+   288|      |-   233|      |-   172|      |-    74|      |-    43|      |-    69|    68|#iterate over the lines of the diff stuff
+   289|      |-   234|      |-   173|      |-    75|      |-    44|      |-    70|    69|while read -r line; do
+   290|      |-   235|      |-   174|      |-    76|      |-    45|      |-      |    70|+	if [ $ACodeCount -lt 1 -a $RCodeCount -lt 1 ]
+   291|      |-   236|      |-   175|      |-    77|      |-    46|      |-      |    71|+	then
+   292|      |-   237|      |-   176|      |-    78|      |-    47|      |-      |    72|+		if [ $Code = "True" ]
+   293|      |-   238|      |-   177|      |-    79|      |-    48|      |-      |    73|+		then
+   294|      |-   239|      |-   178|      |-    80|      |-    49|      |-      |    74|+			$(printf '%0.1s' "_"{1..25} >> "$Changelog") # so it's much clearer where the code fragments are
+   295|      |-   240|      |-   179|      |-    81|      |-    50|      |-      |    75|+			$(echo >> "$Changelog") # nl cause printf%n doesn't work for some reason
+   296|      |-   241|      |-   180|      |-    82|      |-    51|      |-      |    76|+		fi
+   297|      |-   242|      |-   181|      |-    83|      |-    52|      |-      |    77|+		Code="False"
+   298|      |-   243|      |-   182|      |-    84|      |-    53|      |-      |    78|+	fi
+   299|      |-   244|      |-   183|      |-    85|      |-    54|      |-      |    79|+
+   300|      |-   245|      |-   184|      |-    86|      |-    55|      |-    71|    80|#non code lines either of 5 types
+   301|      |-   246|      |-   185|      |-    87|      |-    56|      |-    72|    81|if [ "$Code" == "False" ]
+   302|      |-   247|      |-   186|      |-    88|      |-    57|      |-    73|    82|then
+   303|      |-   248|      |-   187|      |-    89|      |-    58|      |-_________________________
+   304|      |-   249|      |-   188|      |-    90|      |-    59|      |-    92|   101|
+   305|      |-   250|      |-   189|      |-    91|      |-    60|      |-    93|   102|elif [ $Code == "True" ]
+   306|      |-   251|      |-   190|      |-    92|      |-    61|      |-    94|   103|then
+   307|      |-   252|      |-   191|      |-    93|      |-    62|      |-    95|      |-		if [ $ACodeCount -eq 0 -a $RCodeCount -eq 0 ]
+   308|      |-   253|      |-   192|      |-    94|      |-    63|      |-      |   104|+
+   309|      |-   254|      |-   193|      |-    95|      |-    64|      |-      |   105|+		#Print lines, numbering etc
+   310|      |-   255|      |-   194|      |-    96|      |-    65|      |-      |   106|+		Start=$(echo $line | sed -e "s/\(.\).*/\1/")
+   311|      |-   256|      |-   195|      |-    97|      |-    66|      |-      |   107|+		if [ "$Start" = "+" ]
+   312|      |-   257|      |-   196|      |-    98|      |-    67|      |-      |   108|+		then
+   313|      |-   258|      |-   197|      |-    99|      |-    68|      |-      |   109|+			PadA=$(( $PadL - ${#ANum} ))
+   314|      |-   259|      |-   198|      |-   100|      |-    69|      |-      |   110|+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
+   315|      |-   260|      |-   199|      |-   101|      |-    70|      |-      |   111|+			ANum=$(( $ANum + 1 ))
+   316|      |-   261|      |-   200|      |-   102|      |-    71|      |-      |   112|+			ACodeCount=$(( $ACodeCount - 1 ))
+   317|      |-   262|      |-   201|      |-   103|      |-    72|      |-      |   113|+		elif [ "$Start" = "-" ]
+   318|      |-   263|      |-   202|      |-   104|      |-    73|      |-    96|   114|then
+   319|      |-   264|      |-   203|      |-   105|      |-    74|      |-    97|      |-			Code="False"
+   320|      |-   265|      |-   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   321|      |-   266|      |-   205|      |-   107|      |-    76|      |-      |   115|+			PadR=$(( $PadL - ${#RNum} ))
+   322|      |-   267|      |-   206|      |-   108|      |-    77|      |-      |   116|+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> changes.log)
+   323|      |-   268|      |-   207|      |-   109|      |-    78|      |-      |   117|+			RNum=$(( $RNum + 1 ))
+   324|      |-   269|      |-   208|      |-   110|      |-    79|      |-      |   118|+			RCodeCount=$(( $RCodeCount - 1 ))
+   325|      |-   270|      |-   209|      |-   111|      |-    80|      |-    99|   119|else
+   326|      |-   271|      |-   210|      |-   112|      |-    81|      |-   100|      |-			#Print lines, numbering etc
+   327|      |-   272|      |-   211|      |-   113|      |-    82|      |-   101|      |-			Start=$(echo $line | sed -e "s/\(.\).*/\1/")
+   328|      |-   273|      |-   212|      |-   114|      |-    83|      |-   102|      |-			if [ "$Start" = "+" ]
+   329|      |-   274|      |-   213|      |-   115|      |-    84|      |-   103|      |-			then
+   330|      |-   275|      |-   214|      |-   116|      |-    85|      |-   104|      |-				PadA=$(( $PadL - ${#ANum} ))
+   331|      |-   276|      |-   215|      |-   117|      |-    86|      |-   105|      |-				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
+   332|      |-   277|      |-   216|      |-   118|      |-    87|      |-   106|      |-				ANum=$(( $ANum + 1 ))
+   333|      |-   278|      |-   217|      |-   119|      |-    88|      |-   107|      |-				ACodeCount=$(( $ACodeCount - 1 ))
+   334|      |-   279|      |-   218|      |-   120|      |-    89|      |-   108|      |-			elif [ "$Start" = "-" ]
+   335|      |-   280|      |-   219|      |-   121|      |-    90|      |-   109|      |-			then
+   336|      |-   281|      |-   220|      |-   122|      |-    91|      |-   110|      |-				PadR=$(( $PadL - ${#RNum} ))
+   337|      |-   282|      |-   221|      |-   123|      |-    92|      |-   111|      |-				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> changes.log)
+   338|      |-   283|      |-   222|      |-   124|      |-    93|      |-   112|      |-				RNum=$(( $RNum + 1 ))
+   339|      |-   284|      |-   223|      |-   125|      |-    94|      |-   113|      |-				RCodeCount=$(( $RCodeCount - 1 ))
+   340|      |-   285|      |-   224|      |-   126|      |-    95|      |-   114|      |-			else
+   341|      |-   286|      |-   225|      |-   127|      |-    96|      |-   115|      |-				PadR=$(( $PadL - ${#RNum} ))
+   342|      |-   287|      |-   226|      |-   128|      |-    97|      |-   116|      |-				PadA=$(( $PadL - ${#ANum} ))
+   343|      |-   288|      |-   227|      |-   129|      |-    98|      |-   117|      |-				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
+   344|      |-   289|      |-   228|      |-   130|      |-    99|      |-   118|      |-				#increment decrement stuff
+   345|      |-   290|      |-   229|      |-   131|      |-   100|      |-   119|      |-				RNum=$(( $RNum + 1 ))
+   346|      |-   291|      |-   230|      |-   132|      |-   101|      |-   120|      |-				ANum=$(( $ANum + 1 ))
+   347|      |-   292|      |-   231|      |-   133|      |-   102|      |-   121|      |-				RCodeCount=$(( $RCodeCount - 1 ))
+   348|      |-   293|      |-   232|      |-   134|      |-   103|      |-   122|      |-				ACodeCount=$(( $ACodeCount - 1 ))
+   349|      |-   294|      |-   233|      |-   135|      |-   104|      |-   123|      |-
+   350|      |-   295|      |-   234|      |-   136|      |-   105|      |-   124|      |-			fi
+   351|      |-   296|      |-   235|      |-   137|      |-   106|      |-   125|      |-
+   352|      |-   297|      |-   236|      |-   138|      |-   107|      |-   126|      |-			$(echo >> changes.log) #to add newline
+   353|      |-   298|      |-   237|      |-   139|      |-   108|      |-   127|      |-
+   354|      |-   299|      |-   238|      |-   140|      |-   109|      |-   128|      |-
+   355|      |-   300|      |-   239|      |-   141|      |-   110|      |-      |   120|+			PadR=$(( $PadL - ${#RNum} ))
+   356|      |-   301|      |-   240|      |-   142|      |-   111|      |-      |   121|+			PadA=$(( $PadL - ${#ANum} ))
+   357|      |-   302|      |-   241|      |-   143|      |-   112|      |-      |   122|+			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
+   358|      |-   303|      |-   242|      |-   144|      |-   113|      |-      |   123|+			#increment decrement stuff
+   359|      |-   304|      |-   243|      |-   145|      |-   114|      |-      |   124|+			RNum=$(( $RNum + 1 ))
+   360|      |-   305|      |-   244|      |-   146|      |-   115|      |-      |   125|+			ANum=$(( $ANum + 1 ))
+   361|      |-   306|      |-   245|      |-   147|      |-   116|      |-      |   126|+			RCodeCount=$(( $RCodeCount - 1 ))
+   362|      |-   307|      |-   246|      |-   148|      |-   117|      |-      |   127|+			ACodeCount=$(( $ACodeCount - 1 ))
+   363|      |-   308|      |-   247|      |-   149|      |-   118|      |-   129|   128|fi
+   364|      |-   309|      |-   248|      |-   150|      |-   119|      |-   130|      |-
+   365|      |-   310|      |-   249|      |-   151|      |-   120|      |-      |   129|+
+   366|      |-   311|      |-   250|      |-   152|      |-   121|      |-      |   130|+		$(echo >> changes.log) #to add newline
+   367|      |-   312|      |-   251|      |-   153|      |-   122|      |-   131|   131|fi
+   368|      |-   313|      |-   252|      |-   154|      |-   123|      |-   132|   132|
+   369|      |-   314|      |-   253|      |-   155|      |-   124|      |-   133|   133|done <<< $Diff
+   370|      |-   315|      |-   254|      |-   156|      |-   125|      |-_________________________
+   371|      |-   316|      |-   255|      |-   157|      |-   126|      |-
+   372|      |-   317|      |-   256|      |-   158|      |-   127|      |-+++ /dev/null
+   373|      |-   318|      |-   257|      |-   159|      |-   128|      |-     1|      |-	untracked:  change.log
+   374|      |-   319|      |-   258|      |-   160|      |-   129|      |-     2|      |-	modified:   ProjectAnalyze.sh
+   375|      |-   320|      |-   259|      |-   161|      |-   130|      |-     3|      |-	modified:   testscript.sh
+   376|      |-   321|      |-   260|      |-   162|      |-   131|      |-     4|      |-Current git diff:
+   377|      |-   322|      |-   261|      |-   163|      |-   132|      |-     5|      |-
+   378|      |-   323|      |-   262|      |-   164|      |-   133|      |-     6|      |-File diff: Assign1/ProjectAnalyze.sh
+   379|      |-   324|      |-   263|      |-   165|      |-   134|      |-     7|      |-     1|     1|#!/git-bash.exe
+   380|      |-   325|      |-   264|      |-   166|      |-   135|      |-     8|      |-     2|     2|
+   381|      |-   326|      |-   265|      |-   167|      |-   136|      |-     9|      |-      |     3|+#Potential feature turning some of this stuff into HTML if -report flag in args?
+   382|      |-   327|      |-   266|      |-   168|      |-   137|      |-    10|      |-      |     4|+
+   383|      |-   328|      |-   267|      |-   169|      |-   138|      |-    11|      |-     3|     5|# random variable, not sure if I'll use it
+   384|      |-   329|      |-   268|      |-   170|      |-   139|      |-    12|      |-     4|     6|UPTODATE=$(git pull)
+   385|      |-   330|      |-   269|      |-   171|      |-   140|      |-    13|      |-     5|     7|
+   386|      |-   331|      |-   270|      |-   172|      |-   141|      |-    14|      |-    58|    60|#Numbers to count code line
+   387|      |-   332|      |-   271|      |-   173|      |-   142|      |-    15|      |-    59|    61|RNum="0"
+   388|      |-   333|      |-   272|      |-   174|      |-   143|      |-    16|      |-    60|    62|ANum="0"
+   389|      |-   334|      |-   273|      |-   175|      |-   144|      |-    17|      |-    61|      |-
+   390|      |-   335|      |-   274|      |-   176|      |-   145|      |-    18|      |-      |    63|+#padding altered from the following https://stackoverflow.com/questions/4409399/padding-characters-in-printf
+   391|      |-   336|      |-   275|      |-   177|      |-   146|      |-    19|      |-      |    64|+#literally just a bunch of spaces
+   392|      |-   337|      |-   276|      |-   178|      |-   147|      |-    20|      |-      |    65|+Pad=$(printf '%0.1s' " "{1..60})
+   393|      |-   338|      |-   277|      |-   179|      |-   148|      |-    21|      |-      |    66|+#length to pad the numbers
+   394|      |-   339|      |-   278|      |-   180|      |-   149|      |-    22|      |-      |    67|+PadL=6
+   395|      |-   340|      |-   279|      |-   181|      |-   150|      |-    23|      |-    62|    68|
+   396|      |-   341|      |-   280|      |-   182|      |-   151|      |-    24|      |-    63|    69|#iterate over the lines of the diff stuff
+   397|      |-   342|      |-   281|      |-   183|      |-   152|      |-    25|      |-    64|    70|while read -r line; do
+   398|      |-   343|      |-   282|      |-   184|      |-   153|      |-    26|      |-    65|    71|#non code lines either of 5 types
+   399|      |-   344|      |-   283|      |-   185|      |-   154|      |-    27|      |-    66|      |-	if [ $Code == "False" ]
+   400|      |-   345|      |-   284|      |-   186|      |-   155|      |-    28|      |-      |    72|+	if [ "$Code" == "False" ]
+   401|      |-   346|      |-   285|      |-   187|      |-   156|      |-    29|      |-    67|    73|then
+   402|      |-   347|      |-   286|      |-   188|      |-   157|      |-    30|      |-    68|    74|#use multi sed command to get what exactly the non code line is
+   403|      |-   348|      |-   287|      |-   189|      |-   158|      |-    31|      |-    69|      |-		Status=$(echo $line | sed -e "s/^diff --git.*/1/;s/^index.*/2/;s/^---.*/3/;s/^+++.*/4/;s/^@@.*/5/;s/[^1-5]/6/;s/\(.\).*/\1/")
+   404|      |-   349|      |-   288|      |-   190|      |-   159|      |-    32|      |-      |    75|+		Status=$(echo "$line" | sed -e "s/^diff --git.*/1/;s/^index.*/2/;s/^---.*/3/;s/^+++.*/4/;s/^@@.*/5/;s/[^1-5]/6/;s/\(.\).*/\1/;s/^$/6/")
+   405|      |-   350|      |-   289|      |-   191|      |-   160|      |-    33|      |-    70|    76|#1 = first line 2 = index objects 3 = --- 4 = +++ 5 = @@ aka start of code 6 = mode or something, too difficult to match easily
+   406|      |-   351|      |-   290|      |-   192|      |-   161|      |-    34|      |-    71|      |-		if [ $Status -eq 5 ]
+   407|      |-   352|      |-   291|      |-   193|      |-   162|      |-    35|      |-      |    77|+		if [ "$Status" -eq "5" ]
+   408|      |-   353|      |-   292|      |-   194|      |-   163|      |-    36|      |-    72|    78|then
+   409|      |-   354|      |-   293|      |-   195|      |-   164|      |-    37|      |-    73|    79|Code="True"
+   410|      |-   355|      |-   294|      |-   196|      |-   165|      |-    38|      |-    74|      |-			RNum=$(echo $line | sed -e "s/^@@ -\([0-9]*\),.*/\1/")
+   411|      |-   356|      |-   295|      |-   197|      |-   166|      |-    39|      |-    75|      |-			ANum=$(echo $line | sed -e "s/^@@ -[0-9]*,[0-9]* +\([0-9]*\),.*/\1/")
+   412|      |-   357|      |-   296|      |-   198|      |-   167|      |-    40|      |-    76|      |-			RCodeCount=$(echo $line | sed -e "s/^@@ -[0-9]*,\([0-9]*\) .*/\1/")
+   413|      |-   358|      |-   297|      |-   199|      |-   168|      |-    41|      |-    77|      |-			ACodeCount=$(echo $line | sed -e "s/^@@ -[0-9]*,[0-9]* +[0-9]*,\([0-9]*\).*/\1/")
+   414|      |-   359|      |-   298|      |-   200|      |-   169|      |-    42|      |-      |    80|+			RNum=$(echo "$line" | sed -e "s/^@@ -\([0-9]*\),.*/\1/")
+   415|      |-   360|      |-   299|      |-   201|      |-   170|      |-    43|      |-      |    81|+			ANum=$(echo "$line" | sed -e "s/^@@ -[0-9]*,[0-9]* +\([0-9]*\),.*/\1/")
+   416|      |-   361|      |-   300|      |-   202|      |-   171|      |-    44|      |-      |    82|+			RCodeCount=$(echo "$line" | sed -e "s/^@@ -[0-9]*,\([0-9]*\) .*/\1/")
+   417|      |-   362|      |-   301|      |-   203|      |-   172|      |-    45|      |-      |    83|+			ACodeCount=$(echo "$line" | sed -e "s/^@@ -[0-9]*,[0-9]* +[0-9]*,\([0-9]*\).*/\1/")
+   418|      |-   363|      |-   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+   419|      |-   364|      |-   303|      |-   205|      |-   174|      |-    47|      |-    79|    85|
+   420|      |-   365|      |-   304|      |-   206|      |-   175|      |-    48|      |-    80|      |-		elif [$Status -eq 4]
+   421|      |-   366|      |-   305|      |-   207|      |-   176|      |-    49|      |-      |    86|+		elif [ "$Status" -eq "4" ]
+   422|      |-   367|      |-   306|      |-   208|      |-   177|      |-    50|      |-    81|    87|then
+   423|      |-   368|      |-   307|      |-   209|      |-   178|      |-    51|      |-    82|    88|# dump the file name into the changelog
+   424|      |-   369|      |-   308|      |-   210|      |-   179|      |-    52|      |-    83|      |-			$(echo $line | sed -e "s/^+++ b\//File diff: /" >> changes.log)
+   425|      |-   370|      |-   309|      |-   211|      |-   180|      |-    53|      |-      |    89|+			$(echo >> changes.log)
+   426|      |-   371|      |-   310|      |-   212|      |-   181|      |-    54|      |-      |    90|+			$(echo "$line" | sed -e "s/^+++ b\//File diff: /" >> changes.log)
+   427|      |-   372|      |-   311|      |-   213|      |-   182|      |-    55|      |-    84|    91|fi
+   428|      |-   373|      |-   312|      |-   214|      |-   183|      |-    56|      |-    85|      |-		echo $Status
+   429|      |-   374|      |-   313|      |-   215|      |-   184|      |-    57|      |-    86|    92|
+   430|      |-   375|      |-   314|      |-   216|      |-   185|      |-    58|      |-    87|    93|elif [ $Code == "True" ]
+   431|      |-   376|      |-   315|      |-   217|      |-   186|      |-    59|      |-    88|    94|then
+   432|      |-   377|      |-   316|      |-   218|      |-   187|      |-    60|      |-    89|      |-		if [ $CodeCount -eq 0 ]
+   433|      |-   378|      |-   317|      |-   219|      |-   188|      |-    61|      |-      |    95|+		if [ $ACodeCount -eq 0 -a $RCodeCount -eq 0 ]
+   434|      |-   379|      |-   318|      |-   220|      |-   189|      |-    62|      |-    90|    96|then
+   435|      |-   380|      |-   319|      |-   221|      |-   190|      |-    63|      |-    91|    97|Code="False"
+   436|      |-   381|      |-   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   437|      |-   382|      |-   321|      |-   223|      |-   192|      |-    65|      |-      |    99|+		else
+   438|      |-   383|      |-   322|      |-   224|      |-   193|      |-    66|      |-      |   100|+			#Print lines, numbering etc
+   439|      |-   384|      |-   323|      |-   225|      |-   194|      |-    67|      |-      |   101|+			Start=$(echo $line | sed -e "s/\(.\).*/\1/")
+   440|      |-   385|      |-   324|      |-   226|      |-   195|      |-    68|      |-      |   102|+			if [ "$Start" = "+" ]
+   441|      |-   386|      |-   325|      |-   227|      |-   196|      |-    69|      |-      |   103|+			then
+   442|      |-   387|      |-   326|      |-   228|      |-   197|      |-    70|      |-      |   104|+				PadA=$(( $PadL - ${#ANum} ))
+   443|      |-   388|      |-   327|      |-   229|      |-   198|      |-    71|      |-      |   105|+				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
+   444|      |-   389|      |-   328|      |-   230|      |-   199|      |-    72|      |-      |   106|+				ANum=$(( $ANum + 1 ))
+   445|      |-   390|      |-   329|      |-   231|      |-   200|      |-    73|      |-      |   107|+				ACodeCount=$(( $ACodeCount - 1 ))
+   446|      |-   391|      |-   330|      |-   232|      |-   201|      |-    74|      |-      |   108|+			elif [ "$Start" = "-" ]
+   447|      |-   392|      |-   331|      |-   233|      |-   202|      |-    75|      |-      |   109|+			then
+   448|      |-   393|      |-   332|      |-   234|      |-   203|      |-    76|      |-      |   110|+				PadR=$(( $PadL - ${#RNum} ))
+   449|      |-   394|      |-   333|      |-   235|      |-   204|      |-    77|      |-      |   111|+				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> changes.log)
+   450|      |-   395|      |-   334|      |-   236|      |-   205|      |-    78|      |-      |   112|+				RNum=$(( $RNum + 1 ))
+   451|      |-   396|      |-   335|      |-   237|      |-   206|      |-    79|      |-      |   113|+				RCodeCount=$(( $RCodeCount - 1 ))
+   452|      |-   397|      |-   336|      |-   238|      |-   207|      |-    80|      |-      |   114|+			else
+   453|      |-   398|      |-   337|      |-   239|      |-   208|      |-    81|      |-      |   115|+				PadR=$(( $PadL - ${#RNum} ))
+   454|      |-   399|      |-   338|      |-   240|      |-   209|      |-    82|      |-      |   116|+				PadA=$(( $PadL - ${#ANum} ))
+   455|      |-   400|      |-   339|      |-   241|      |-   210|      |-    83|      |-      |   117|+				$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> changes.log)
+   456|      |-   401|      |-   340|      |-   242|      |-   211|      |-    84|      |-      |   118|+				#increment decrement stuff
+   457|      |-   402|      |-   341|      |-   243|      |-   212|      |-    85|      |-      |   119|+				RNum=$(( $RNum + 1 ))
+   458|      |-   403|      |-   342|      |-   244|      |-   213|      |-    86|      |-      |   120|+				ANum=$(( $ANum + 1 ))
+   459|      |-   404|      |-   343|      |-   245|      |-   214|      |-    87|      |-      |   121|+				RCodeCount=$(( $RCodeCount - 1 ))
+   460|      |-   405|      |-   344|      |-   246|      |-   215|      |-    88|      |-      |   122|+				ACodeCount=$(( $ACodeCount - 1 ))
+   461|      |-   406|      |-   345|      |-   247|      |-   216|      |-    89|      |-      |   123|+
+   462|      |-   407|      |-   346|      |-   248|      |-   217|      |-    90|      |-      |   124|+			fi
+   463|      |-   408|      |-   347|      |-   249|      |-   218|      |-    91|      |-      |   125|+
+   464|      |-   409|      |-   348|      |-   250|      |-   219|      |-    92|      |-      |   126|+			$(echo >> changes.log) #to add newline
+   465|      |-   410|      |-   349|      |-   251|      |-   220|      |-    93|      |-      |   127|+
+   466|      |-   411|      |-   350|      |-   252|      |-   221|      |-    94|      |-      |   128|+
+   467|      |-   412|      |-   351|      |-   253|      |-   222|      |-    95|      |-    93|   129|fi
+   468|      |-   413|      |-   352|      |-   254|      |-   223|      |-    96|      |-    94|   130|
+   469|      |-   414|      |-   353|      |-   255|      |-   224|      |-    97|      |-    95|   131|fi
+   470|      |-   415|      |-   354|      |-   256|      |-   225|      |-    98|      |-
+   471|      |-   416|      |-   355|      |-   257|      |-   226|      |-    99|      |-File diff: Assign1/testscript.sh
+   472|      |-   417|      |-   356|      |-   258|      |-   227|      |-   100|      |-     1|     1|#!/git-bash.exe
+   473|      |-   418|      |-   357|      |-   259|      |-   228|      |-   101|      |-     2|     2|
+   474|      |-   419|      |-   358|      |-   260|      |-   229|      |-   102|      |-     3|      |-Status=$(sed -e "s/^diff --git.*/1/;s/^index.*/2/;s/^---.*/3/;s/^+++.*/4/;s/^@@.*/5/;s/[^1-5]/6/;s/\(.\).*/\1/" < test.txt)
+   475|      |-   420|      |-   359|      |-   261|      |-   230|      |-   103|      |-      |     3|+Status=$(echo >> changes.log)
+   476|      |-   421|      |-   360|      |-   262|      |-   231|      |-   104|      |-     4|     4|echo $Status
+   477|      |-   422|      |-   361|      |-_________________________
+   478|      |-   423|      |-   362|      |-
+   479|      |-   424|      |-   363|      |-File diff: Assign1/testscript.sh
+   480|      |-   425|      |-   364|      |-     1|     1| #!/git-bash.exe
+   481|      |-   426|      |-   365|      |-     2|     2| 
+   482|      |-   427|      |-   366|      |-     3|      |-Status=$(echo >> changes.log)
+   483|      |-   428|      |-   367|      |-      |     3|+PadLength=15
+   484|      |-   429|      |-   368|      |-      |     4|+String="test"
+   485|      |-   430|      |-   369|      |-      |     5|+printf '%0.*s%s' $PadLength "$(printf '%0.1s' " "{1..100})" "$String"
+   486|      |-   431|      |-   370|      |-     4|     6| echo $Status
+   487|      |-_________________________
+   488|      |-
+   489|      |-File diff: Assign1/test.hs
+   490|      |-     1|      |-
+   491|      |-     2|     1| test:: String
+   492|      |-     3|     2| test = "Random"
+   493|      |-     4|     3| 
+   494|      |-     5|      |-main = undefined
+   495|      |-_________________________
+   496|      |-
+   497|      |-File diff: Assign1/testscript.sh
+   498|      |-     1|     1| #!/git-bash.exe
+   499|      |-     2|     2| 
+   500|      |-     3|      |-PadLength=15
+   501|      |-     4|      |-String="test"
+   502|      |-     5|      |-printf '%0.*s%s' $PadLength "$(printf '%0.1s' " "{1..100})" "$String"
+   503|      |-     6|      |-echo $Status
+   504|      |-      |     3|+Status=$(ghc -fno-code test.hs 2>&1 >/dev/null)
+   505|      |-      |     4|+if [[ $Status =~ .*The\ IO\ action\ .main.\ is\ not\ defined\ [i]n\ module\ .Main..*  ]]
+   506|      |-      |     5|+then
+   507|      |-      |     6|+	echo "Found"
+   508|      |-      |     7|+fi
+   509|      |-      |     8|+
+   510|      |-_________________________
+   511|      |-
+   512|      |-File diff: Assign1/todo.log
+   513|      |-     1|     1| File: changes.log
+   514|      |-     2|      |-   12|      |    20|+#TODO fix this part
+   515|      |-     3|      |-   26|   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   516|      |-     4|      |-   27|   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   517|      |-     5|      |-   28|      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+   518|      |-     6|      |-   50|   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   519|      |-     7|      |-   58|   161|   185| #TODO
+   520|      |-     8|      |-   81|    20|      |-      |    12|+	#TODO stuff to parse the arguments
+   521|      |-     9|      |-  148|    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   522|      |-    10|      |-  149|    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   523|      |-    11|      |-  151|    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   524|      |-    12|      |-  156|    95|      |-      |   161|+#TODO
+   525|      |-    13|      |-  169|   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+   526|      |-    14|      |-  265|   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   527|      |-    15|      |-  363|   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+   528|      |-    16|      |-  381|   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   529|      |-      |     2|+   66|    12|      |-      |    20|+#TODO fix this part
+   530|      |-      |     3|+   80|    26|      |-   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   531|      |-      |     4|+   81|    27|      |-   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   532|      |-      |     5|+   82|    28|      |-      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+   533|      |-      |     6|+  104|    50|      |-   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   534|      |-      |     7|+  112|    58|      |-   161|   185| #TODO
+   535|      |-      |     8|+  135|    81|      |-    20|      |-      |    12|+	#TODO stuff to parse the arguments
+   536|      |-      |     9|+  202|   148|      |-    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   537|      |-      |    10|+  203|   149|      |-    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   538|      |-      |    11|+  205|   151|      |-    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   539|      |-      |    12|+  210|   156|      |-    95|      |-      |   161|+#TODO
+   540|      |-      |    13|+  223|   169|      |-   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+   541|      |-      |    14|+  319|   265|      |-   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   542|      |-      |    15|+  417|   363|      |-   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+   543|      |-      |    16|+  435|   381|      |-   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   544|      |-      |    17|+  513|     2|      |-   12|      |    20|+#TODO fix this part
+   545|      |-      |    18|+  514|     3|      |-   26|   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   546|      |-      |    19|+  515|     4|      |-   27|   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   547|      |-      |    20|+  516|     5|      |-   28|      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+   548|      |-      |    21|+  517|     6|      |-   50|   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   549|      |-      |    22|+  518|     7|      |-   58|   161|   185| #TODO
+   550|      |-      |    23|+  519|     8|      |-   81|    20|      |-      |    12|+	#TODO stuff to parse the arguments
+   551|      |-      |    24|+  520|     9|      |-  148|    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   552|      |-      |    25|+  521|    10|      |-  149|    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   553|      |-      |    26|+  522|    11|      |-  151|    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   554|      |-      |    27|+  523|    12|      |-  156|    95|      |-      |   161|+#TODO
+   555|      |-      |    28|+  524|    13|      |-  169|   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+   556|      |-      |    29|+  525|    14|      |-  265|   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   557|      |-      |    30|+  526|    15|      |-  363|   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+   558|      |-      |    31|+  527|    16|      |-  381|   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   559|      |-      |    32|+  528|      |     2|+   65|    12|      |-      |    20|+#TODO fix this part
+   560|      |-      |    33|+  529|      |     3|+   79|    26|      |-   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   561|      |-      |    34|+  530|      |     4|+   80|    27|      |-   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   562|      |-      |    35|+  531|      |     5|+   81|    28|      |-      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+   563|      |-      |    36|+  532|      |     6|+  103|    50|      |-   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   564|      |-      |    37|+  533|      |     7|+  111|    58|      |-   161|   185| #TODO
+   565|      |-      |    38|+  534|      |     8|+  134|    81|      |-    20|      |-      |    12|+	#TODO stuff to parse the arguments
+   566|      |-      |    39|+  535|      |     9|+  201|   148|      |-    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   567|      |-      |    40|+  536|      |    10|+  202|   149|      |-    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   568|      |-      |    41|+  537|      |    11|+  204|   151|      |-    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   569|      |-      |    42|+  538|      |    12|+  209|   156|      |-    95|      |-      |   161|+#TODO
+   570|      |-      |    43|+  539|      |    13|+  222|   169|      |-   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+   571|      |-      |    44|+  540|      |    14|+  318|   265|      |-   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   572|      |-      |    45|+  541|      |    15|+  416|   363|      |-   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+   573|      |-      |    46|+  542|      |    16|+  434|   381|      |-   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   574|      |-      |    47|+  543|      |    17|+  511|     2|      |-   12|      |    20|+#TODO fix this part
+   575|      |-      |    48|+  544|      |    18|+  512|     3|      |-   26|   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   576|      |-      |    49|+  545|      |    19|+  513|     4|      |-   27|   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   577|      |-      |    50|+  546|      |    20|+  514|     5|      |-   28|      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+   578|      |-      |    51|+  547|      |    21|+  515|     6|      |-   50|   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   579|      |-      |    52|+  548|      |    22|+  516|     7|      |-   58|   161|   185| #TODO
+   580|      |-      |    53|+  549|      |    23|+  517|     8|      |-   81|    20|      |-      |    12|+	#TODO stuff to parse the arguments
+   581|      |-      |    54|+  550|      |    24|+  518|     9|      |-  148|    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   582|      |-      |    55|+  551|      |    25|+  519|    10|      |-  149|    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   583|      |-      |    56|+  552|      |    26|+  520|    11|      |-  151|    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   584|      |-      |    57|+  553|      |    27|+  521|    12|      |-  156|    95|      |-      |   161|+#TODO
+   585|      |-      |    58|+  554|      |    28|+  522|    13|      |-  169|   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+   586|      |-      |    59|+  555|      |    29|+  523|    14|      |-  265|   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   587|      |-      |    60|+  556|      |    30|+  524|    15|      |-  363|   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+   588|      |-      |    61|+  557|      |    31|+  525|    16|      |-  381|   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   589|      |-      |    62|+  558|      |    32|+  526|      |     2|+   65|    12|      |-      |    20|+#TODO fix this part
+   590|      |-      |    63|+  559|      |    33|+  527|      |     3|+   79|    26|      |-   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   591|      |-      |    64|+  560|      |    34|+  528|      |     4|+   80|    27|      |-   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   592|      |-      |    65|+  561|      |    35|+  529|      |     5|+   81|    28|      |-      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+   593|      |-      |    66|+  562|      |    36|+  530|      |     6|+  103|    50|      |-   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   594|      |-      |    67|+  563|      |    37|+  531|      |     7|+  111|    58|      |-   161|   185| #TODO
+   595|      |-      |    68|+  564|      |    38|+  532|      |     8|+  134|    81|      |-    20|      |-      |    12|+	#TODO stuff to parse the arguments
+   596|      |-      |    69|+  565|      |    39|+  533|      |     9|+  201|   148|      |-    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   597|      |-      |    70|+  566|      |    40|+  534|      |    10|+  202|   149|      |-    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   598|      |-      |    71|+  567|      |    41|+  535|      |    11|+  204|   151|      |-    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   599|      |-      |    72|+  568|      |    42|+  536|      |    12|+  209|   156|      |-    95|      |-      |   161|+#TODO
+   600|      |-      |    73|+  569|      |    43|+  537|      |    13|+  222|   169|      |-   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+   601|      |-      |    74|+  570|      |    44|+  538|      |    14|+  318|   265|      |-   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   602|      |-      |    75|+  571|      |    45|+  539|      |    15|+  416|   363|      |-   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+   603|      |-      |    76|+  572|      |    46|+  540|      |    16|+  434|   381|      |-   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   604|      |-      |    77|+  573|      |    47|+  541|      |    17|+  511|     2|      |-   12|      |    20|+#TODO fix this part
+   605|      |-      |    78|+  574|      |    48|+  542|      |    18|+  512|     3|      |-   26|   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   606|      |-      |    79|+  575|      |    49|+  543|      |    19|+  513|     4|      |-   27|   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   607|      |-      |    80|+  576|      |    50|+  544|      |    20|+  514|     5|      |-   28|      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+   608|      |-      |    81|+  577|      |    51|+  545|      |    21|+  515|     6|      |-   50|   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   609|      |-      |    82|+  578|      |    52|+  546|      |    22|+  516|     7|      |-   58|   161|   185| #TODO
+   610|      |-      |    83|+  579|      |    53|+  547|      |    23|+  517|     8|      |-   81|    20|      |-      |    12|+	#TODO stuff to parse the arguments
+   611|      |-      |    84|+  580|      |    54|+  548|      |    24|+  518|     9|      |-  148|    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   612|      |-      |    85|+  581|      |    55|+  549|      |    25|+  519|    10|      |-  149|    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   613|      |-      |    86|+  582|      |    56|+  550|      |    26|+  520|    11|      |-  151|    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   614|      |-      |    87|+  583|      |    57|+  551|      |    27|+  521|    12|      |-  156|    95|      |-      |   161|+#TODO
+   615|      |-      |    88|+  584|      |    58|+  552|      |    28|+  522|    13|      |-  169|   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+   616|      |-      |    89|+  585|      |    59|+  553|      |    29|+  523|    14|      |-  265|   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   617|      |-      |    90|+  586|      |    60|+  554|      |    30|+  524|    15|      |-  363|   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+   618|      |-      |    91|+  587|      |    61|+  555|      |    31|+  525|    16|      |-  381|   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   619|      |-      |    92|+  588|      |    62|+  556|      |    32|+  526|      |     2|+   59|    12|      |-      |    20|+#TODO fix this part
+   620|      |-      |    93|+  589|      |    63|+  557|      |    33|+  527|      |     3|+   73|    26|      |-   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   621|      |-      |    94|+  590|      |    64|+  558|      |    34|+  528|      |     4|+   74|    27|      |-   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   622|      |-      |    95|+  591|      |    65|+  559|      |    35|+  529|      |     5|+   75|    28|      |-      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+   623|      |-      |    96|+  592|      |    66|+  560|      |    36|+  530|      |     6|+   97|    50|      |-   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   624|      |-      |    97|+  593|      |    67|+  561|      |    37|+  531|      |     7|+  105|    58|      |-   161|   185| #TODO
+   625|      |-      |    98|+  594|      |    68|+  562|      |    38|+  532|      |     8|+  128|    81|      |-    20|      |-      |    12|+	#TODO stuff to parse the arguments
+   626|      |-      |    99|+  595|      |    69|+  563|      |    39|+  533|      |     9|+  195|   148|      |-    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   627|      |-      |   100|+  596|      |    70|+  564|      |    40|+  534|      |    10|+  196|   149|      |-    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   628|      |-      |   101|+  597|      |    71|+  565|      |    41|+  535|      |    11|+  198|   151|      |-    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   629|      |-      |   102|+  598|      |    72|+  566|      |    42|+  536|      |    12|+  203|   156|      |-    95|      |-      |   161|+#TODO
+   630|      |-      |   103|+  599|      |    73|+  567|      |    43|+  537|      |    13|+  216|   169|      |-   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+   631|      |-      |   104|+  600|      |    74|+  568|      |    44|+  538|      |    14|+  312|   265|      |-   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   632|      |-      |   105|+  601|      |    75|+  569|      |    45|+  539|      |    15|+  410|   363|      |-   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+   633|      |-      |   106|+  602|      |    76|+  570|      |    46|+  540|      |    16|+  428|   381|      |-   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   634|      |-      |   107|+  603|      |    77|+  571|      |    47|+  541|      |    17|+  505|     2|      |-   12|      |    20|+#TODO fix this part
+   635|      |-      |   108|+  604|      |    78|+  572|      |    48|+  542|      |    18|+  506|     3|      |-   26|   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   636|      |-      |   109|+  605|      |    79|+  573|      |    49|+  543|      |    19|+  507|     4|      |-   27|   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   637|      |-      |   110|+  606|      |    80|+  574|      |    50|+  544|      |    20|+  508|     5|      |-   28|      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+   638|      |-      |   111|+  607|      |    81|+  575|      |    51|+  545|      |    21|+  509|     6|      |-   50|   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   639|      |-      |   112|+  608|      |    82|+  576|      |    52|+  546|      |    22|+  510|     7|      |-   58|   161|   185| #TODO
+   640|      |-      |   113|+  609|      |    83|+  577|      |    53|+  547|      |    23|+  511|     8|      |-   81|    20|      |-      |    12|+	#TODO stuff to parse the arguments
+   641|      |-      |   114|+  610|      |    84|+  578|      |    54|+  548|      |    24|+  512|     9|      |-  148|    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   642|      |-      |   115|+  611|      |    85|+  579|      |    55|+  549|      |    25|+  513|    10|      |-  149|    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   643|      |-      |   116|+  612|      |    86|+  580|      |    56|+  550|      |    26|+  514|    11|      |-  151|    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   644|      |-      |   117|+  613|      |    87|+  581|      |    57|+  551|      |    27|+  515|    12|      |-  156|    95|      |-      |   161|+#TODO
+   645|      |-      |   118|+  614|      |    88|+  582|      |    58|+  552|      |    28|+  516|    13|      |-  169|   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+   646|      |-      |   119|+  615|      |    89|+  583|      |    59|+  553|      |    29|+  517|    14|      |-  265|   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   647|      |-      |   120|+  616|      |    90|+  584|      |    60|+  554|      |    30|+  518|    15|      |-  363|   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+   648|      |-      |   121|+  617|      |    91|+  585|      |    61|+  555|      |    31|+  519|    16|      |-  381|   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   649|      |-      |   122|+  618|      |    92|+  586|      |    62|+  556|      |    32|+  520|      |     2|+   58|    12|      |-      |    20|+#TODO fix this part
+   650|      |-      |   123|+  619|      |    93|+  587|      |    63|+  557|      |    33|+  521|      |     3|+   72|    26|      |-   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   651|      |-      |   124|+  620|      |    94|+  588|      |    64|+  558|      |    34|+  522|      |     4|+   73|    27|      |-   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   652|      |-      |   125|+  621|      |    95|+  589|      |    65|+  559|      |    35|+  523|      |     5|+   74|    28|      |-      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+   653|      |-      |   126|+  622|      |    96|+  590|      |    66|+  560|      |    36|+  524|      |     6|+   96|    50|      |-   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   654|      |-      |   127|+  623|      |    97|+  591|      |    67|+  561|      |    37|+  525|      |     7|+  104|    58|      |-   161|   185| #TODO
+   655|      |-      |   128|+  624|      |    98|+  592|      |    68|+  562|      |    38|+  526|      |     8|+  127|    81|      |-    20|      |-      |    12|+	#TODO stuff to parse the arguments
+   656|      |-      |   129|+  625|      |    99|+  593|      |    69|+  563|      |    39|+  527|      |     9|+  194|   148|      |-    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   657|      |-      |   130|+  626|      |   100|+  594|      |    70|+  564|      |    40|+  528|      |    10|+  195|   149|      |-    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   658|      |-      |   131|+  627|      |   101|+  595|      |    71|+  565|      |    41|+  529|      |    11|+  197|   151|      |-    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+   659|      |-      |   132|+  628|      |   102|+  596|      |    72|+  566|      |    42|+  530|      |    12|+  202|   156|      |-    95|      |-      |   161|+#TODO
+   660|      |-      |   133|+  629|      |   103|+  597|      |    73|+  567|      |    43|+  531|      |    13|+  215|   169|      |-   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+   661|      |-      |   134|+  630|      |   104|+  598|      |    74|+  568|      |    44|+  532|      |    14|+  311|   265|      |-   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   662|      |-      |   135|+  631|      |   105|+  599|      |    75|+  569|      |    45|+  533|      |    15|+  409|   363|      |-   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+   663|      |-      |   136|+  632|      |   106|+  600|      |    76|+  570|      |    46|+  534|      |    16|+  427|   381|      |-   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state

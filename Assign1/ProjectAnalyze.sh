@@ -186,7 +186,7 @@ echo "Lines of code = $(find -name "*.hs" -print0 | xargs -0 wc -l | grep total)
 
 ErrorLog="error.log"
 > "$ErrorLog" # clear log ofc
-Cleanup="False" #if to clean up a temporary insert of main undefined
+
 
 shopt -s nullglob
 for hsFile in *.hs
@@ -199,16 +199,12 @@ do
 		# if main undefined, create it momentarily
 		echo "main = undefined" >> "$hsFile"
 		HSErr=$(ghc -fno-code "$hsFile" 2>&1 >/dev/null)
-		Cleanup="True"
+		# line drop from https://stackoverflow.com/questions/4881930/remove-the-last-line-from-a-file-in-bash
+		head -n -1 "$hsFile" > tmp.hs; mv tmp.hs "$hsFile"
 	fi
 	echo "File: $hsFile" >> "$ErrorLog"
 	echo "$HSErr" >> "$ErrorLog"
 
-	# line drop from https://stackoverflow.com/questions/4881930/remove-the-last-line-from-a-file-in-bash
-	if [ "$Cleanup" = "True" ]
-		then
-		head -n -1 "$hsFile" > tmp.hs; mv tmp.hs "$hsFile"
-		Cleanup="False"
-	fi
+	
 done
 
