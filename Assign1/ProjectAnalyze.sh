@@ -180,7 +180,7 @@ done <<< $Todo
 #----Count Code Lines----
 #Cause literally this is a command I use all the time to see how close I am to 10k lines
 
-echo "Lines of code = $(find -name "*.hs" -print0 | xargs -0 wc -l | grep total)"
+echo "Lines of code = $(find -name "*.hs" -print0 | xargs -0 wc -l | grep total | sed -e "s/\.*([0-9]*\).*/\1/")"
 
 #----Haskell Eror Check----
 
@@ -194,7 +194,8 @@ do
 	#error capture from https://stackoverflow.com/questions/962255/how-to-store-standard-error-in-a-variable-in-a-bash-script
 	HSErr=$(ghc -fno-code "$hsFile" 2>&1 >/dev/null)
 	#contains test from https://stackoverflow.com/questions/229551/string-contains-in-bash answer # 2
-	if [[ $HSErr =~ .*The\ IO\ action\ .main.\ is\ not\ defined\ [i]n\ module\ .Main..*  ]]
+	#some strage things w/ regex to avoid annoying escaping errors
+	if [[ $HSErr =~ .*The\ IO\ action\ .main.\ is\ not\ defined\ [i]n\ module\ .Main..*  ]] 
 	then
 		# if main undefined, create it momentarily
 		echo "main = undefined" >> "$hsFile"
@@ -203,7 +204,7 @@ do
 		head -n -1 "$hsFile" > tmp.hs; mv tmp.hs "$hsFile"
 	fi
 	echo "File: $hsFile" >> "$ErrorLog"
-	echo "$HSErr" >> "$ErrorLog"
+	echo "$HSErr" | sed -e "/^ *$/d" >> "$ErrorLog"
 
 	
 done
