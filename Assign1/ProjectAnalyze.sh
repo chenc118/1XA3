@@ -21,16 +21,26 @@ do
 		if [ ${arg,,} = "-report"]
 			then
 			Report="True"
-		elif [[ ${arg,,} = "-autoPull" ]]; then
+			Mode="Null"
+		elif [[ ${arg,,} = "-autopull" ]]; then
 			Pull="True"
+			Mode="Null"
 		fi
+	#Modal check if argument accepts several values, otherwise gets appended to the GL Value var
+	elif [[ $Mode = "Null" ]];then
+		ArgValue="$ArgValue(_)$arg" # still got to decide what's the best deliminator/ other workaround
 	fi
 done
 
 #----Check status----
+git fetch >/dev/null # to consume output
 
-#TODO complete this part
+Status=$(git status)
 
+# https://stackoverflow.com/questions/6022384/bash-tool-to-get-nth-line-from-a-file
+Status=$(sed -e "2q;d" )
+
+echo $Status
 
 #----AutoPull (feature)----
 #if autopull flag set will try to autopull stuffs
@@ -195,10 +205,8 @@ while IFS= read -r line; do
 
 done <<< $Todo
 
-#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-
 #----Count Code Lines----
-#Cause literally this is a command I use all the time to see how close I am to 10k lines
+#A command I use all the time to see how close I am to 10k lines
 
 echo "Lines of code = $(find -name "*.hs" -print0 | xargs -0 wc -l | grep total | sed -e "s/\.*([0-9]*\).*/\1/")"
 
@@ -218,7 +226,7 @@ do
 	#error capture from https://stackoverflow.com/questions/962255/how-to-store-standard-error-in-a-variable-in-a-bash-script
 	HSErr=$(ghc -fno-code "$hsFile" 2>&1 >/dev/null)
 	#contains test from https://stackoverflow.com/questions/229551/string-contains-in-bash answer # 2
-	#some strage things w/ regex to avoid annoying escaping errors
+	#some strange things w/ regex to avoid annoying escaping errors
 	if [[ $HSErr =~ .*The\ IO\ action\ .main.\ is\ not\ defined\ [i]n\ module\ .Main..*  ]] 
 	then
 		# if main undefined, create it momentarily
