@@ -1,6 +1,8 @@
 #!/git-bash.exe
 
-PadLength=15
-String="test"
-printf '%0.*s%s' $PadLength "$(printf '%0.1s' " "{1..100})" "$String"
-echo $Status
+Status=$(ghc -fno-code test.hs 2>&1 >/dev/null)
+if [[ $Status =~ .*The\ IO\ action\ .main.\ is\ not\ defined\ [i]n\ module\ .Main..*  ]]
+then
+	echo "Found"
+fi
+

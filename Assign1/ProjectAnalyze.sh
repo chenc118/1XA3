@@ -180,17 +180,35 @@ done <<< $Todo
 #----Count Code Lines----
 #Cause literally this is a command I use all the time to see how close I am to 10k lines
 
-echo "Lines of code = $(find -name "*.hs" -print0 | xargs -0 wc -l )"
+echo "Lines of code = $(find -name "*.hs" -print0 | xargs -0 wc -l | grep total)"
 
 #----Haskell Eror Check----
 
 ErrorLog="error.log"
+> "$ErrorLog" # clear log ofc
+Cleanup="False" #if to clean up a temporary insert of main undefined
 
-AllValid="False"
-
-while [ "$AllValid" = "False" ]
+shopt -s nullglob
+for hsFile in *.hs
 do
-	HSErr=ghc -fno-code *.hs &>> "$ErrorLog"
-	
+	#error capture from https://stackoverflow.com/questions/962255/how-to-store-standard-error-in-a-variable-in-a-bash-script
+	HSErr=$(ghc -fno-code "$hsFile" 2>&1 >/dev/null)
+	#contains test from https://stackoverflow.com/questions/229551/string-contains-in-bash answer # 2
+	if [[ $HSErr =~ .*The\ IO\ action\ .main.\ is\ not\ defined\ [i]n\ module\ .Main..*  ]]
+	then
+		# if main undefined, create it momentarily
+		echo "main = undefined" >> "$hsFile"
+		HSErr=$(ghc -fno-code "$hsFile" 2>&1 >/dev/null)
+		Cleanup="True"
+	fi
+	echo "File: $hsFile" >> "$ErrorLog"
+	echo "$HSErr" >> "$ErrorLog"
+
+	# line drop from https://stackoverflow.com/questions/4881930/remove-the-last-line-from-a-file-in-bash
+	if [ "$Cleanup" = "True" ]
+		then
+		head -n -1 "$hsFile" > tmp.hs; mv tmp.hs "$hsFile"
+		Cleanup="False"
+	fi
 done
 

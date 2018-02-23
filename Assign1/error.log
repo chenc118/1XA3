@@ -1,0 +1,8 @@
+File: rand.hs
+
+rand.hs:1:13: error: parse error on input `->'
+  |
+1 | rand = Long -> Float
+  |             ^^
+File: test.hs
+

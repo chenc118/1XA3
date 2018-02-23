@@ -1,16 +1,166 @@
 File: changes.log
-   12|      |    20|+#TODO fix this part
-   26|   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-   27|   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-   28|      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
-   50|   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-   58|   161|   185| #TODO
-   81|    20|      |-      |    12|+	#TODO stuff to parse the arguments
-  148|    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
-  149|    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
-  151|    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
-  156|    95|      |-      |   161|+#TODO
-  169|   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
-  265|   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
-  363|   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
-  381|   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+   67|    12|      |-      |    20|+#TODO fix this part
+   81|    26|      |-   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+   82|    27|      |-   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+   83|    28|      |-      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+  105|    50|      |-   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  113|    58|      |-   161|   185| #TODO
+  136|    81|      |-    20|      |-      |    12|+	#TODO stuff to parse the arguments
+  203|   148|      |-    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  204|   149|      |-    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  206|   151|      |-    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  211|   156|      |-    95|      |-      |   161|+#TODO
+  224|   169|      |-   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+  320|   265|      |-   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  418|   363|      |-   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+  436|   381|      |-   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  514|     2|      |-   12|      |    20|+#TODO fix this part
+  515|     3|      |-   26|   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  516|     4|      |-   27|   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  517|     5|      |-   28|      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+  518|     6|      |-   50|   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  519|     7|      |-   58|   161|   185| #TODO
+  520|     8|      |-   81|    20|      |-      |    12|+	#TODO stuff to parse the arguments
+  521|     9|      |-  148|    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  522|    10|      |-  149|    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  523|    11|      |-  151|    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  524|    12|      |-  156|    95|      |-      |   161|+#TODO
+  525|    13|      |-  169|   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+  526|    14|      |-  265|   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  527|    15|      |-  363|   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+  528|    16|      |-  381|   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  529|      |     2|+   66|    12|      |-      |    20|+#TODO fix this part
+  530|      |     3|+   80|    26|      |-   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  531|      |     4|+   81|    27|      |-   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  532|      |     5|+   82|    28|      |-      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+  533|      |     6|+  104|    50|      |-   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  534|      |     7|+  112|    58|      |-   161|   185| #TODO
+  535|      |     8|+  135|    81|      |-    20|      |-      |    12|+	#TODO stuff to parse the arguments
+  536|      |     9|+  202|   148|      |-    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  537|      |    10|+  203|   149|      |-    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  538|      |    11|+  205|   151|      |-    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  539|      |    12|+  210|   156|      |-    95|      |-      |   161|+#TODO
+  540|      |    13|+  223|   169|      |-   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+  541|      |    14|+  319|   265|      |-   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  542|      |    15|+  417|   363|      |-   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+  543|      |    16|+  435|   381|      |-   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  544|      |    17|+  513|     2|      |-   12|      |    20|+#TODO fix this part
+  545|      |    18|+  514|     3|      |-   26|   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  546|      |    19|+  515|     4|      |-   27|   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  547|      |    20|+  516|     5|      |-   28|      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+  548|      |    21|+  517|     6|      |-   50|   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  549|      |    22|+  518|     7|      |-   58|   161|   185| #TODO
+  550|      |    23|+  519|     8|      |-   81|    20|      |-      |    12|+	#TODO stuff to parse the arguments
+  551|      |    24|+  520|     9|      |-  148|    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  552|      |    25|+  521|    10|      |-  149|    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  553|      |    26|+  522|    11|      |-  151|    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  554|      |    27|+  523|    12|      |-  156|    95|      |-      |   161|+#TODO
+  555|      |    28|+  524|    13|      |-  169|   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+  556|      |    29|+  525|    14|      |-  265|   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  557|      |    30|+  526|    15|      |-  363|   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+  558|      |    31|+  527|    16|      |-  381|   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  559|      |    32|+  528|      |     2|+   65|    12|      |-      |    20|+#TODO fix this part
+  560|      |    33|+  529|      |     3|+   79|    26|      |-   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  561|      |    34|+  530|      |     4|+   80|    27|      |-   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  562|      |    35|+  531|      |     5|+   81|    28|      |-      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+  563|      |    36|+  532|      |     6|+  103|    50|      |-   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  564|      |    37|+  533|      |     7|+  111|    58|      |-   161|   185| #TODO
+  565|      |    38|+  534|      |     8|+  134|    81|      |-    20|      |-      |    12|+	#TODO stuff to parse the arguments
+  566|      |    39|+  535|      |     9|+  201|   148|      |-    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  567|      |    40|+  536|      |    10|+  202|   149|      |-    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  568|      |    41|+  537|      |    11|+  204|   151|      |-    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  569|      |    42|+  538|      |    12|+  209|   156|      |-    95|      |-      |   161|+#TODO
+  570|      |    43|+  539|      |    13|+  222|   169|      |-   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+  571|      |    44|+  540|      |    14|+  318|   265|      |-   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  572|      |    45|+  541|      |    15|+  416|   363|      |-   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+  573|      |    46|+  542|      |    16|+  434|   381|      |-   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  574|      |    47|+  543|      |    17|+  511|     2|      |-   12|      |    20|+#TODO fix this part
+  575|      |    48|+  544|      |    18|+  512|     3|      |-   26|   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  576|      |    49|+  545|      |    19|+  513|     4|      |-   27|   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  577|      |    50|+  546|      |    20|+  514|     5|      |-   28|      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+  578|      |    51|+  547|      |    21|+  515|     6|      |-   50|   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  579|      |    52|+  548|      |    22|+  516|     7|      |-   58|   161|   185| #TODO
+  580|      |    53|+  549|      |    23|+  517|     8|      |-   81|    20|      |-      |    12|+	#TODO stuff to parse the arguments
+  581|      |    54|+  550|      |    24|+  518|     9|      |-  148|    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  582|      |    55|+  551|      |    25|+  519|    10|      |-  149|    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  583|      |    56|+  552|      |    26|+  520|    11|      |-  151|    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  584|      |    57|+  553|      |    27|+  521|    12|      |-  156|    95|      |-      |   161|+#TODO
+  585|      |    58|+  554|      |    28|+  522|    13|      |-  169|   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+  586|      |    59|+  555|      |    29|+  523|    14|      |-  265|   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  587|      |    60|+  556|      |    30|+  524|    15|      |-  363|   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+  588|      |    61|+  557|      |    31|+  525|    16|      |-  381|   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  589|      |    62|+  558|      |    32|+  526|      |     2|+   65|    12|      |-      |    20|+#TODO fix this part
+  590|      |    63|+  559|      |    33|+  527|      |     3|+   79|    26|      |-   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  591|      |    64|+  560|      |    34|+  528|      |     4|+   80|    27|      |-   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  592|      |    65|+  561|      |    35|+  529|      |     5|+   81|    28|      |-      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+  593|      |    66|+  562|      |    36|+  530|      |     6|+  103|    50|      |-   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  594|      |    67|+  563|      |    37|+  531|      |     7|+  111|    58|      |-   161|   185| #TODO
+  595|      |    68|+  564|      |    38|+  532|      |     8|+  134|    81|      |-    20|      |-      |    12|+	#TODO stuff to parse the arguments
+  596|      |    69|+  565|      |    39|+  533|      |     9|+  201|   148|      |-    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  597|      |    70|+  566|      |    40|+  534|      |    10|+  202|   149|      |-    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  598|      |    71|+  567|      |    41|+  535|      |    11|+  204|   151|      |-    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  599|      |    72|+  568|      |    42|+  536|      |    12|+  209|   156|      |-    95|      |-      |   161|+#TODO
+  600|      |    73|+  569|      |    43|+  537|      |    13|+  222|   169|      |-   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+  601|      |    74|+  570|      |    44|+  538|      |    14|+  318|   265|      |-   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  602|      |    75|+  571|      |    45|+  539|      |    15|+  416|   363|      |-   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+  603|      |    76|+  572|      |    46|+  540|      |    16|+  434|   381|      |-   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  604|      |    77|+  573|      |    47|+  541|      |    17|+  511|     2|      |-   12|      |    20|+#TODO fix this part
+  605|      |    78|+  574|      |    48|+  542|      |    18|+  512|     3|      |-   26|   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  606|      |    79|+  575|      |    49|+  543|      |    19|+  513|     4|      |-   27|   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  607|      |    80|+  576|      |    50|+  544|      |    20|+  514|     5|      |-   28|      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+  608|      |    81|+  577|      |    51|+  545|      |    21|+  515|     6|      |-   50|   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  609|      |    82|+  578|      |    52|+  546|      |    22|+  516|     7|      |-   58|   161|   185| #TODO
+  610|      |    83|+  579|      |    53|+  547|      |    23|+  517|     8|      |-   81|    20|      |-      |    12|+	#TODO stuff to parse the arguments
+  611|      |    84|+  580|      |    54|+  548|      |    24|+  518|     9|      |-  148|    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  612|      |    85|+  581|      |    55|+  549|      |    25|+  519|    10|      |-  149|    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  613|      |    86|+  582|      |    56|+  550|      |    26|+  520|    11|      |-  151|    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  614|      |    87|+  583|      |    57|+  551|      |    27|+  521|    12|      |-  156|    95|      |-      |   161|+#TODO
+  615|      |    88|+  584|      |    58|+  552|      |    28|+  522|    13|      |-  169|   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+  616|      |    89|+  585|      |    59|+  553|      |    29|+  523|    14|      |-  265|   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  617|      |    90|+  586|      |    60|+  554|      |    30|+  524|    15|      |-  363|   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+  618|      |    91|+  587|      |    61|+  555|      |    31|+  525|    16|      |-  381|   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  619|      |    92|+  588|      |    62|+  556|      |    32|+  526|      |     2|+   59|    12|      |-      |    20|+#TODO fix this part
+  620|      |    93|+  589|      |    63|+  557|      |    33|+  527|      |     3|+   73|    26|      |-   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  621|      |    94|+  590|      |    64|+  558|      |    34|+  528|      |     4|+   74|    27|      |-   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  622|      |    95|+  591|      |    65|+  559|      |    35|+  529|      |     5|+   75|    28|      |-      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+  623|      |    96|+  592|      |    66|+  560|      |    36|+  530|      |     6|+   97|    50|      |-   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  624|      |    97|+  593|      |    67|+  561|      |    37|+  531|      |     7|+  105|    58|      |-   161|   185| #TODO
+  625|      |    98|+  594|      |    68|+  562|      |    38|+  532|      |     8|+  128|    81|      |-    20|      |-      |    12|+	#TODO stuff to parse the arguments
+  626|      |    99|+  595|      |    69|+  563|      |    39|+  533|      |     9|+  195|   148|      |-    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  627|      |   100|+  596|      |    70|+  564|      |    40|+  534|      |    10|+  196|   149|      |-    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  628|      |   101|+  597|      |    71|+  565|      |    41|+  535|      |    11|+  198|   151|      |-    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  629|      |   102|+  598|      |    72|+  566|      |    42|+  536|      |    12|+  203|   156|      |-    95|      |-      |   161|+#TODO
+  630|      |   103|+  599|      |    73|+  567|      |    43|+  537|      |    13|+  216|   169|      |-   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+  631|      |   104|+  600|      |    74|+  568|      |    44|+  538|      |    14|+  312|   265|      |-   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  632|      |   105|+  601|      |    75|+  569|      |    45|+  539|      |    15|+  410|   363|      |-   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+  633|      |   106|+  602|      |    76|+  570|      |    46|+  540|      |    16|+  428|   381|      |-   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  634|      |   107|+  603|      |    77|+  571|      |    47|+  541|      |    17|+  505|     2|      |-   12|      |    20|+#TODO fix this part
+  635|      |   108|+  604|      |    78|+  572|      |    48|+  542|      |    18|+  506|     3|      |-   26|   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  636|      |   109|+  605|      |    79|+  573|      |    49|+  543|      |    19|+  507|     4|      |-   27|   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  637|      |   110|+  606|      |    80|+  574|      |    50|+  544|      |    20|+  508|     5|      |-   28|      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+  638|      |   111|+  607|      |    81|+  575|      |    51|+  545|      |    21|+  509|     6|      |-   50|   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  639|      |   112|+  608|      |    82|+  576|      |    52|+  546|      |    22|+  510|     7|      |-   58|   161|   185| #TODO
+  640|      |   113|+  609|      |    83|+  577|      |    53|+  547|      |    23|+  511|     8|      |-   81|    20|      |-      |    12|+	#TODO stuff to parse the arguments
+  641|      |   114|+  610|      |    84|+  578|      |    54|+  548|      |    24|+  512|     9|      |-  148|    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  642|      |   115|+  611|      |    85|+  579|      |    55|+  549|      |    25|+  513|    10|      |-  149|    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  643|      |   116|+  612|      |    86|+  580|      |    56|+  550|      |    26|+  514|    11|      |-  151|    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  644|      |   117|+  613|      |    87|+  581|      |    57|+  551|      |    27|+  515|    12|      |-  156|    95|      |-      |   161|+#TODO
+  645|      |   118|+  614|      |    88|+  582|      |    58|+  552|      |    28|+  516|    13|      |-  169|   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+  646|      |   119|+  615|      |    89|+  583|      |    59|+  553|      |    29|+  517|    14|      |-  265|   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  647|      |   120|+  616|      |    90|+  584|      |    60|+  554|      |    30|+  518|    15|      |-  363|   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+  648|      |   121|+  617|      |    91|+  585|      |    61|+  555|      |    31|+  519|    16|      |-  381|   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  649|      |   122|+  618|      |    92|+  586|      |    62|+  556|      |    32|+  520|      |     2|+   58|    12|      |-      |    20|+#TODO fix this part
+  650|      |   123|+  619|      |    93|+  587|      |    63|+  557|      |    33|+  521|      |     3|+   72|    26|      |-   153|      |-grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  651|      |   124|+  620|      |    94|+  588|      |    64|+  558|      |    34|+  522|      |     4|+   73|    27|      |-   154|      |-grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  652|      |   125|+  621|      |    95|+  589|      |    65|+  559|      |    35|+  523|      |     5|+   74|    28|      |-      |   156|+Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+  653|      |   126|+  622|      |    96|+  590|      |    66|+  560|      |    36|+  524|      |     6|+   96|    50|      |-   156|   178| #TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  654|      |   127|+  623|      |    97|+  591|      |    67|+  561|      |    37|+  525|      |     7|+  104|    58|      |-   161|   185| #TODO
+  655|      |   128|+  624|      |    98|+  592|      |    68|+  562|      |    38|+  526|      |     8|+  127|    81|      |-    20|      |-      |    12|+	#TODO stuff to parse the arguments
+  656|      |   129|+  625|      |    99|+  593|      |    69|+  563|      |    39|+  527|      |     9|+  194|   148|      |-    87|      |-      |   153|+grep -rnI --exclude=ProjectAnalyze.sh "#TODO" ?> $TodoLog
+  657|      |   130|+  626|      |   100|+  594|      |    70|+  564|      |    40|+  528|      |    10|+  195|   149|      |-    88|      |-      |   154|+grep -rnI --exclude=ProjectAnalyze.sh "//TODO" >> $TodoLog # cause I program in java a lot
+  658|      |   131|+  627|      |   101|+  595|      |    71|+  565|      |    41|+  529|      |    11|+  197|   151|      |-    90|      |-      |   156|+#TODO seriously cleanup the messy output of grep, file headings, and then the lines found similar format to diff
+  659|      |   132|+  628|      |   102|+  596|      |    72|+  566|      |    42|+  530|      |    12|+  202|   156|      |-    95|      |-      |   161|+#TODO
+  660|      |   133|+  629|      |   103|+  597|      |    73|+  567|      |    43|+  531|      |    13|+  215|   169|      |-   108|      |-    10|      |-    93|      |-			#TODO print stuff to changelog
+  661|      |   134|+  630|      |   104|+  598|      |    74|+  568|      |    44|+  532|      |    14|+  311|   265|      |-   204|      |-   106|      |-    75|      |-    98|      |-			#TODO everything else and determine what the code count must be equal to in order to switch out of this state
+  662|      |   135|+  631|      |   105|+  599|      |    75|+  569|      |    45|+  533|      |    15|+  409|   363|      |-   302|      |-   204|      |-   173|      |-    46|      |-    78|    84|#TODO print stuff to changelog
+  663|      |   136|+  632|      |   106|+  600|      |    76|+  570|      |    46|+  534|      |    16|+  427|   381|      |-   320|      |-   222|      |-   191|      |-    64|      |-    92|    98|#TODO everything else and determine what the code count must be equal to in order to switch out of this state
