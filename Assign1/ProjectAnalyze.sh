@@ -5,19 +5,38 @@
 #Potential feature turning some of this stuff into HTML if -report flag in args?
 
 #----Arugment Parsing----
+#Static arg vars here to know what static vars there are, even though actually setting them is motly useless
+Report="False"
+Pull="False"
+#Modes to gather vars etc
+Mode="Null"
+
 #sourced from https://stackoverflow.com/questions/255898/how-to-iterate-over-arguments-in-a-bash-script
 for arg in "$@"
 do
-	Nothing="Nothing" #here to avoid errors for the moment
-	#TODO stuff to parse the arguments
+	#starts with check done using https://stackoverflow.com/questions/2172352/in-bash-how-can-i-check-if-a-string-begins-with-some-value
+	if [[ $arg == -* ]]
+		then
+
+		if [ ${arg,,} = "-report"]
+			then
+			Report="True"
+		elif [[ ${arg,,} = "-autoPull" ]]; then
+			Pull="True"
+		fi
+	fi
 done
 
+#----Check status----
+
+#TODO complete this part
 
 
-
-# random variable, not sure if I'll use it
-UPTODATE=$(git pull)
-#TODO fix this part
+#----AutoPull (feature)----
+#if autopull flag set will try to autopull stuffs
+if [[ $Pull = "True" ]]; then
+	$(git pull)
+fi
 
 #----Find uncommitted changes I ----
 #AKA feature # 1 adds the stuff form git status to the diff stuff
@@ -33,6 +52,7 @@ Test="/^ *$/d"
 #sed '//,+#d' sourced from stackoverflow: https://stackoverflow.com/questions/4396974/sed-or-awk-delete-n-lines-following-a-pattern
 
 rm "$Changelog"
+
 
 #flag to see if there's untracked files
 untracked=$( git status | grep "Untracked files:" | wc -l )
@@ -187,6 +207,10 @@ echo "Lines of code = $(find -name "*.hs" -print0 | xargs -0 wc -l | grep total 
 ErrorLog="error.log"
 > "$ErrorLog" # clear log ofc
 
+#placeholder for stuff to edit the head of the html doc once I find a nice CSS stylesheet
+if [[ $Report = "True" ]]; then
+	Nothing="Nothing"
+fi
 
 shopt -s nullglob
 for hsFile in *.hs
@@ -203,6 +227,7 @@ do
 		# line drop from https://stackoverflow.com/questions/4881930/remove-the-last-line-from-a-file-in-bash
 		head -n -1 "$hsFile" > tmp.hs; mv tmp.hs "$hsFile"
 	fi
+	echo >> "$ErrorLog"
 	echo "File: $hsFile" >> "$ErrorLog"
 	echo "$HSErr" | sed -e "/^ *$/d" >> "$ErrorLog"
 
