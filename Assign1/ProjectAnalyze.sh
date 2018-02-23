@@ -32,7 +32,7 @@ Test="/^ *$/d"
 #sed '/^ *$/d' sourced from wikipedia on sed to clean empty lines
 #sed '//,+#d' sourced from stackoverflow: https://stackoverflow.com/questions/4396974/sed-or-awk-delete-n-lines-following-a-pattern
 
-rm changes.log
+rm "$Changelog"
 
 #flag to see if there's untracked files
 untracked=$( git status | grep "Untracked files:" | wc -l )
@@ -182,4 +182,15 @@ done <<< $Todo
 
 echo "Lines of code = $(find -name "*.hs" -print0 | xargs -0 wc -l )"
 
-#TODO
+#----Haskell Eror Check----
+
+ErrorLog="error.log"
+
+AllValid="False"
+
+while [ "$AllValid" = "False" ]
+do
+	HSErr=ghc -fno-code *.hs &>> "$ErrorLog"
+	
+done
+
