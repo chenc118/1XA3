@@ -7,10 +7,18 @@ Directory for assignment 1 stuffs
 ProjectAnalyze.sh [args]
 
 ##### Args:
-
+(args are denoted by `-` before the argument name listed below)
 - autopull - Automatically pulls from the configured remote
 - report - Some log stuff rendered in HTML
 - 1718 - Turns on feature # 7 (Will only work properly if in root directory)
+
+#### Effects:
+(Behavior may be modified by the arguments above)
+1. Prints out whether the local branch is up to date with the remote branch
+2. Puts the uncommited files, and the diffs into changes.log
+3. Puts all lines w/ # TODO and // TODO into todo.log
+4. Prints out the total # of lines of haskell code denoted by .hs files
+5. Puts Haskell errors into error.log
 
 #### Project Analyze Docs
 1. Just run the pull command, things will become too much of a mess if I do something more complicated
@@ -27,6 +35,8 @@ ProjectAnalyze.sh [args]
 5. Argument to auto pull(cause literally 99% of the time things won't break unless you're working as a group, then it's 50% of the time)
 6. ~~Implmentation of https://www.xkcd.com/801/ (planned, got java code to modify for this)~~ Not enough time to actually impelment
 7. Implementation of https://xkcd.com/1718/ due to accidental ~~bug~~ feature which has resulted in the recursive growth of changes.log and todo.log 
+8. Prints out # of lines of code written
+
 ##### Notes:
 
 Some things that are different from other's cause of the intended useage
