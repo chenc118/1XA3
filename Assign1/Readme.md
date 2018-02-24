@@ -20,9 +20,9 @@ ProjectAnalyze.sh [args]
 4. Prints out the total # of lines of haskell code denoted by .hs files
 5. Puts Haskell errors into error.log
 
-#### Project Analyze Docs
-1. Just run the pull command, things will become too much of a mess if I do something more complicated
-2. Run git diff to get the uncommitted changes, outputs printed into changes.log w/ lines numbered and all that as they appear in the code source, also clean up some things
+#### Requirements fulfilled
+1. Uses `git status` and `git fetch` to determine whether branch is up to date
+2. Run `git diff` to get the uncommitted changes, outputs printed into changes.log w/ lines numbered and all that as they appear in the code source, also clean up some things
 3. Gets todo with # and // in front
 4. Haskell stuff
 5. See features for all the "features" included, apparently the OP people are doing 5+
@@ -33,7 +33,7 @@ ProjectAnalyze.sh [args]
 3. requirement 3 has // as well for practicality reasons as I code in java
 4. report arg that changes the output from raw text to HTML (currently only implemented for Haskell errors)
 5. Argument to auto pull(cause literally 99% of the time things won't break unless you're working as a group, then it's 50% of the time)
-6. ~~Implmentation of https://www.xkcd.com/801/ (planned, got java code to modify for this)~~ Not enough time to actually impelment
+6. ~~Implmentation of https://www.xkcd.com/801/ (planned, got java code to modify for this)~~ Not enough time to actually implement
 7. Implementation of https://xkcd.com/1718/ due to accidental ~~bug~~ feature which has resulted in the recursive growth of changes.log and todo.log 
 8. Prints out # of lines of code written
 
