@@ -8,6 +8,7 @@
 #Static arg vars here to know what static vars there are, even though actually setting them is motly useless
 Report="False"
 Pull="False"
+Moore="False"
 #Modes to gather vars etc
 Mode="Null"
 
@@ -20,11 +21,12 @@ do
 
 		if [[ ${arg,,} = "-report" ]];then
 			Report="True"
-			Mode="Null"
 		elif [[ ${arg,,} = "-autopull" ]]; then
 			Pull="True"
-			Mode="Null"
+		elif [[ ${arg,,} = "-1718" ]]; then
+			Moore="True"
 		fi
+		Mode="Null"
 	#Modal check if argument accepts several values, otherwise gets appended to the GL Value var
 	elif [[ $Mode = "Null" ]];then
 		ArgValue="$ArgValue(_)$arg" # still got to decide what's the best deliminator/ other workaround
@@ -66,8 +68,12 @@ rm "$Changelog"
 #flag to see if there's untracked files
 untracked=$( git status | grep "Untracked files:" | wc -l )
 
+if [[ $Moore = "False" ]];then
+	DiffFilter=":(exclude)$Changelog\" \":(exclude)$TodoLog"
+fi
+
 Status=$(git status)
-Diff=$( git diff )
+Diff=$( git diff -- . "$DiffFilter")
 
 # clear changes.log
 $( echo "The following files have not been committed" > "$Changelog")
@@ -182,7 +188,10 @@ PadL=5 # new padding length for this part
 TodoLog="todo.log"
 > $TodoLog #clears log
 
-Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+if [[ $Moore = "False" ]]; then
+	FMoore=",$TodoLog,$Changelog"
+fi
+Todo=$(grep -rnIE --exclude={ProjectAnalyze.sh$FMoore} "//TODO|#TODO") #//TODO cause I use java a lot
 
 LastFile=">>Null" #>> cause that's illegal in filenames
 while IFS= read -r line; do
@@ -242,8 +251,6 @@ do
 		echo "File: $hsFile" >> "$ErrorLog"
 	fi
 	echo "$HSErr" | sed -e "/^ *$/d" >> "$ErrorLog"
-
-	
 done
 
 if [[ $Report = "True" ]];then
