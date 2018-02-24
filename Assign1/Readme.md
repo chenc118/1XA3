@@ -9,7 +9,7 @@ ProjectAnalyze.sh [args]
 ##### Args:
 
 - autopull - Automatically pulls from the configured remote
-
+- report - Some log stuff rendered in HTML
 
 
 #### Project Analyze Docs
@@ -23,7 +23,7 @@ ProjectAnalyze.sh [args]
 1. uncommitted files (including staged) will be displayed at the beginning of changes.log (cause I can't be bothered to just toss out those couple hours of work)
 2. Literally every required feature is "fancy" making the input slightly more readable etc, and also resolving some errors
 3. requirement 3 has // as well for practicality reasons as I code in java
-4.(maybe) report arg will result in logs created being in html format and viewable as such, (for more editing options using CSS/HTML)
+4. report arg that changes the output from raw text to HTML (currently only implemented for Haskell errors)
 5. Argument to auto pull(cause literally 99% of the time things won't break unless you're working as a group, then it's 50% of the time)
 6. Implmentation of https://www.xkcd.com/801/ (planned, got java code to modify for this)
 7. Implementation of https://xkcd.com/1718/ due to accidental ~~bug~~ feature which has resulted in the recursive growth of changes.log and todo.log 
