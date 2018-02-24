@@ -24,7 +24,7 @@ ProjectAnalyze.sh [args]
 1. Uses `git status` and `git fetch` to determine whether branch is up to date
 2. Run `git diff` to get the uncommitted changes, outputs printed into changes.log w/ lines numbered and all that as they appear in the code source, also clean up some things
 3. Gets todo with # and // in front
-4. Haskell stuff
+4. Dumps haskell errors into error.log
 5. See features for all the "features" included, apparently the OP people are doing 5+
 
 #### Additional Features
