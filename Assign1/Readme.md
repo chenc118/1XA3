@@ -26,7 +26,7 @@ ProjectAnalyze.sh [args]
 4.(maybe) report arg will result in logs created being in html format and viewable as such, (for more editing options using CSS/HTML)
 5. Argument to auto pull(cause literally 99% of the time things won't break unless you're working as a group, then it's 50% of the time)
 6. Implmentation of https://www.xkcd.com/801/ (planned, got java code to modify for this)
-
+7. Implementation of https://xkcd.com/1718/ due to accidental ~~bug~~ feature which has resulted in the recursive growth of changes.log and todo.log 
 ##### Notes:
 
 Some things that are different from other's cause of the intended useage
