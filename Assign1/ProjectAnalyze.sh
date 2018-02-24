@@ -18,8 +18,7 @@ do
 	if [[ $arg == -* ]]
 		then
 
-		if [ ${arg,,} = "-report"]
-			then
+		if [[ ${arg,,} = "-report" ]];then
 			Report="True"
 			Mode="Null"
 		elif [[ ${arg,,} = "-autopull" ]]; then
@@ -38,7 +37,7 @@ git fetch >/dev/null # to consume output
 Status=$(git status)
 
 # https://stackoverflow.com/questions/6022384/bash-tool-to-get-nth-line-from-a-file
-Status=$(sed -e "2q;d" )
+Status=$(echo "$Status" | sed -e "2q;d" )
 
 echo $Status
 
@@ -208,7 +207,7 @@ done <<< $Todo
 #----Count Code Lines----
 #A command I use all the time to see how close I am to 10k lines
 
-echo "Lines of code = $(find -name "*.hs" -print0 | xargs -0 wc -l | grep total | sed -e "s/\.*([0-9]*\).*/\1/")"
+echo "Lines of code = $(find -name "*.hs" -print0 | xargs -0 wc -l | grep total | sed -e "s/[^0-9]*\([0-9]*\).*/\1/")"
 
 #----Haskell Eror Check----
 
@@ -217,7 +216,8 @@ ErrorLog="error.log"
 
 #placeholder for stuff to edit the head of the html doc once I find a nice CSS stylesheet
 if [[ $Report = "True" ]]; then
-	Nothing="Nothing"
+	echo "<!DOCTYPE html> <html><head><title>Haskell ErrorLog</title><style>.Errorbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}</style></head>" >> "$ErrorLog"
+	echo "<body><div><pre>" >> "$ErrorLog"
 fi
 
 shopt -s nullglob
@@ -236,9 +236,16 @@ do
 		head -n -1 "$hsFile" > tmp.hs; mv tmp.hs "$hsFile"
 	fi
 	echo >> "$ErrorLog"
-	echo "File: $hsFile" >> "$ErrorLog"
+	if [[ $Report = "True" ]]; then
+		echo "</pre></div><h3> $hsFile </h3><div class = \"Errorbody\"><pre>" >> "$ErrorLog"
+	else
+		echo "File: $hsFile" >> "$ErrorLog"
+	fi
 	echo "$HSErr" | sed -e "/^ *$/d" >> "$ErrorLog"
 
 	
 done
 
+if [[ $Report = "True" ]];then
+	echo "</pre></div></body></html>" >> "$ErrorLog"
+fi

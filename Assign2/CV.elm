@@ -7,9 +7,15 @@ main = div [][
         h1 [][ text "CV Page" ]
         ]
     ,section [][
+        h3 [] [text "Education Stuff?"]
+        ,ul [] [
+            li [] [ text "Stuff"]
+            ]
+        ]
+    ,section [][
         h3 [][ text "Volunteering Experience" ]
-        ,ol[][
-            li[][
+        ,ol [][
+            li [][
                 h5 [] [text "Volunteering Experience title 1"]
                 ,div [] [ text "Volunteering Experience Description short" ]
                 ]
@@ -21,7 +27,7 @@ main = div [][
         ]
     ,section [][
         h3 [] [text "Workplace Skills" ]
-        ,ul[][
+        ,ul [][
             li [] [text  "Skill # 1"]
             ,li [] [text "Skill # 2"]
             ,li [] [text "Skill # 3"]
@@ -30,7 +36,7 @@ main = div [][
         ]
     ,footer [] [
         h5 [] [text "Copyright @ Name 2018"]
-        div [] [ text "email:chenc118@mcmaster.ca"]
-        div [] [ text "github:github.com/chenc118"]
+        ,div [] [ text "email:chenc118@mcmaster.ca"]
+        ,div [] [ text "github:github.com/chenc118"]
         ] 
     ]
