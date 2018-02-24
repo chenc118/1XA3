@@ -46,7 +46,7 @@ echo $Status
 #----AutoPull (feature)----
 #if autopull flag set will try to autopull stuffs
 if [[ $Pull = "True" ]]; then
-	$(git pull)
+	git pull
 fi
 
 #----Find uncommitted changes I ----
@@ -189,9 +189,11 @@ TodoLog="todo.log"
 > $TodoLog #clears log
 
 if [[ $Moore = "False" ]]; then
-	FMoore=",$TodoLog,$Changelog"
+	Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "--exclude=$Changelog" "--exclude=$TodoLog" "//TODO|#TODO") #//TODO cause I use java a lot
+else
+	Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
 fi
-Todo=$(grep -rnIE --exclude={ProjectAnalyze.sh$FMoore} "//TODO|#TODO") #//TODO cause I use java a lot
+
 
 LastFile=">>Null" #>> cause that's illegal in filenames
 while IFS= read -r line; do
@@ -244,13 +246,15 @@ do
 		# line drop from https://stackoverflow.com/questions/4881930/remove-the-last-line-from-a-file-in-bash
 		head -n -1 "$hsFile" > tmp.hs; mv tmp.hs "$hsFile"
 	fi
-	echo >> "$ErrorLog"
-	if [[ $Report = "True" ]]; then
-		echo "</pre></div><h3> $hsFile </h3><div class = \"Errorbody\"><pre>" >> "$ErrorLog"
-	else
-		echo "File: $hsFile" >> "$ErrorLog"
+	if [[ -n $HSErr ]]; then
+		echo >> "$ErrorLog"
+		if [[ $Report = "True" ]]; then
+			echo "</pre></div><h3> $hsFile </h3><div class = \"Errorbody\"><pre>" >> "$ErrorLog"
+		else
+			echo "File: $hsFile" >> "$ErrorLog"
+		fi
+		echo "$HSErr" | sed -e "/^ *$/d" >> "$ErrorLog"
 	fi
-	echo "$HSErr" | sed -e "/^ *$/d" >> "$ErrorLog"
 done
 
 if [[ $Report = "True" ]];then
