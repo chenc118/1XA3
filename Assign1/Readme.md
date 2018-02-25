@@ -1,15 +1,17 @@
 ### Assignment 1
-Directory for assignment 1 stuffs
+
 
 #### Usage
 
 ##### synoposis
 ProjectAnalyze.sh [args]
 
+Note if it does not run properly change the first line from `#!/git-bash.exe` to `#!/bash.exe` or wherever your bash installation is located
+
 ##### Args:
 (args are denoted by `-` before the argument name listed below)
 - autopull - Automatically pulls from the configured remote
-- report - Some log stuff rendered in HTML
+- report - Renders error.log and changes.log in HTML, (minor difference w/ error.log but highlights additions/deletetions w/ changes.log)
 - 1718 - Turns on feature # 7 (Will only work properly if in root directory)
 
 #### Effects:
@@ -31,11 +33,25 @@ ProjectAnalyze.sh [args]
 1. uncommitted files (including staged) will be displayed at the beginning of changes.log (cause I can't be bothered to just toss out those couple hours of work)
 2. Literally every required feature is "fancy" making the input slightly more readable etc, and also resolving some errors
 3. requirement 3 has // as well for practicality reasons as I code in java
-4. report arg that changes the output from raw text to HTML (currently only implemented for Haskell errors)
+4. report arg that changes the output from raw text to HTML (implemented for changes.log and error.log)
 5. Argument to auto pull(cause literally 99% of the time things won't break unless you're working as a group, then it's 50% of the time)
 6. ~~Implmentation of https://www.xkcd.com/801/ (planned, got java code to modify for this)~~ Not enough time to actually implement
 7. Implementation of https://xkcd.com/1718/ due to accidental ~~bug~~ feature which has resulted in the recursive growth of changes.log and todo.log 
 8. Prints out # of lines of code written
+
+#### Code Summary:(Simplified)
+
+- `1-35` (Argument parsing) - Parses arguments supplied into various variables
+- `36-45` (Check Status) - Uses `git fetch` and `git status` to get current state of the main branch and filters for only line 2 using sed
+- `46-51` (Autopull feature) - if autopull arg triggered will also use the git pull command
+- `52-124` (Uncommitted changes I) - Uses git status to find what files have not been committed and adds those to changes.log. Uses various sed expressions and a loop iterating through the lines of `git status` to allow for greater control. If report arg is triggered will go into the true branch of various if statements to add various HTML elements
+- `125-248` (Uncommitted changes II) - Uses git diff to find changes in tracked files. Uses a line by line loop iterating over the output. Has 1 main nestled if statement one branch to parse the headers and the other to print the modified code.
+-  `249-285` (Find TODO) - Uses grep printing the line and file and a for each line iterator to parse each line into more readable output.
+- `286-290` (Count Code Lines) - Uses find piping into xargs then wc then sed to find all haskell files, and count the total # of lines
+- `291-331` (Haskell error check) - Uses a for each file loop to iterate over each hs file and `ghc -fno-code` to 1. determine if file has error. 2. a branch that adds main = undefined if the error is missing main, dropping that line afterwards
+
+##### Citations:
+See inline comments for where I got various parts
 
 ##### Notes:
 
