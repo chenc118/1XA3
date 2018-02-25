@@ -76,14 +76,29 @@ fi
 Status=$(git status)
 Diff=$( git diff -- . "$DiffFilter" 2>/dev/null ) # Consume the error (warning LF replaced by CRLF on windows)
 
-# clear changes.log
-$( echo "The following files have not been committed" > "$Changelog")
+if [[ $Report = "True" ]];then
+	echo "<!DOCTYPE html> <html><head><title>Project Diffs</title><style>.Uncommitted{color:#33BE33}.ZeroMP{margin:0;padding:0}.Untracked{color:#AE6666}.Diffbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}</style></head>" >> "$Changelog"
+fi
+
+if [[ $Report = "True" ]];then
+	echo "<h3>Uncommitted Files</h3>" >> "$Changelog"
+	echo "<div class = \"ZeroMP\"><pre>" >> "$Changelog"
+else
+	$( echo "The following files have not been committed" >> "$Changelog")
+fi
 
 # if there are untracked files
 if [ $untracked -eq 1 ]
 then
 	#adds untracked tag to untracked files, after getting them
-	$( echo "$Status" | sed -e "$STATUSCLEAN;/Untracked files:/d;/:/d;s/^	/	untracked:  /g" >> "$Changelog" )
+
+	Untrack=$( echo "$Status" | sed -e "$STATUSCLEAN;/Untracked files:/d;/:/d;s/^	/	untracked:  /g" )
+	
+	if [[ $Report = "True" ]];then
+		echo "</pre></div><div class =\"Untracked\"><pre> $Untrack </pre></div>"
+	else
+		echo "$Untrack" >> "$Changelog"
+	fi
 	STATUSCLEAN="$STATUSCLEAN;/Untracked files:/,\$d" # delete all after line sourced from https://stackoverflow.com/questions/5227295/how-do-i-delete-all-lines-in-a-file-starting-from-after-a-matching-line 
 fi
 
@@ -92,9 +107,12 @@ StatCleaned=$( echo "$Status" | sed "$STATUSCLEAN" )
 
 while IFS= read -r line; do
 	if [[ $line =~ .*Changes\ to\ be\ committed.* ]];then
-		Nothing="Nothing"
+		if [[ $Report = "True" ]];then
+			echo "</pre></div><h3>Files Not yet committed</h3><div class = \"Diffbody Uncommitted\"><pre>" >> "$Changelog"
+		fi
 	elif [[ $line =~ .*Changes\ not\ staged\ [f]or\ commit.* ]];then
-		Nothing="Nothing"
+		if  [[ $Report = "True" ]];then
+			echo "</pre></div><h3>Files Not yet Staged</h3><div class = \"Diffbody Uncommitted\"><pre>"
 	else 
 		echo "$line" >> "$Changelog"
 	fi
@@ -104,9 +122,11 @@ done <<< StatCleaned
 #---- Find uncommitted changes II ----
 #uses git diff prints in a cleaner style than default with lines numbered and all that
 
-
-$(echo "Current git diff:" >> "$Changelog")
-
+if [[ $Report = "True" ]];then
+	echo "</pre></div><h3>Files Diff (Excluding Untracked Files)</h3></div class = \"Diffbody\"><pre>"
+else
+	$(echo "Current git diff:" >> "$Changelog")
+fi
 #iterate over lines https://superuser.com/questions/284187/bash-iterating-over-lines-in-a-variable
 
 #init some vars for the read loop
@@ -131,8 +151,12 @@ while IFS= read -r line; do
 	then
 		if [ $Code = "True" ]
 		then
-			$(printf '%0.1s' "_"{1..25} >> "$Changelog") # so it's much clearer where the code fragments are
-			$(echo >> "$Changelog") # nl cause printf%n doesn't work for some reason
+			if [[ $Report = "True" ]];then
+				echo "<hr width = \"100%\">" >> "$Changelog" #TODO maybe have it breaking the diff body stuff as well
+			else
+				$(printf '%0.1s' "_"{1..25} >> "$Changelog") # so it's much clearer where the code fragments are
+				$(echo >> "$Changelog") # nl cause printf%n doesn't work for some reason
+			fi
 		fi
 		Code="False"
 	fi
@@ -240,8 +264,8 @@ ErrorLog="error.log"
 
 #placeholder for stuff to edit the head of the html doc once I find a nice CSS stylesheet
 if [[ $Report = "True" ]]; then
-	echo "<!DOCTYPE html> <html><head><title>Haskell ErrorLog</title><style>.Errorbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}</style></head>" >> "$ErrorLog"
-	echo "<body><div><pre>" >> "$ErrorLog"
+	echo "<!DOCTYPE html> <html><head><title>Haskell ErrorLog</title><style>.ZeroMP{margin:0;padding:0}.Errorbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}</style></head>" >> "$ErrorLog"
+	echo "<body><div class=\"ZeroMP\"><pre>" >> "$ErrorLog"
 fi
 
 shopt -s nullglob
