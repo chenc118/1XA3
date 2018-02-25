@@ -205,7 +205,7 @@ while IFS= read -r line; do
 				Diffl=$(echo "$Diffl" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g')
 				echo "<span class = \"Add\">$Diffl</span> " >> "$Changelog"
 			else
-				echo $Diffl >> "$Changelog"
+				echo "$Diffl" >> "$Changelog"
 			fi
 			ANum=$(( $ANum + 1 ))
 			ACodeCount=$(( $ACodeCount - 1 ))
@@ -217,7 +217,7 @@ while IFS= read -r line; do
 				Diffl=$(echo "$Diffl" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g')
 				echo "<span class = \"Delete\">$Diffl</span>" >> "$Changelog"
 			else
-				echo "$Diffl" >> Changelog
+				echo "$Diffl" >> "$Changelog"
 			fi
 			RNum=$(( $RNum + 1 ))
 			RCodeCount=$(( $RCodeCount - 1 ))
@@ -236,9 +236,6 @@ while IFS= read -r line; do
 			ANum=$(( $ANum + 1 ))
 			RCodeCount=$(( $RCodeCount - 1 ))
 			ACodeCount=$(( $ACodeCount - 1 ))
-		fi
-		if [[ $Report = "False" ]];then
-			$(echo >> "$Changelog") #to add newline
 		fi
 	fi
 

@@ -1,4 +1,4 @@
 File: ProjectAnalyze.sh
-  268|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} "//TODO|#TODO" )
+  265|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} "//TODO|#TODO" )
 File: testscript.sh
     6|grep -rnIE ${Something[@]/#/--exclude=} "#TODO"
