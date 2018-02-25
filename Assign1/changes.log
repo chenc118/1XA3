@@ -1,154 +1,315 @@
-The following files have not been committed
-StatCleaned
-Current git diff:
-
-File diff: Assign1/ProjectAnalyze.sh
-    87|    87| fi
-    88|    88| 
-    89|    89| # get other changes
-    90|      |-$( echo "$Status" | sed "$STATUSCLEAN;/Changes to be committed:/d;/Changes not staged for commit:/d" >> "$Changelog" )
-      |    90|+StatCleaned=$( echo "$Status" | sed "$STATUSCLEAN" )
-      |    91|+
-      |    92|+while IFS= read -r line; do
-      |    93|+	if [[ $line =~ .*Changes\ to\ be\ committed.* ]];then
-      |    94|+		Nothing="Nothing"
-      |    95|+	elif [[ $line =~ .*Changes\ not\ staged\ [f]or\ commit.* ]];then
-      |    96|+		Nothing="Nothing"
-      |    97|+	else 
-      |    98|+		echo "$line" >> "$Changelog"
-      |    99|+	fi
-      |   100|+done <<< StatCleaned 
-    91|   101| 
-    92|   102| 
-    93|   103| #---- Find uncommitted changes II ----
-_________________________
-   109|   119| ANum="0"
-   110|   120| #padding altered from the following https://stackoverflow.com/questions/4409399/padding-characters-in-printf
-   111|   121| #literally just a bunch of spaces
-   112|      |-Pad=$(printf '%0.1s' " "{1..60})
-      |   122|+Pad=$(printf '%0.1s' " "{1..60}) # This is resused for TODO
-   113|   123| #length to pad the numbers
-   114|   124| PadL=6
-   115|   125| 
-_________________________
-   189|   199| > $TodoLog #clears log
-   190|   200| 
-   191|   201| if [[ $Moore = "False" ]]; then
-   192|      |-	Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "--exclude=$Changelog" "--exclude=$TodoLog" "//TODO|#TODO") #//TODO cause I use java a lot
-   193|      |-else
-   194|      |-	Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
-      |   202|+	TIgnore+=("$Changelog")
-      |   203|+	TIgnore+=("$TodoLog")
-   195|   204| fi
-   196|   205| 
-      |   206|+TIgnore+=("ProjectAnalzye.sh")
-   197|   207| 
-      |   208|+# Idea taken from https://github.com/gwgundersen/gp/blob/master/gp.sh
-      |   209|+Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} "//TODO|#TODO" )
-   198|   210| LastFile=">>Null" #>> cause that's illegal in filenames
-   199|   211| while IFS= read -r line; do
-   200|   212| 	if [ -n "$line" ]
-_________________________
-   220|   232| 
-   221|   233| echo "Lines of code = $(find -name "*.hs" -print0 | xargs -0 wc -l | grep total | sed -e "s/[^0-9]*\([0-9]*\).*/\1/")"
-   222|   234| 
-   223|      |-#----Haskell Eror Check----
-      |   235|+#----Haskell Error Check----
-   224|   236| 
-   225|   237| ErrorLog="error.log"
-   226|   238| > "$ErrorLog" # clear log ofc
-_________________________
-
-File deleted: Assign1/changes.log
-     1|      |-The following files have not been committed
-     2|      |-	deleted:    changes.log
-     3|      |-	deleted:    todo.log
-     4|      |-	modified:   ProjectAnalyze.sh
-     5|      |-	modified:   error.log
-     6|      |-	modified:   testscript.sh
-     7|      |-Current git diff:
-     8|      |-
-     9|      |-File diff: Assign1/ProjectAnalyze.sh
-    10|      |-    46|    46| #----AutoPull (feature)----
-    11|      |-    47|    47| #if autopull flag set will try to autopull stuffs
-    12|      |-    48|    48| if [[ $Pull = "True" ]]; then
-    13|      |-    49|      |-	$(git pull)
-    14|      |-      |    49|+	git pull
-    15|      |-    50|    50| fi
-    16|      |-    51|    51| 
-    17|      |-    52|    52| #----Find uncommitted changes I ----
-    18|      |-_________________________
-    19|      |-   189|   189| > $TodoLog #clears log
-    20|      |-   190|   190| 
-    21|      |-   191|   191| if [[ $Moore = "False" ]]; then
-    22|      |-   192|      |-	FMoore=",$TodoLog,$Changelog"
-    23|      |-      |   192|+	Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "--exclude=$Changelog" "--exclude=$TodoLog" "//TODO|#TODO") #//TODO cause I use java a lot
-    24|      |-      |   193|+else
-    25|      |-      |   194|+	Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
-    26|      |-   193|   195| fi
-    27|      |-   194|      |-Todo=$(grep -rnIE --exclude={ProjectAnalyze.sh$FMoore} "//TODO|#TODO") #//TODO cause I use java a lot
-    28|      |-      |   196|+
-    29|      |-   195|   197| 
-    30|      |-   196|   198| LastFile=">>Null" #>> cause that's illegal in filenames
-    31|      |-   197|   199| while IFS= read -r line; do
-    32|      |-_________________________
-    33|      |-   244|   246| 		# line drop from https://stackoverflow.com/questions/4881930/remove-the-last-line-from-a-file-in-bash
-    34|      |-   245|   247| 		head -n -1 "$hsFile" > tmp.hs; mv tmp.hs "$hsFile"
-    35|      |-   246|   248| 	fi
-    36|      |-   247|      |-	echo >> "$ErrorLog"
-    37|      |-   248|      |-	if [[ $Report = "True" ]]; then
-    38|      |-   249|      |-		echo "</pre></div><h3> $hsFile </h3><div class = \"Errorbody\"><pre>" >> "$ErrorLog"
-    39|      |-   250|      |-	else
-    40|      |-   251|      |-		echo "File: $hsFile" >> "$ErrorLog"
-    41|      |-      |   249|+	if [[ -n $HSErr ]]; then
-    42|      |-      |   250|+		echo >> "$ErrorLog"
-    43|      |-      |   251|+		if [[ $Report = "True" ]]; then
-    44|      |-      |   252|+			echo "</pre></div><h3> $hsFile </h3><div class = \"Errorbody\"><pre>" >> "$ErrorLog"
-    45|      |-      |   253|+		else
-    46|      |-      |   254|+			echo "File: $hsFile" >> "$ErrorLog"
-    47|      |-      |   255|+		fi
-    48|      |-      |   256|+		echo "$HSErr" | sed -e "/^ *$/d" >> "$ErrorLog"
-    49|      |-   252|   257| 	fi
-    50|      |-   253|      |-	echo "$HSErr" | sed -e "/^ *$/d" >> "$ErrorLog"
-    51|      |-   254|   258| done
-    52|      |-   255|   259| 
-    53|      |-   256|   260| if [[ $Report = "True" ]];then
-    54|      |-_________________________
-    55|      |-
-    56|      |-File diff: Assign1/error.log
-    57|      |-     1|      |-<!DOCTYPE html> <html><head><title>Haskell ErrorLog</title><style>.Errorbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}</style></head>
-    58|      |-     2|      |-<body><div><pre>
-    59|      |-     3|     1| 
-    60|      |-     4|      |-</pre></div><h3> rand.hs </h3><div class = "Errorbody"><pre>
-    61|      |-      |     2|+File: rand.hs
-    62|      |-     5|     3| rand.hs:1:13: error: parse error on input `->'
-    63|      |-     6|     4|   |
-    64|      |-     7|     5| 1 | rand = Long -> Float
-    65|      |-     8|     6|   |             ^^
-    66|      |-     9|      |-
-    67|      |-    10|      |-</pre></div><h3> test.hs </h3><div class = "Errorbody"><pre>
-    68|      |-    11|      |-</pre></div></body></html>
-    69|      |-_________________________
-    70|      |-
-    71|      |-File diff: Assign1/testscript.sh
-    72|      |-     1|     1| #!/git-bash.exe
-    73|      |-     2|     2| 
-    74|      |-     3|      |-Status=$(ghc -fno-code test.hs 2>&1 >/dev/null)
-    75|      |-     4|      |-if [[ $Status =~ .*The\ IO\ action\ .main.\ is\ not\ defined\ [i]n\ module\ .Main..*  ]]
-    76|      |-     5|      |-then
-    77|      |-     6|      |-	echo "Found"
-    78|      |-     7|      |-fi
-    79|      |-      |     3|+Something="--exclude=changes.log --exclude=todo.log"
-    80|      |-     8|     4| 
-    81|      |-      |     5|+grep -rnIE "$Something" "#TODO"
-_________________________
-
-File diff: Assign1/testscript.sh
-     1|     1| #!/git-bash.exe
-     2|     2| 
-     3|      |-Something="--exclude=changes.log --exclude=todo.log"
-      |     3|+Something+=("todo.log")
-      |     4|+Something+=("changes.log")
-     4|     5| 
-     5|      |-grep -rnIE "$Something" "#TODO"
-      |     6|+grep -rnIE ${Something[@]/#/--exclude=} "#TODO"
+<!DOCTYPE html> <html><head><title>Project Diffs</title><style>.Uncommitted{color:#007E00}span{display:inline-block;width:100%}pre{white-space:pre-wrap}.ZeroMP{margin:0;padding:0}.Untracked{color:#AE6666}hr{border-color:black}.Diffbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}.Delete{background-color:#FFAAAA}.Add{background-color:#AAFFAA}</style></head>
+<h3>Uncommitted Files</h3>
+<div class = "ZeroMP"><pre>
+</pre></div><div class ="Diffbody Untracked"><pre> 	untracked:  test.txt </pre></div>
+</pre></div><h3>Files Not yet Staged</h3><div class = "Diffbody Uncommitted"><pre>
+	modified:   ProjectAnalyze.sh
+	deleted:    changes.log
+	modified:   error.log
+	modified:   todo.log
+</pre></div><h3>Files Diff (Excluding Untracked Files)</h3><div class = "Diffbody"><pre>
+<h3>Assign1/ProjectAnalyze.sh
+</h3>
+<span>    77|    77| Diff=$( git diff -- . &quot;$DiffFilter&quot; 2&gt;/dev/null ) # Consume the error (warning LF replaced by CRLF on windows)</span>
+<span>    78|    78| </span>
+<span>    79|    79| if [[ $Report = &quot;True&quot; ]];then</span>
+<span class = "Delete">    80|      |-	echo &quot;&lt;!DOCTYPE html&gt; &lt;html&gt;&lt;head&gt;&lt;title&gt;Project Diffs&lt;/title&gt;&lt;style&gt;.Uncommitted{color:#33BE33}.ZeroMP{margin:0;padding:0}.Untracked{color:#AE6666}.Diffbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}&lt;/style&gt;&lt;/head&gt;&quot; &gt;&gt; &quot;$Changelog&quot;</span>
+<span class = "Add">      |    80|+	#Pre wrapping whitespace from https://css-tricks.com/snippets/css/make-pre-text-wrap/</span> 
+<span class = "Add">      |    81|+	#Better highlighting https://stackoverflow.com/questions/5589958/html-span-tag-stretch-to-avaliable-width</span> 
+<span class = "Add">      |    82|+	echo &quot;&lt;!DOCTYPE html&gt; &lt;html&gt;&lt;head&gt;&lt;title&gt;Project Diffs&lt;/title&gt;&lt;style&gt;.Uncommitted{color:#007E00}span{display:inline-block;width:100%}pre{white-space:pre-wrap}.ZeroMP{margin:0;padding:0}.Untracked{color:#AE6666}hr{border-color:black}.Diffbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}.Delete{background-color:#FFAAAA}.Add{background-color:#AAFFAA}&lt;/style&gt;&lt;/head&gt;&quot; &gt;&gt; &quot;$Changelog&quot;</span> 
+<span>    81|    83| fi</span>
+<span>    82|    84| </span>
+<span>    83|    85| if [[ $Report = &quot;True&quot; ]];then</span>
+<hr width = "100%"><span>    95|    97| 	Untrack=$( echo &quot;$Status&quot; | sed -e &quot;$STATUSCLEAN;/Untracked files:/d;/:/d;s/^	/	untracked:  /g&quot; )</span>
+<span>    96|    98| 	</span>
+<span>    97|    99| 	if [[ $Report = &quot;True&quot; ]];then</span>
+<span class = "Delete">    98|      |-		echo &quot;&lt;/pre&gt;&lt;/div&gt;&lt;div class =\&quot;Untracked\&quot;&gt;&lt;pre&gt; $Untrack &lt;/pre&gt;&lt;/div&gt;&quot;</span>
+<span class = "Add">      |   100|+		echo &quot;&lt;/pre&gt;&lt;/div&gt;&lt;div class =\&quot;Diffbody Untracked\&quot;&gt;&lt;pre&gt; $Untrack &lt;/pre&gt;&lt;/div&gt;&quot; &gt;&gt; &quot;$Changelog&quot;</span> 
+<span>    99|   101| 	else</span>
+<span>   100|   102| 		echo &quot;$Untrack&quot; &gt;&gt; &quot;$Changelog&quot;</span>
+<span>   101|   103| 	fi</span>
+<hr width = "100%"><span>   112|   114| 		fi</span>
+<span>   113|   115| 	elif [[ $line =~ .*Changes\ not\ staged\ [f]or\ commit.* ]];then</span>
+<span>   114|   116| 		if  [[ $Report = &quot;True&quot; ]];then</span>
+<span class = "Delete">   115|      |-			echo &quot;&lt;/pre&gt;&lt;/div&gt;&lt;h3&gt;Files Not yet Staged&lt;/h3&gt;&lt;div class = \&quot;Diffbody Uncommitted\&quot;&gt;&lt;pre&gt;&quot;</span>
+<span class = "Add">      |   117|+			echo &quot;&lt;/pre&gt;&lt;/div&gt;&lt;h3&gt;Files Not yet Staged&lt;/h3&gt;&lt;div class = \&quot;Diffbody Uncommitted\&quot;&gt;&lt;pre&gt;&quot; &gt;&gt; &quot;$Changelog&quot;</span> 
+<span class = "Add">      |   118|+		fi</span> 
+<span>   116|   119| 	else </span>
+<span>   117|   120| 		echo &quot;$line&quot; &gt;&gt; &quot;$Changelog&quot;</span>
+<span>   118|   121| 	fi</span>
+<span class = "Delete">   119|      |-done &lt;&lt;&lt; StatCleaned </span>
+<span class = "Add">      |   122|+done &lt;&lt;&lt; $StatCleaned </span> 
+<span>   120|   123| </span>
+<span>   121|   124| </span>
+<span>   122|   125| #---- Find uncommitted changes II ----</span>
+<span>   123|   126| #uses git diff prints in a cleaner style than default with lines numbered and all that</span>
+<span>   124|   127| </span>
+<span>   125|   128| if [[ $Report = &quot;True&quot; ]];then</span>
+<span class = "Delete">   126|      |-	echo &quot;&lt;/pre&gt;&lt;/div&gt;&lt;h3&gt;Files Diff (Excluding Untracked Files)&lt;/h3&gt;&lt;/div class = \&quot;Diffbody\&quot;&gt;&lt;pre&gt;&quot;</span>
+<span class = "Add">      |   129|+	echo &quot;&lt;/pre&gt;&lt;/div&gt;&lt;h3&gt;Files Diff (Excluding Untracked Files)&lt;/h3&gt;&lt;div class = \&quot;Diffbody\&quot;&gt;&lt;pre&gt;&quot; &gt;&gt; &quot;$Changelog&quot;</span> 
+<span>   127|   130| else</span>
+<span>   128|   131| 	$(echo &quot;Current git diff:&quot; &gt;&gt; &quot;$Changelog&quot;)</span>
+<span>   129|   132| fi</span>
+<hr width = "100%"><span>   152|   155| 		if [ $Code = &quot;True&quot; ]</span>
+<span>   153|   156| 		then</span>
+<span>   154|   157| 			if [[ $Report = &quot;True&quot; ]];then</span>
+<span class = "Delete">   155|      |-				echo &quot;&lt;hr width = \&quot;100%\&quot;&gt;&quot; &gt;&gt; &quot;$Changelog&quot; #TODO maybe have it breaking the diff body stuff as well</span>
+<span class = "Add">      |   158|+				printf &quot;%s&quot; &quot;&lt;hr width = \&quot;100%\&quot;&gt;&quot; &gt;&gt; &quot;$Changelog&quot; # printf to preserve pre formatting</span> 
+<span>   156|   159| 			else</span>
+<span>   157|   160| 				$(printf &#39;%0.1s&#39; &quot;_&quot;{1..25} &gt;&gt; &quot;$Changelog&quot;) # so it&#39;s much clearer where the code fragments are</span>
+<span>   158|   161| 				$(echo &gt;&gt; &quot;$Changelog&quot;) # nl cause printf%n doesn&#39;t work for some reason</span>
+<hr width = "100%"><span>   179|   182| 			Rem=$(echo &quot;$line&quot; | sed -e &quot;s/^--- a\///;s:/:\\\/:g&quot;) # file removed to fix def/null issue</span>
+<span>   180|   183| 		elif [ &quot;$Status&quot; -eq &quot;4&quot; ]</span>
+<span>   181|   184| 		then</span>
+<span class = "Delete">   182|      |-			# dump the file name into the changelog</span>
+<span class = "Delete">   183|      |-			$(echo &gt;&gt; &quot;$Changelog&quot;)</span>
+<span class = "Delete">   184|      |-			$(echo &quot;$line&quot; | sed -e &quot;s/^+++ b\//File diff: /;s/+++ \/dev\/null/File deleted: $Rem/&quot; &gt;&gt; &quot;$Changelog&quot; )</span>
+<span class = "Add">      |   185|+			if [[ $Report = &quot;True&quot; ]];then</span> 
+<span class = "Add">      |   186|+				echo &quot;$line&quot; | sed -e &quot;s/^+++ b\//&lt;h3&gt;/;s/+++ \/dev\/null/&lt;h3 class = \&quot;Untracked\&quot;&gt; $Rem/;&quot; &gt;&gt; &quot;$Changelog&quot;</span> 
+<span class = "Add">      |   187|+				echo &quot;&lt;/h3&gt;&quot; &gt;&gt; &quot;$Changelog&quot;</span> 
+<span class = "Add">      |   188|+			else</span> 
+<span class = "Add">      |   189|+				# dump the file name into the changelog</span> 
+<span class = "Add">      |   190|+				$(echo &gt;&gt; &quot;$Changelog&quot;)</span> 
+<span class = "Add">      |   191|+				$(echo &quot;$line&quot; | sed -e &quot;s/^+++ b\//File diff: /;s/+++ \/dev\/null/File deleted: $Rem/&quot; &gt;&gt; &quot;$Changelog&quot; )</span> 
+<span class = "Add">      |   192|+			fi</span> 
+<span>   185|   193| 		fi</span>
+<span>   186|   194| </span>
+<span>   187|   195| 	elif [ $Code == &quot;True&quot; ]</span>
+<hr width = "100%"><span>   191|   199| 		if [ &quot;$Start&quot; = &quot;+&quot; ]</span>
+<span>   192|   200| 		then</span>
+<span>   193|   201| 			PadA=$(( $PadL - ${#ANum} ))</span>
+<span class = "Delete">   194|      |-			$(printf &#39;%*.*s%s|%*.*s%s|%s&#39; 0 &quot;$PadL&quot; &quot;$Pad&quot; &quot;&quot; 0 &quot;$PadA&quot; &quot;$Pad&quot; &quot;$ANum&quot; &quot;$line&quot; &gt;&gt; &quot;$Changelog&quot;)</span>
+<span class = "Add">      |   202|+			Diffl=$(printf &#39;%*.*s%s|%*.*s%s|%s&#39; 0 &quot;$PadL&quot; &quot;$Pad&quot; &quot;&quot; 0 &quot;$PadA&quot; &quot;$Pad&quot; &quot;$ANum&quot; &quot;$line&quot;)</span> 
+<span class = "Add">      |   203|+			if [[ $Report = &quot;True&quot; ]];then</span> 
+<span class = "Add">      |   204|+				#HTML encoder from https://stackoverflow.com/questions/12873682/short-way-to-escape-html-in-bash</span> 
+<span class = "Add">      |   205|+				Diffl=$(echo &quot;$Diffl&quot; | sed &#39;s/&amp;/\&amp;amp;/g; s/&lt;/\&amp;lt;/g; s/&gt;/\&amp;gt;/g; s/&quot;/\&amp;quot;/g; s/&#39;&quot;&#39;&quot;&#39;/\&amp;#39;/g&#39;)</span> 
+<span class = "Add">      |   206|+				echo &quot;&lt;span class = \&quot;Add\&quot;&gt;$Diffl&lt;/span&gt; &quot; &gt;&gt; &quot;$Changelog&quot;</span> 
+<span class = "Add">      |   207|+			else</span> 
+<span class = "Add">      |   208|+				echo $Diffl &gt;&gt; &quot;$Changelog&quot;</span> 
+<span class = "Add">      |   209|+			fi</span> 
+<span>   195|   210| 			ANum=$(( $ANum + 1 ))</span>
+<span>   196|   211| 			ACodeCount=$(( $ACodeCount - 1 ))</span>
+<span>   197|   212| 		elif [ &quot;$Start&quot; = &quot;-&quot; ]</span>
+<span>   198|   213| 		then</span>
+<span>   199|   214| 			PadR=$(( $PadL - ${#RNum} ))</span>
+<span class = "Delete">   200|      |-			$(printf &#39;%*.*s%s|%*.*s%s|%s&#39; 0 &quot;$PadR&quot; &quot;$Pad&quot; &quot;$RNum&quot; 0 &quot;$PadL&quot; &quot;$Pad&quot; &quot;&quot; &quot;$line&quot; &gt;&gt; &quot;$Changelog&quot;)</span>
+<span class = "Add">      |   215|+			Diffl=$(printf &#39;%*.*s%s|%*.*s%s|%s&#39; 0 &quot;$PadR&quot; &quot;$Pad&quot; &quot;$RNum&quot; 0 &quot;$PadL&quot; &quot;$Pad&quot; &quot;&quot; &quot;$line&quot;)</span> 
+<span class = "Add">      |   216|+			if [[ $Report = &quot;True&quot; ]];then</span> 
+<span class = "Add">      |   217|+				Diffl=$(echo &quot;$Diffl&quot; | sed &#39;s/&amp;/\&amp;amp;/g; s/&lt;/\&amp;lt;/g; s/&gt;/\&amp;gt;/g; s/&quot;/\&amp;quot;/g; s/&#39;&quot;&#39;&quot;&#39;/\&amp;#39;/g&#39;)</span> 
+<span class = "Add">      |   218|+				echo &quot;&lt;span class = \&quot;Delete\&quot;&gt;$Diffl&lt;/span&gt;&quot; &gt;&gt; &quot;$Changelog&quot;</span> 
+<span class = "Add">      |   219|+			else</span> 
+<span class = "Add">      |   220|+				echo &quot;$Diffl&quot; &gt;&gt; Changelog</span> 
+<span class = "Add">      |   221|+			fi</span> 
+<span>   201|   222| 			RNum=$(( $RNum + 1 ))</span>
+<span>   202|   223| 			RCodeCount=$(( $RCodeCount - 1 ))</span>
+<span>   203|   224| 		else</span>
+<span>   204|   225| 			PadR=$(( $PadL - ${#RNum} ))</span>
+<span>   205|   226| 			PadA=$(( $PadL - ${#ANum} ))</span>
+<span class = "Delete">   206|      |-			$(printf &#39;%*.*s%s|%*.*s%s|%s&#39; 0 &quot;$PadR&quot; &quot;$Pad&quot; &quot;$RNum&quot; 0 &quot;$PadA&quot; &quot;$Pad&quot; &quot;$ANum&quot; &quot;$line&quot; &gt;&gt; &quot;$Changelog&quot;)</span>
+<span class = "Add">      |   227|+			Diffl=$(printf &#39;%*.*s%s|%*.*s%s|%s&#39; 0 &quot;$PadR&quot; &quot;$Pad&quot; &quot;$RNum&quot; 0 &quot;$PadA&quot; &quot;$Pad&quot; &quot;$ANum&quot; &quot;$line&quot;)</span> 
+<span class = "Add">      |   228|+			if [[ $Report = &quot;True&quot; ]];then</span> 
+<span class = "Add">      |   229|+				Diffl=$(echo &quot;$Diffl&quot; | sed &#39;s/&amp;/\&amp;amp;/g; s/&lt;/\&amp;lt;/g; s/&gt;/\&amp;gt;/g; s/&quot;/\&amp;quot;/g; s/&#39;&quot;&#39;&quot;&#39;/\&amp;#39;/g&#39;)</span> 
+<span class = "Add">      |   230|+				echo &quot;&lt;span&gt;$Diffl&lt;/span&gt;&quot; &gt;&gt; &quot;$Changelog&quot;</span> 
+<span class = "Add">      |   231|+			else</span> 
+<span class = "Add">      |   232|+				echo &quot;$Diffl&quot; &gt;&gt; &quot;$Changelog&quot;</span> 
+<span class = "Add">      |   233|+			fi</span> 
+<span>   207|   234| 			#increment decrement stuff</span>
+<span>   208|   235| 			RNum=$(( $RNum + 1 ))</span>
+<span>   209|   236| 			ANum=$(( $ANum + 1 ))</span>
+<span>   210|   237| 			RCodeCount=$(( $RCodeCount - 1 ))</span>
+<span>   211|   238| 			ACodeCount=$(( $ACodeCount - 1 ))</span>
+<span>   212|   239| 		fi</span>
+<span class = "Delete">   213|      |-			</span>
+<span class = "Delete">   214|      |-		$(echo &gt;&gt; &quot;$Changelog&quot;) #to add newline</span>
+<span class = "Add">      |   240|+		if [[ $Report = &quot;False&quot; ]];then</span> 
+<span class = "Add">      |   241|+			$(echo &gt;&gt; &quot;$Changelog&quot;) #to add newline</span> 
+<span class = "Add">      |   242|+		fi</span> 
+<span>   215|   243| 	fi</span>
+<span>   216|   244| </span>
+<span>   217|   245| done &lt;&lt;&lt; $Diff</span>
+<span class = "Add">      |   246|+</span> 
+<span class = "Add">      |   247|+</span> 
+<span class = "Add">      |   248|+if [[ $Report = &quot;True&quot; ]];then</span> 
+<span class = "Add">      |   249|+	echo &quot;&lt;/pre&gt;&lt;/div&gt;&lt;/html&gt;&quot; &gt;&gt; &quot;$Changelog&quot;</span> 
+<span class = "Add">      |   250|+fi</span> 
+<span class = "Add">      |   251|+</span> 
+<span>   218|   252| #---- FIND TODO ----</span>
+<span>   219|   253| </span>
+<span>   220|   254| </span>
+<hr width = "100%"><h3 class = "Untracked"> Assign1/changes.log
+</h3>
+<span class = "Delete">     1|      |-The following files have not been committed</span>
+<span class = "Delete">     2|      |-StatCleaned</span>
+<span class = "Delete">     3|      |-Current git diff:</span>
+<span class = "Delete">     4|      |-</span>
+<span class = "Delete">     5|      |-File diff: Assign1/ProjectAnalyze.sh</span>
+<span class = "Delete">     6|      |-    87|    87| fi</span>
+<span class = "Delete">     7|      |-    88|    88| </span>
+<span class = "Delete">     8|      |-    89|    89| # get other changes</span>
+<span class = "Delete">     9|      |-    90|      |-$( echo &quot;$Status&quot; | sed &quot;$STATUSCLEAN;/Changes to be committed:/d;/Changes not staged for commit:/d&quot; &gt;&gt; &quot;$Changelog&quot; )</span>
+<span class = "Delete">    10|      |-      |    90|+StatCleaned=$( echo &quot;$Status&quot; | sed &quot;$STATUSCLEAN&quot; )</span>
+<span class = "Delete">    11|      |-      |    91|+</span>
+<span class = "Delete">    12|      |-      |    92|+while IFS= read -r line; do</span>
+<span class = "Delete">    13|      |-      |    93|+	if [[ $line =~ .*Changes\ to\ be\ committed.* ]];then</span>
+<span class = "Delete">    14|      |-      |    94|+		Nothing=&quot;Nothing&quot;</span>
+<span class = "Delete">    15|      |-      |    95|+	elif [[ $line =~ .*Changes\ not\ staged\ [f]or\ commit.* ]];then</span>
+<span class = "Delete">    16|      |-      |    96|+		Nothing=&quot;Nothing&quot;</span>
+<span class = "Delete">    17|      |-      |    97|+	else </span>
+<span class = "Delete">    18|      |-      |    98|+		echo &quot;$line&quot; &gt;&gt; &quot;$Changelog&quot;</span>
+<span class = "Delete">    19|      |-      |    99|+	fi</span>
+<span class = "Delete">    20|      |-      |   100|+done &lt;&lt;&lt; StatCleaned </span>
+<span class = "Delete">    21|      |-    91|   101| </span>
+<span class = "Delete">    22|      |-    92|   102| </span>
+<span class = "Delete">    23|      |-    93|   103| #---- Find uncommitted changes II ----</span>
+<span class = "Delete">    24|      |-_________________________</span>
+<span class = "Delete">    25|      |-   109|   119| ANum=&quot;0&quot;</span>
+<span class = "Delete">    26|      |-   110|   120| #padding altered from the following https://stackoverflow.com/questions/4409399/padding-characters-in-printf</span>
+<span class = "Delete">    27|      |-   111|   121| #literally just a bunch of spaces</span>
+<span class = "Delete">    28|      |-   112|      |-Pad=$(printf &#39;%0.1s&#39; &quot; &quot;{1..60})</span>
+<span class = "Delete">    29|      |-      |   122|+Pad=$(printf &#39;%0.1s&#39; &quot; &quot;{1..60}) # This is resused for TODO</span>
+<span class = "Delete">    30|      |-   113|   123| #length to pad the numbers</span>
+<span class = "Delete">    31|      |-   114|   124| PadL=6</span>
+<span class = "Delete">    32|      |-   115|   125| </span>
+<span class = "Delete">    33|      |-_________________________</span>
+<span class = "Delete">    34|      |-   189|   199| &gt; $TodoLog #clears log</span>
+<span class = "Delete">    35|      |-   190|   200| </span>
+<span class = "Delete">    36|      |-   191|   201| if [[ $Moore = &quot;False&quot; ]]; then</span>
+<span class = "Delete">    37|      |-   192|      |-	Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh &quot;--exclude=$Changelog&quot; &quot;--exclude=$TodoLog&quot; &quot;//TODO|#TODO&quot;) #//TODO cause I use java a lot</span>
+<span class = "Delete">    38|      |-   193|      |-else</span>
+<span class = "Delete">    39|      |-   194|      |-	Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh &quot;//TODO|#TODO&quot;) #//TODO cause I use java a lot</span>
+<span class = "Delete">    40|      |-      |   202|+	TIgnore+=(&quot;$Changelog&quot;)</span>
+<span class = "Delete">    41|      |-      |   203|+	TIgnore+=(&quot;$TodoLog&quot;)</span>
+<span class = "Delete">    42|      |-   195|   204| fi</span>
+<span class = "Delete">    43|      |-   196|   205| </span>
+<span class = "Delete">    44|      |-      |   206|+TIgnore+=(&quot;ProjectAnalzye.sh&quot;)</span>
+<span class = "Delete">    45|      |-   197|   207| </span>
+<span class = "Delete">    46|      |-      |   208|+# Idea taken from https://github.com/gwgundersen/gp/blob/master/gp.sh</span>
+<span class = "Delete">    47|      |-      |   209|+Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &quot;//TODO|#TODO&quot; )</span>
+<span class = "Delete">    48|      |-   198|   210| LastFile=&quot;&gt;&gt;Null&quot; #&gt;&gt; cause that&#39;s illegal in filenames</span>
+<span class = "Delete">    49|      |-   199|   211| while IFS= read -r line; do</span>
+<span class = "Delete">    50|      |-   200|   212| 	if [ -n &quot;$line&quot; ]</span>
+<span class = "Delete">    51|      |-_________________________</span>
+<span class = "Delete">    52|      |-   220|   232| </span>
+<span class = "Delete">    53|      |-   221|   233| echo &quot;Lines of code = $(find -name &quot;*.hs&quot; -print0 | xargs -0 wc -l | grep total | sed -e &quot;s/[^0-9]*\([0-9]*\).*/\1/&quot;)&quot;</span>
+<span class = "Delete">    54|      |-   222|   234| </span>
+<span class = "Delete">    55|      |-   223|      |-#----Haskell Eror Check----</span>
+<span class = "Delete">    56|      |-      |   235|+#----Haskell Error Check----</span>
+<span class = "Delete">    57|      |-   224|   236| </span>
+<span class = "Delete">    58|      |-   225|   237| ErrorLog=&quot;error.log&quot;</span>
+<span class = "Delete">    59|      |-   226|   238| &gt; &quot;$ErrorLog&quot; # clear log ofc</span>
+<span class = "Delete">    60|      |-_________________________</span>
+<span class = "Delete">    61|      |-</span>
+<span class = "Delete">    62|      |-File deleted: Assign1/changes.log</span>
+<span class = "Delete">    63|      |-     1|      |-The following files have not been committed</span>
+<span class = "Delete">    64|      |-     2|      |-	deleted:    changes.log</span>
+<span class = "Delete">    65|      |-     3|      |-	deleted:    todo.log</span>
+<span class = "Delete">    66|      |-     4|      |-	modified:   ProjectAnalyze.sh</span>
+<span class = "Delete">    67|      |-     5|      |-	modified:   error.log</span>
+<span class = "Delete">    68|      |-     6|      |-	modified:   testscript.sh</span>
+<span class = "Delete">    69|      |-     7|      |-Current git diff:</span>
+<span class = "Delete">    70|      |-     8|      |-</span>
+<span class = "Delete">    71|      |-     9|      |-File diff: Assign1/ProjectAnalyze.sh</span>
+<span class = "Delete">    72|      |-    10|      |-    46|    46| #----AutoPull (feature)----</span>
+<span class = "Delete">    73|      |-    11|      |-    47|    47| #if autopull flag set will try to autopull stuffs</span>
+<span class = "Delete">    74|      |-    12|      |-    48|    48| if [[ $Pull = &quot;True&quot; ]]; then</span>
+<span class = "Delete">    75|      |-    13|      |-    49|      |-	$(git pull)</span>
+<span class = "Delete">    76|      |-    14|      |-      |    49|+	git pull</span>
+<span class = "Delete">    77|      |-    15|      |-    50|    50| fi</span>
+<span class = "Delete">    78|      |-    16|      |-    51|    51| </span>
+<span class = "Delete">    79|      |-    17|      |-    52|    52| #----Find uncommitted changes I ----</span>
+<span class = "Delete">    80|      |-    18|      |-_________________________</span>
+<span class = "Delete">    81|      |-    19|      |-   189|   189| &gt; $TodoLog #clears log</span>
+<span class = "Delete">    82|      |-    20|      |-   190|   190| </span>
+<span class = "Delete">    83|      |-    21|      |-   191|   191| if [[ $Moore = &quot;False&quot; ]]; then</span>
+<span class = "Delete">    84|      |-    22|      |-   192|      |-	FMoore=&quot;,$TodoLog,$Changelog&quot;</span>
+<span class = "Delete">    85|      |-    23|      |-      |   192|+	Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh &quot;--exclude=$Changelog&quot; &quot;--exclude=$TodoLog&quot; &quot;//TODO|#TODO&quot;) #//TODO cause I use java a lot</span>
+<span class = "Delete">    86|      |-    24|      |-      |   193|+else</span>
+<span class = "Delete">    87|      |-    25|      |-      |   194|+	Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh &quot;//TODO|#TODO&quot;) #//TODO cause I use java a lot</span>
+<span class = "Delete">    88|      |-    26|      |-   193|   195| fi</span>
+<span class = "Delete">    89|      |-    27|      |-   194|      |-Todo=$(grep -rnIE --exclude={ProjectAnalyze.sh$FMoore} &quot;//TODO|#TODO&quot;) #//TODO cause I use java a lot</span>
+<span class = "Delete">    90|      |-    28|      |-      |   196|+</span>
+<span class = "Delete">    91|      |-    29|      |-   195|   197| </span>
+<span class = "Delete">    92|      |-    30|      |-   196|   198| LastFile=&quot;&gt;&gt;Null&quot; #&gt;&gt; cause that&#39;s illegal in filenames</span>
+<span class = "Delete">    93|      |-    31|      |-   197|   199| while IFS= read -r line; do</span>
+<span class = "Delete">    94|      |-    32|      |-_________________________</span>
+<span class = "Delete">    95|      |-    33|      |-   244|   246| 		# line drop from https://stackoverflow.com/questions/4881930/remove-the-last-line-from-a-file-in-bash</span>
+<span class = "Delete">    96|      |-    34|      |-   245|   247| 		head -n -1 &quot;$hsFile&quot; &gt; tmp.hs; mv tmp.hs &quot;$hsFile&quot;</span>
+<span class = "Delete">    97|      |-    35|      |-   246|   248| 	fi</span>
+<span class = "Delete">    98|      |-    36|      |-   247|      |-	echo &gt;&gt; &quot;$ErrorLog&quot;</span>
+<span class = "Delete">    99|      |-    37|      |-   248|      |-	if [[ $Report = &quot;True&quot; ]]; then</span>
+<span class = "Delete">   100|      |-    38|      |-   249|      |-		echo &quot;&lt;/pre&gt;&lt;/div&gt;&lt;h3&gt; $hsFile &lt;/h3&gt;&lt;div class = \&quot;Errorbody\&quot;&gt;&lt;pre&gt;&quot; &gt;&gt; &quot;$ErrorLog&quot;</span>
+<span class = "Delete">   101|      |-    39|      |-   250|      |-	else</span>
+<span class = "Delete">   102|      |-    40|      |-   251|      |-		echo &quot;File: $hsFile&quot; &gt;&gt; &quot;$ErrorLog&quot;</span>
+<span class = "Delete">   103|      |-    41|      |-      |   249|+	if [[ -n $HSErr ]]; then</span>
+<span class = "Delete">   104|      |-    42|      |-      |   250|+		echo &gt;&gt; &quot;$ErrorLog&quot;</span>
+<span class = "Delete">   105|      |-    43|      |-      |   251|+		if [[ $Report = &quot;True&quot; ]]; then</span>
+<span class = "Delete">   106|      |-    44|      |-      |   252|+			echo &quot;&lt;/pre&gt;&lt;/div&gt;&lt;h3&gt; $hsFile &lt;/h3&gt;&lt;div class = \&quot;Errorbody\&quot;&gt;&lt;pre&gt;&quot; &gt;&gt; &quot;$ErrorLog&quot;</span>
+<span class = "Delete">   107|      |-    45|      |-      |   253|+		else</span>
+<span class = "Delete">   108|      |-    46|      |-      |   254|+			echo &quot;File: $hsFile&quot; &gt;&gt; &quot;$ErrorLog&quot;</span>
+<span class = "Delete">   109|      |-    47|      |-      |   255|+		fi</span>
+<span class = "Delete">   110|      |-    48|      |-      |   256|+		echo &quot;$HSErr&quot; | sed -e &quot;/^ *$/d&quot; &gt;&gt; &quot;$ErrorLog&quot;</span>
+<span class = "Delete">   111|      |-    49|      |-   252|   257| 	fi</span>
+<span class = "Delete">   112|      |-    50|      |-   253|      |-	echo &quot;$HSErr&quot; | sed -e &quot;/^ *$/d&quot; &gt;&gt; &quot;$ErrorLog&quot;</span>
+<span class = "Delete">   113|      |-    51|      |-   254|   258| done</span>
+<span class = "Delete">   114|      |-    52|      |-   255|   259| </span>
+<span class = "Delete">   115|      |-    53|      |-   256|   260| if [[ $Report = &quot;True&quot; ]];then</span>
+<span class = "Delete">   116|      |-    54|      |-_________________________</span>
+<span class = "Delete">   117|      |-    55|      |-</span>
+<span class = "Delete">   118|      |-    56|      |-File diff: Assign1/error.log</span>
+<span class = "Delete">   119|      |-    57|      |-     1|      |-&lt;!DOCTYPE html&gt; &lt;html&gt;&lt;head&gt;&lt;title&gt;Haskell ErrorLog&lt;/title&gt;&lt;style&gt;.Errorbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}&lt;/style&gt;&lt;/head&gt;</span>
+<span class = "Delete">   120|      |-    58|      |-     2|      |-&lt;body&gt;&lt;div&gt;&lt;pre&gt;</span>
+<span class = "Delete">   121|      |-    59|      |-     3|     1| </span>
+<span class = "Delete">   122|      |-    60|      |-     4|      |-&lt;/pre&gt;&lt;/div&gt;&lt;h3&gt; rand.hs &lt;/h3&gt;&lt;div class = &quot;Errorbody&quot;&gt;&lt;pre&gt;</span>
+<span class = "Delete">   123|      |-    61|      |-      |     2|+File: rand.hs</span>
+<span class = "Delete">   124|      |-    62|      |-     5|     3| rand.hs:1:13: error: parse error on input `-&gt;&#39;</span>
+<span class = "Delete">   125|      |-    63|      |-     6|     4|   |</span>
+<span class = "Delete">   126|      |-    64|      |-     7|     5| 1 | rand = Long -&gt; Float</span>
+<span class = "Delete">   127|      |-    65|      |-     8|     6|   |             ^^</span>
+<span class = "Delete">   128|      |-    66|      |-     9|      |-</span>
+<span class = "Delete">   129|      |-    67|      |-    10|      |-&lt;/pre&gt;&lt;/div&gt;&lt;h3&gt; test.hs &lt;/h3&gt;&lt;div class = &quot;Errorbody&quot;&gt;&lt;pre&gt;</span>
+<span class = "Delete">   130|      |-    68|      |-    11|      |-&lt;/pre&gt;&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;</span>
+<span class = "Delete">   131|      |-    69|      |-_________________________</span>
+<span class = "Delete">   132|      |-    70|      |-</span>
+<span class = "Delete">   133|      |-    71|      |-File diff: Assign1/testscript.sh</span>
+<span class = "Delete">   134|      |-    72|      |-     1|     1| #!/git-bash.exe</span>
+<span class = "Delete">   135|      |-    73|      |-     2|     2| </span>
+<span class = "Delete">   136|      |-    74|      |-     3|      |-Status=$(ghc -fno-code test.hs 2&gt;&amp;1 &gt;/dev/null)</span>
+<span class = "Delete">   137|      |-    75|      |-     4|      |-if [[ $Status =~ .*The\ IO\ action\ .main.\ is\ not\ defined\ [i]n\ module\ .Main..*  ]]</span>
+<span class = "Delete">   138|      |-    76|      |-     5|      |-then</span>
+<span class = "Delete">   139|      |-    77|      |-     6|      |-	echo &quot;Found&quot;</span>
+<span class = "Delete">   140|      |-    78|      |-     7|      |-fi</span>
+<span class = "Delete">   141|      |-    79|      |-      |     3|+Something=&quot;--exclude=changes.log --exclude=todo.log&quot;</span>
+<span class = "Delete">   142|      |-    80|      |-     8|     4| </span>
+<span class = "Delete">   143|      |-    81|      |-      |     5|+grep -rnIE &quot;$Something&quot; &quot;#TODO&quot;</span>
+<span class = "Delete">   144|      |-_________________________</span>
+<span class = "Delete">   145|      |-</span>
+<span class = "Delete">   146|      |-File diff: Assign1/testscript.sh</span>
+<span class = "Delete">   147|      |-     1|     1| #!/git-bash.exe</span>
+<span class = "Delete">   148|      |-     2|     2| </span>
+<span class = "Delete">   149|      |-     3|      |-Something=&quot;--exclude=changes.log --exclude=todo.log&quot;</span>
+<span class = "Delete">   150|      |-      |     3|+Something+=(&quot;todo.log&quot;)</span>
+<span class = "Delete">   151|      |-      |     4|+Something+=(&quot;changes.log&quot;)</span>
+<span class = "Delete">   152|      |-     4|     5| </span>
+<span class = "Delete">   153|      |-     5|      |-grep -rnIE &quot;$Something&quot; &quot;#TODO&quot;</span>
+<span class = "Delete">   154|      |-      |     6|+grep -rnIE ${Something[@]/#/--exclude=} &quot;#TODO&quot;</span>
+<hr width = "100%"><h3>Assign1/error.log
+</h3>
+<span class = "Add">      |     1|+&lt;!DOCTYPE html&gt; &lt;html&gt;&lt;head&gt;&lt;title&gt;Haskell ErrorLog&lt;/title&gt;&lt;style&gt;.ZeroMP{margin:0;padding:0}.Errorbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}&lt;/style&gt;&lt;/head&gt;</span> 
+<span class = "Add">      |     2|+&lt;body&gt;&lt;div class=&quot;ZeroMP&quot;&gt;&lt;pre&gt;</span> 
+<span>     1|     3| </span>
+<span class = "Delete">     2|      |-File: rand.hs</span>
+<span class = "Add">      |     4|+&lt;/pre&gt;&lt;/div&gt;&lt;h3&gt; rand.hs &lt;/h3&gt;&lt;div class = &quot;Errorbody&quot;&gt;&lt;pre&gt;</span> 
+<span>     3|     5| rand.hs:1:13: error: parse error on input `-&gt;&#39;</span>
+<span>     4|     6|   |</span>
+<span>     5|     7| 1 | rand = Long -&gt; Float</span>
+<span>     6|     8|   |             ^^</span>
+<span class = "Add">      |     9|+&lt;/pre&gt;&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;</span> 
+<hr width = "100%"><h3>Assign1/todo.log
+</h3>
+<span>     1|     1| File: ProjectAnalyze.sh</span>
+<span class = "Delete">     2|      |-  209|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &quot;//TODO|#TODO&quot; )</span>
+<span class = "Add">      |     2|+  158|				printf &quot;%s&quot; &quot;&lt;hr width = \&quot;100%\&quot;&gt;&quot; &gt;&gt; &quot;$Changelog&quot; #TODO maybe have it breaking the diff body stuff as well</span> 
+<span class = "Add">      |     3|+  268|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &quot;//TODO|#TODO&quot; )</span> 
+<span>     3|     4| File: testscript.sh</span>
+<span>     4|     5|     6|grep -rnIE ${Something[@]/#/--exclude=} &quot;#TODO&quot;</span>
+</pre></div></html>

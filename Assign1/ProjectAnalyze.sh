@@ -77,7 +77,9 @@ Status=$(git status)
 Diff=$( git diff -- . "$DiffFilter" 2>/dev/null ) # Consume the error (warning LF replaced by CRLF on windows)
 
 if [[ $Report = "True" ]];then
-	echo "<!DOCTYPE html> <html><head><title>Project Diffs</title><style>.Uncommitted{color:#33BE33}.ZeroMP{margin:0;padding:0}.Untracked{color:#AE6666}.Diffbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}</style></head>" >> "$Changelog"
+	#Pre wrapping whitespace from https://css-tricks.com/snippets/css/make-pre-text-wrap/
+	#Better highlighting https://stackoverflow.com/questions/5589958/html-span-tag-stretch-to-avaliable-width
+	echo "<!DOCTYPE html> <html><head><title>Project Diffs</title><style>.Uncommitted{color:#007E00}span{display:inline-block;width:100%}pre{white-space:pre-wrap}.ZeroMP{margin:0;padding:0}.Untracked{color:#AE6666}hr{border-color:black}.Diffbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}.Delete{background-color:#FFAAAA}.Add{background-color:#AAFFAA}</style></head>" >> "$Changelog"
 fi
 
 if [[ $Report = "True" ]];then
@@ -95,7 +97,7 @@ then
 	Untrack=$( echo "$Status" | sed -e "$STATUSCLEAN;/Untracked files:/d;/:/d;s/^	/	untracked:  /g" )
 	
 	if [[ $Report = "True" ]];then
-		echo "</pre></div><div class =\"Untracked\"><pre> $Untrack </pre></div>"
+		echo "</pre></div><div class =\"Diffbody Untracked\"><pre> $Untrack </pre></div>" >> "$Changelog"
 	else
 		echo "$Untrack" >> "$Changelog"
 	fi
@@ -112,18 +114,19 @@ while IFS= read -r line; do
 		fi
 	elif [[ $line =~ .*Changes\ not\ staged\ [f]or\ commit.* ]];then
 		if  [[ $Report = "True" ]];then
-			echo "</pre></div><h3>Files Not yet Staged</h3><div class = \"Diffbody Uncommitted\"><pre>"
+			echo "</pre></div><h3>Files Not yet Staged</h3><div class = \"Diffbody Uncommitted\"><pre>" >> "$Changelog"
+		fi
 	else 
 		echo "$line" >> "$Changelog"
 	fi
-done <<< StatCleaned 
+done <<< $StatCleaned 
 
 
 #---- Find uncommitted changes II ----
 #uses git diff prints in a cleaner style than default with lines numbered and all that
 
 if [[ $Report = "True" ]];then
-	echo "</pre></div><h3>Files Diff (Excluding Untracked Files)</h3></div class = \"Diffbody\"><pre>"
+	echo "</pre></div><h3>Files Diff (Excluding Untracked Files)</h3><div class = \"Diffbody\"><pre>" >> "$Changelog"
 else
 	$(echo "Current git diff:" >> "$Changelog")
 fi
@@ -152,7 +155,7 @@ while IFS= read -r line; do
 		if [ $Code = "True" ]
 		then
 			if [[ $Report = "True" ]];then
-				echo "<hr width = \"100%\">" >> "$Changelog" #TODO maybe have it breaking the diff body stuff as well
+				printf "%s" "<hr width = \"100%\">" >> "$Changelog" # printf to preserve pre formatting
 			else
 				$(printf '%0.1s' "_"{1..25} >> "$Changelog") # so it's much clearer where the code fragments are
 				$(echo >> "$Changelog") # nl cause printf%n doesn't work for some reason
@@ -179,9 +182,14 @@ while IFS= read -r line; do
 			Rem=$(echo "$line" | sed -e "s/^--- a\///;s:/:\\\/:g") # file removed to fix def/null issue
 		elif [ "$Status" -eq "4" ]
 		then
-			# dump the file name into the changelog
-			$(echo >> "$Changelog")
-			$(echo "$line" | sed -e "s/^+++ b\//File diff: /;s/+++ \/dev\/null/File deleted: $Rem/" >> "$Changelog" )
+			if [[ $Report = "True" ]];then
+				echo "$line" | sed -e "s/^+++ b\//<h3>/;s/+++ \/dev\/null/<h3 class = \"Untracked\"> $Rem/;" >> "$Changelog"
+				echo "</h3>" >> "$Changelog"
+			else
+				# dump the file name into the changelog
+				$(echo >> "$Changelog")
+				$(echo "$line" | sed -e "s/^+++ b\//File diff: /;s/+++ \/dev\/null/File deleted: $Rem/" >> "$Changelog" )
+			fi
 		fi
 
 	elif [ $Code == "True" ]
@@ -191,30 +199,56 @@ while IFS= read -r line; do
 		if [ "$Start" = "+" ]
 		then
 			PadA=$(( $PadL - ${#ANum} ))
-			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line" >> "$Changelog")
+			Diffl=$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadL" "$Pad" "" 0 "$PadA" "$Pad" "$ANum" "$line")
+			if [[ $Report = "True" ]];then
+				#HTML encoder from https://stackoverflow.com/questions/12873682/short-way-to-escape-html-in-bash
+				Diffl=$(echo "$Diffl" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g')
+				echo "<span class = \"Add\">$Diffl</span> " >> "$Changelog"
+			else
+				echo $Diffl >> "$Changelog"
+			fi
 			ANum=$(( $ANum + 1 ))
 			ACodeCount=$(( $ACodeCount - 1 ))
 		elif [ "$Start" = "-" ]
 		then
 			PadR=$(( $PadL - ${#RNum} ))
-			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line" >> "$Changelog")
+			Diffl=$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadL" "$Pad" "" "$line")
+			if [[ $Report = "True" ]];then
+				Diffl=$(echo "$Diffl" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g')
+				echo "<span class = \"Delete\">$Diffl</span>" >> "$Changelog"
+			else
+				echo "$Diffl" >> Changelog
+			fi
 			RNum=$(( $RNum + 1 ))
 			RCodeCount=$(( $RCodeCount - 1 ))
 		else
 			PadR=$(( $PadL - ${#RNum} ))
 			PadA=$(( $PadL - ${#ANum} ))
-			$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line" >> "$Changelog")
+			Diffl=$(printf '%*.*s%s|%*.*s%s|%s' 0 "$PadR" "$Pad" "$RNum" 0 "$PadA" "$Pad" "$ANum" "$line")
+			if [[ $Report = "True" ]];then
+				Diffl=$(echo "$Diffl" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g')
+				echo "<span>$Diffl</span>" >> "$Changelog"
+			else
+				echo "$Diffl" >> "$Changelog"
+			fi
 			#increment decrement stuff
 			RNum=$(( $RNum + 1 ))
 			ANum=$(( $ANum + 1 ))
 			RCodeCount=$(( $RCodeCount - 1 ))
 			ACodeCount=$(( $ACodeCount - 1 ))
 		fi
-			
-		$(echo >> "$Changelog") #to add newline
+		if [[ $Report = "False" ]];then
+			$(echo >> "$Changelog") #to add newline
+		fi
 	fi
 
 done <<< $Diff
+
+
+if [[ $Report = "True" ]];then
+	echo "</pre></div></html>" >> "$Changelog"
+fi
+
 #---- FIND TODO ----
 
 
