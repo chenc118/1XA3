@@ -1,5 +1,6 @@
 #!/git-bash.exe
 
-Something="--exclude=changes.log --exclude=todo.log"
+Something+=("todo.log")
+Something+=("changes.log")
 
-grep -rnIE "$Something" "#TODO"
+grep -rnIE ${Something[@]/#/--exclude=} "#TODO"

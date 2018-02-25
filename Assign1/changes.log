@@ -1,81 +1,154 @@
 The following files have not been committed
-	deleted:    changes.log
-	deleted:    todo.log
-	modified:   ProjectAnalyze.sh
-	modified:   error.log
-	modified:   testscript.sh
+StatCleaned
 Current git diff:
 
 File diff: Assign1/ProjectAnalyze.sh
-    46|    46| #----AutoPull (feature)----
-    47|    47| #if autopull flag set will try to autopull stuffs
-    48|    48| if [[ $Pull = "True" ]]; then
-    49|      |-	$(git pull)
-      |    49|+	git pull
-    50|    50| fi
-    51|    51| 
-    52|    52| #----Find uncommitted changes I ----
+    87|    87| fi
+    88|    88| 
+    89|    89| # get other changes
+    90|      |-$( echo "$Status" | sed "$STATUSCLEAN;/Changes to be committed:/d;/Changes not staged for commit:/d" >> "$Changelog" )
+      |    90|+StatCleaned=$( echo "$Status" | sed "$STATUSCLEAN" )
+      |    91|+
+      |    92|+while IFS= read -r line; do
+      |    93|+	if [[ $line =~ .*Changes\ to\ be\ committed.* ]];then
+      |    94|+		Nothing="Nothing"
+      |    95|+	elif [[ $line =~ .*Changes\ not\ staged\ [f]or\ commit.* ]];then
+      |    96|+		Nothing="Nothing"
+      |    97|+	else 
+      |    98|+		echo "$line" >> "$Changelog"
+      |    99|+	fi
+      |   100|+done <<< StatCleaned 
+    91|   101| 
+    92|   102| 
+    93|   103| #---- Find uncommitted changes II ----
 _________________________
-   189|   189| > $TodoLog #clears log
-   190|   190| 
-   191|   191| if [[ $Moore = "False" ]]; then
-   192|      |-	FMoore=",$TodoLog,$Changelog"
-      |   192|+	Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "--exclude=$Changelog" "--exclude=$TodoLog" "//TODO|#TODO") #//TODO cause I use java a lot
-      |   193|+else
-      |   194|+	Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
-   193|   195| fi
-   194|      |-Todo=$(grep -rnIE --exclude={ProjectAnalyze.sh$FMoore} "//TODO|#TODO") #//TODO cause I use java a lot
-      |   196|+
-   195|   197| 
-   196|   198| LastFile=">>Null" #>> cause that's illegal in filenames
-   197|   199| while IFS= read -r line; do
+   109|   119| ANum="0"
+   110|   120| #padding altered from the following https://stackoverflow.com/questions/4409399/padding-characters-in-printf
+   111|   121| #literally just a bunch of spaces
+   112|      |-Pad=$(printf '%0.1s' " "{1..60})
+      |   122|+Pad=$(printf '%0.1s' " "{1..60}) # This is resused for TODO
+   113|   123| #length to pad the numbers
+   114|   124| PadL=6
+   115|   125| 
 _________________________
-   244|   246| 		# line drop from https://stackoverflow.com/questions/4881930/remove-the-last-line-from-a-file-in-bash
-   245|   247| 		head -n -1 "$hsFile" > tmp.hs; mv tmp.hs "$hsFile"
-   246|   248| 	fi
-   247|      |-	echo >> "$ErrorLog"
-   248|      |-	if [[ $Report = "True" ]]; then
-   249|      |-		echo "</pre></div><h3> $hsFile </h3><div class = \"Errorbody\"><pre>" >> "$ErrorLog"
-   250|      |-	else
-   251|      |-		echo "File: $hsFile" >> "$ErrorLog"
-      |   249|+	if [[ -n $HSErr ]]; then
-      |   250|+		echo >> "$ErrorLog"
-      |   251|+		if [[ $Report = "True" ]]; then
-      |   252|+			echo "</pre></div><h3> $hsFile </h3><div class = \"Errorbody\"><pre>" >> "$ErrorLog"
-      |   253|+		else
-      |   254|+			echo "File: $hsFile" >> "$ErrorLog"
-      |   255|+		fi
-      |   256|+		echo "$HSErr" | sed -e "/^ *$/d" >> "$ErrorLog"
-   252|   257| 	fi
-   253|      |-	echo "$HSErr" | sed -e "/^ *$/d" >> "$ErrorLog"
-   254|   258| done
-   255|   259| 
-   256|   260| if [[ $Report = "True" ]];then
+   189|   199| > $TodoLog #clears log
+   190|   200| 
+   191|   201| if [[ $Moore = "False" ]]; then
+   192|      |-	Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "--exclude=$Changelog" "--exclude=$TodoLog" "//TODO|#TODO") #//TODO cause I use java a lot
+   193|      |-else
+   194|      |-	Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+      |   202|+	TIgnore+=("$Changelog")
+      |   203|+	TIgnore+=("$TodoLog")
+   195|   204| fi
+   196|   205| 
+      |   206|+TIgnore+=("ProjectAnalzye.sh")
+   197|   207| 
+      |   208|+# Idea taken from https://github.com/gwgundersen/gp/blob/master/gp.sh
+      |   209|+Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} "//TODO|#TODO" )
+   198|   210| LastFile=">>Null" #>> cause that's illegal in filenames
+   199|   211| while IFS= read -r line; do
+   200|   212| 	if [ -n "$line" ]
+_________________________
+   220|   232| 
+   221|   233| echo "Lines of code = $(find -name "*.hs" -print0 | xargs -0 wc -l | grep total | sed -e "s/[^0-9]*\([0-9]*\).*/\1/")"
+   222|   234| 
+   223|      |-#----Haskell Eror Check----
+      |   235|+#----Haskell Error Check----
+   224|   236| 
+   225|   237| ErrorLog="error.log"
+   226|   238| > "$ErrorLog" # clear log ofc
 _________________________
 
-File diff: Assign1/error.log
-     1|      |-<!DOCTYPE html> <html><head><title>Haskell ErrorLog</title><style>.Errorbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}</style></head>
-     2|      |-<body><div><pre>
-     3|     1| 
-     4|      |-</pre></div><h3> rand.hs </h3><div class = "Errorbody"><pre>
-      |     2|+File: rand.hs
-     5|     3| rand.hs:1:13: error: parse error on input `->'
-     6|     4|   |
-     7|     5| 1 | rand = Long -> Float
-     8|     6|   |             ^^
-     9|      |-
-    10|      |-</pre></div><h3> test.hs </h3><div class = "Errorbody"><pre>
-    11|      |-</pre></div></body></html>
+File deleted: Assign1/changes.log
+     1|      |-The following files have not been committed
+     2|      |-	deleted:    changes.log
+     3|      |-	deleted:    todo.log
+     4|      |-	modified:   ProjectAnalyze.sh
+     5|      |-	modified:   error.log
+     6|      |-	modified:   testscript.sh
+     7|      |-Current git diff:
+     8|      |-
+     9|      |-File diff: Assign1/ProjectAnalyze.sh
+    10|      |-    46|    46| #----AutoPull (feature)----
+    11|      |-    47|    47| #if autopull flag set will try to autopull stuffs
+    12|      |-    48|    48| if [[ $Pull = "True" ]]; then
+    13|      |-    49|      |-	$(git pull)
+    14|      |-      |    49|+	git pull
+    15|      |-    50|    50| fi
+    16|      |-    51|    51| 
+    17|      |-    52|    52| #----Find uncommitted changes I ----
+    18|      |-_________________________
+    19|      |-   189|   189| > $TodoLog #clears log
+    20|      |-   190|   190| 
+    21|      |-   191|   191| if [[ $Moore = "False" ]]; then
+    22|      |-   192|      |-	FMoore=",$TodoLog,$Changelog"
+    23|      |-      |   192|+	Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "--exclude=$Changelog" "--exclude=$TodoLog" "//TODO|#TODO") #//TODO cause I use java a lot
+    24|      |-      |   193|+else
+    25|      |-      |   194|+	Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+    26|      |-   193|   195| fi
+    27|      |-   194|      |-Todo=$(grep -rnIE --exclude={ProjectAnalyze.sh$FMoore} "//TODO|#TODO") #//TODO cause I use java a lot
+    28|      |-      |   196|+
+    29|      |-   195|   197| 
+    30|      |-   196|   198| LastFile=">>Null" #>> cause that's illegal in filenames
+    31|      |-   197|   199| while IFS= read -r line; do
+    32|      |-_________________________
+    33|      |-   244|   246| 		# line drop from https://stackoverflow.com/questions/4881930/remove-the-last-line-from-a-file-in-bash
+    34|      |-   245|   247| 		head -n -1 "$hsFile" > tmp.hs; mv tmp.hs "$hsFile"
+    35|      |-   246|   248| 	fi
+    36|      |-   247|      |-	echo >> "$ErrorLog"
+    37|      |-   248|      |-	if [[ $Report = "True" ]]; then
+    38|      |-   249|      |-		echo "</pre></div><h3> $hsFile </h3><div class = \"Errorbody\"><pre>" >> "$ErrorLog"
+    39|      |-   250|      |-	else
+    40|      |-   251|      |-		echo "File: $hsFile" >> "$ErrorLog"
+    41|      |-      |   249|+	if [[ -n $HSErr ]]; then
+    42|      |-      |   250|+		echo >> "$ErrorLog"
+    43|      |-      |   251|+		if [[ $Report = "True" ]]; then
+    44|      |-      |   252|+			echo "</pre></div><h3> $hsFile </h3><div class = \"Errorbody\"><pre>" >> "$ErrorLog"
+    45|      |-      |   253|+		else
+    46|      |-      |   254|+			echo "File: $hsFile" >> "$ErrorLog"
+    47|      |-      |   255|+		fi
+    48|      |-      |   256|+		echo "$HSErr" | sed -e "/^ *$/d" >> "$ErrorLog"
+    49|      |-   252|   257| 	fi
+    50|      |-   253|      |-	echo "$HSErr" | sed -e "/^ *$/d" >> "$ErrorLog"
+    51|      |-   254|   258| done
+    52|      |-   255|   259| 
+    53|      |-   256|   260| if [[ $Report = "True" ]];then
+    54|      |-_________________________
+    55|      |-
+    56|      |-File diff: Assign1/error.log
+    57|      |-     1|      |-<!DOCTYPE html> <html><head><title>Haskell ErrorLog</title><style>.Errorbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}</style></head>
+    58|      |-     2|      |-<body><div><pre>
+    59|      |-     3|     1| 
+    60|      |-     4|      |-</pre></div><h3> rand.hs </h3><div class = "Errorbody"><pre>
+    61|      |-      |     2|+File: rand.hs
+    62|      |-     5|     3| rand.hs:1:13: error: parse error on input `->'
+    63|      |-     6|     4|   |
+    64|      |-     7|     5| 1 | rand = Long -> Float
+    65|      |-     8|     6|   |             ^^
+    66|      |-     9|      |-
+    67|      |-    10|      |-</pre></div><h3> test.hs </h3><div class = "Errorbody"><pre>
+    68|      |-    11|      |-</pre></div></body></html>
+    69|      |-_________________________
+    70|      |-
+    71|      |-File diff: Assign1/testscript.sh
+    72|      |-     1|     1| #!/git-bash.exe
+    73|      |-     2|     2| 
+    74|      |-     3|      |-Status=$(ghc -fno-code test.hs 2>&1 >/dev/null)
+    75|      |-     4|      |-if [[ $Status =~ .*The\ IO\ action\ .main.\ is\ not\ defined\ [i]n\ module\ .Main..*  ]]
+    76|      |-     5|      |-then
+    77|      |-     6|      |-	echo "Found"
+    78|      |-     7|      |-fi
+    79|      |-      |     3|+Something="--exclude=changes.log --exclude=todo.log"
+    80|      |-     8|     4| 
+    81|      |-      |     5|+grep -rnIE "$Something" "#TODO"
 _________________________
 
 File diff: Assign1/testscript.sh
      1|     1| #!/git-bash.exe
      2|     2| 
-     3|      |-Status=$(ghc -fno-code test.hs 2>&1 >/dev/null)
-     4|      |-if [[ $Status =~ .*The\ IO\ action\ .main.\ is\ not\ defined\ [i]n\ module\ .Main..*  ]]
-     5|      |-then
-     6|      |-	echo "Found"
-     7|      |-fi
-      |     3|+Something="--exclude=changes.log --exclude=todo.log"
-     8|     4| 
-      |     5|+grep -rnIE "$Something" "#TODO"
+     3|      |-Something="--exclude=changes.log --exclude=todo.log"
+      |     3|+Something+=("todo.log")
+      |     4|+Something+=("changes.log")
+     4|     5| 
+     5|      |-grep -rnIE "$Something" "#TODO"
+      |     6|+grep -rnIE ${Something[@]/#/--exclude=} "#TODO"

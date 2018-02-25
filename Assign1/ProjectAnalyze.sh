@@ -61,8 +61,9 @@ Test="/^ *$/d"
 
 #sed '/^ *$/d' sourced from wikipedia on sed to clean empty lines
 #sed '//,+#d' sourced from stackoverflow: https://stackoverflow.com/questions/4396974/sed-or-awk-delete-n-lines-following-a-pattern
-
-rm "$Changelog"
+if [[ -e "$Changelog" ]];then
+	rm "$Changelog"
+fi
 
 
 #flag to see if there's untracked files
@@ -73,7 +74,7 @@ if [[ $Moore = "False" ]];then
 fi
 
 Status=$(git status)
-Diff=$( git diff -- . "$DiffFilter")
+Diff=$( git diff -- . "$DiffFilter" 2>/dev/null ) # Consume the error (warning LF replaced by CRLF on windows)
 
 # clear changes.log
 $( echo "The following files have not been committed" > "$Changelog")
@@ -87,7 +88,17 @@ then
 fi
 
 # get other changes
-$( echo "$Status" | sed "$STATUSCLEAN;/Changes to be committed:/d;/Changes not staged for commit:/d" >> "$Changelog" )
+StatCleaned=$( echo "$Status" | sed "$STATUSCLEAN" )
+
+while IFS= read -r line; do
+	if [[ $line =~ .*Changes\ to\ be\ committed.* ]];then
+		Nothing="Nothing"
+	elif [[ $line =~ .*Changes\ not\ staged\ [f]or\ commit.* ]];then
+		Nothing="Nothing"
+	else 
+		echo "$line" >> "$Changelog"
+	fi
+done <<< StatCleaned 
 
 
 #---- Find uncommitted changes II ----
@@ -109,7 +120,7 @@ RNum="0"
 ANum="0"
 #padding altered from the following https://stackoverflow.com/questions/4409399/padding-characters-in-printf
 #literally just a bunch of spaces
-Pad=$(printf '%0.1s' " "{1..60})
+Pad=$(printf '%0.1s' " "{1..60}) # This is resused for TODO
 #length to pad the numbers
 PadL=6
 
@@ -189,12 +200,14 @@ TodoLog="todo.log"
 > $TodoLog #clears log
 
 if [[ $Moore = "False" ]]; then
-	Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "--exclude=$Changelog" "--exclude=$TodoLog" "//TODO|#TODO") #//TODO cause I use java a lot
-else
-	Todo=$(grep -rnIE --exclude=ProjectAnalyze.sh "//TODO|#TODO") #//TODO cause I use java a lot
+	TIgnore+=("$Changelog")
+	TIgnore+=("$TodoLog")
 fi
 
+TIgnore+=("ProjectAnalzye.sh")
 
+# Idea taken from https://github.com/gwgundersen/gp/blob/master/gp.sh
+Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} "//TODO|#TODO" )
 LastFile=">>Null" #>> cause that's illegal in filenames
 while IFS= read -r line; do
 	if [ -n "$line" ]
@@ -220,7 +233,7 @@ done <<< $Todo
 
 echo "Lines of code = $(find -name "*.hs" -print0 | xargs -0 wc -l | grep total | sed -e "s/[^0-9]*\([0-9]*\).*/\1/")"
 
-#----Haskell Eror Check----
+#----Haskell Error Check----
 
 ErrorLog="error.log"
 > "$ErrorLog" # clear log ofc
