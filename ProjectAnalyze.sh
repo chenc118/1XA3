@@ -29,7 +29,7 @@ do
 		Mode="Null"
 	#Modal check if argument accepts several values, otherwise gets appended to the GL Value var
 	elif [[ $Mode = "Null" ]];then
-		ArgValue="$ArgValue(_)$arg" # still got to decide what's the best deliminator/ other workaround
+		ArgValue+="$arg"
 	fi
 done
 

@@ -1,87 +1,20 @@
 <!DOCTYPE html> <html><head><title>Project Diffs</title><style>.Uncommitted{color:#007E00}span{display:inline-block;width:100%}pre{white-space:pre-wrap}.ZeroMP{margin:0;padding:0}.Untracked{color:#AE6666}hr{border-color:black}.Diffbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}.Delete{background-color:#FFAAAA}.Add{background-color:#AAFFAA}</style></head>
 <h3>Uncommitted Files</h3>
 <div class = "ZeroMP"><pre>
+</pre></div><h3>Files Not yet committed</h3><div class = "Diffbody Uncommitted"><pre>
+	modified:   changes.log
 </pre></div><h3>Files Not yet Staged</h3><div class = "Diffbody Uncommitted"><pre>
-	modified:   Assign1/ProjectAnalyze.sh
-	modified:   Assign1/testscript.sh
 	modified:   ProjectAnalyze.sh
 	deleted:    changes.log
-	modified:   todo.log
 </pre></div><h3>Files Diff (Excluding Untracked Files)</h3><div class = "Diffbody"><pre>
-<h3>Assign1/ProjectAnalyze.sh
+<h3>ProjectAnalyze.sh
 </h3>
-<span>    52|    52| #----Find uncommitted changes I ----</span>
-<span>    53|    53| #AKA feature # 1 adds the stuff form git status to the diff stuff</span>
-<span>    54|    54| </span>
-<span class = "Delete">    55|      |-</span>
-<span class = "Add">      |    55|+TodoLog=&quot;todo.log&quot;</span> 
-<span>    56|    56| Changelog=&quot;changes.log&quot; #var to change the file in the future if I ever use this thing again</span>
-<span>    57|    57| </span>
-<span>    58|    58| #first sed cleans blank lines, second cleans mess in brackets, third cleans first line telling status of branch</span>
-<hr width = "100%"><span>    70|    70| untracked=$( git status | grep &quot;Untracked files:&quot; | wc -l )</span>
-<span>    71|    71| </span>
-<span>    72|    72| if [[ $Moore = &quot;False&quot; ]];then</span>
-<span class = "Delete">    73|      |-	DiffFilter=&quot;:(exclude)$Changelog\&quot; \&quot;:(exclude)$TodoLog&quot;</span>
-<span class = "Add">      |    73|+	DiffFilter+=(&quot;$Changelog&quot;)</span> 
-<span class = "Add">      |    74|+	DiffFilter+=(&quot;$TodoLog&quot;)</span> 
-<span>    74|    75| fi</span>
-<span class = "Delete">    75|      |-</span>
-<span>    76|    76| Status=$(git status)</span>
-<span class = "Delete">    77|      |-Diff=$( git diff -- . &quot;$DiffFilter&quot; 2&gt;/dev/null ) # Consume the error (warning LF replaced by CRLF on windows)</span>
-<span class = "Add">      |    77|+Diff=$( git diff -- . &quot;${DiffFilter[@]/#/\:\(exclude\)}&quot; 2&gt;/dev/null ) # Consume the error (warning LF replaced by CRLF on windows)</span> 
-<span>    78|    78| </span>
-<span>    79|    79| if [[ $Report = &quot;True&quot; ]];then</span>
-<span>    80|    80| 	#Pre wrapping whitespace from https://css-tricks.com/snippets/css/make-pre-text-wrap/</span>
-<hr width = "100%"><span>   251|   251| </span>
-<span>   252|   252| PadL=5 # new padding length for this part</span>
-<span>   253|   253| </span>
-<span class = "Delete">   254|      |-TodoLog=&quot;todo.log&quot;</span>
-<span class = "Add">      |   254|+</span> 
-<span>   255|   255| &gt; $TodoLog #clears log</span>
-<span>   256|   256| </span>
-<span>   257|   257| if [[ $Moore = &quot;False&quot; ]]; then</span>
-<hr width = "100%"><h3>Assign1/testscript.sh
-</h3>
-<span>     1|     1| #!/git-bash.exe</span>
-<span>     2|     2| </span>
-<span class = "Add">      |     3|+non=&quot;changes.log&quot;</span> 
-<span>     3|     4| Something+=(&quot;todo.log&quot;)</span>
-<span class = "Delete">     4|      |-Something+=(&quot;changes.log&quot;)</span>
-<span class = "Add">      |     5|+Something+=(&quot;$non&quot;)</span> 
-<span>     5|     6| </span>
-<span class = "Delete">     6|      |-grep -rnIE ${Something[@]/#/--exclude=} &quot;#TODO&quot;</span>
-<span class = "Add">      |     7|+Stat=$(git diff -- . &quot;${Something[@]/#/\:\(exclude\)}&quot;)</span> 
-<span class = "Add">      |     8|+echo $Stat</span> 
-<hr width = "100%"><h3>ProjectAnalyze.sh
-</h3>
-<span>    52|    52| #----Find uncommitted changes I ----</span>
-<span>    53|    53| #AKA feature # 1 adds the stuff form git status to the diff stuff</span>
-<span>    54|    54| </span>
-<span class = "Delete">    55|      |-</span>
-<span class = "Add">      |    55|+TodoLog=&quot;todo.log&quot;</span> 
-<span>    56|    56| Changelog=&quot;changes.log&quot; #var to change the file in the future if I ever use this thing again</span>
-<span>    57|    57| </span>
-<span>    58|    58| #first sed cleans blank lines, second cleans mess in brackets, third cleans first line telling status of branch</span>
-<hr width = "100%"><span>    70|    70| untracked=$( git status | grep &quot;Untracked files:&quot; | wc -l )</span>
-<span>    71|    71| </span>
-<span>    72|    72| if [[ $Moore = &quot;False&quot; ]];then</span>
-<span class = "Delete">    73|      |-	DiffFilter=&quot;:(exclude)$Changelog\&quot; \&quot;:(exclude)$TodoLog&quot;</span>
-<span class = "Add">      |    73|+	DiffFilter+=(&quot;$Changelog&quot;)</span> 
-<span class = "Add">      |    74|+	DiffFilter+=(&quot;$TodoLog&quot;)</span> 
-<span>    74|    75| fi</span>
-<span class = "Delete">    75|      |-</span>
-<span>    76|    76| Status=$(git status)</span>
-<span class = "Delete">    77|      |-Diff=$( git diff -- . &quot;$DiffFilter&quot; 2&gt;/dev/null ) # Consume the error (warning LF replaced by CRLF on windows)</span>
-<span class = "Add">      |    77|+Diff=$( git diff -- . &quot;${DiffFilter[@]/#/\:\(exclude\)}&quot; 2&gt;/dev/null ) # Consume the error (warning LF replaced by CRLF on windows)</span> 
-<span>    78|    78| </span>
-<span>    79|    79| if [[ $Report = &quot;True&quot; ]];then</span>
-<span>    80|    80| 	#Pre wrapping whitespace from https://css-tricks.com/snippets/css/make-pre-text-wrap/</span>
-<hr width = "100%"><span>   251|   251| </span>
-<span>   252|   252| PadL=5 # new padding length for this part</span>
-<span>   253|   253| </span>
-<span class = "Delete">   254|      |-TodoLog=&quot;todo.log&quot;</span>
-<span class = "Add">      |   254|+</span> 
-<span>   255|   255| &gt; $TodoLog #clears log</span>
-<span>   256|   256| </span>
-<span>   257|   257| if [[ $Moore = &quot;False&quot; ]]; then</span>
+<span>    29|    29| 		Mode=&quot;Null&quot;</span>
+<span>    30|    30| 	#Modal check if argument accepts several values, otherwise gets appended to the GL Value var</span>
+<span>    31|    31| 	elif [[ $Mode = &quot;Null&quot; ]];then</span>
+<span class = "Delete">    32|      |-		ArgValue=&quot;$ArgValue(_)$arg&quot; # still got to decide what&#39;s the best deliminator/ other workaround</span>
+<span class = "Add">      |    32|+		ArgValue+=&quot;$arg&quot;</span> 
+<span>    33|    33| 	fi</span>
+<span>    34|    34| done</span>
+<span>    35|    35| </span>
 </pre></div></html>
