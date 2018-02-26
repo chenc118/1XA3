@@ -1,6 +1,13 @@
+File: Assign1/changes.log
+   53|     2|      |-  268|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} "//TODO|#TODO" )
+   54|      |     2|+  266|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} "//TODO|#TODO" )
+   56|     4|     4|     6|grep -rnIE ${Something[@]/#/--exclude=} "#TODO"
 File: Assign1/ProjectAnalyze.sh
   265|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} "//TODO|#TODO" )
 File: Assign1/testscript.sh
     6|grep -rnIE ${Something[@]/#/--exclude=} "#TODO"
+File: Assign1/todo.log
+    2|  265|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} "//TODO|#TODO" )
+    4|    6|grep -rnIE ${Something[@]/#/--exclude=} "#TODO"
 File: ProjectAnalyze.sh
   265|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} "//TODO|#TODO" )

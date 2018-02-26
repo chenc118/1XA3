@@ -1,6 +1,15 @@
 <!DOCTYPE html> <html><head><title>Project Diffs</title><style>.Uncommitted{color:#007E00}span{display:inline-block;width:100%}pre{white-space:pre-wrap}.ZeroMP{margin:0;padding:0}.Untracked{color:#AE6666}hr{border-color:black}.Diffbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}.Delete{background-color:#FFAAAA}.Add{background-color:#AAFFAA}</style></head>
 <h3>Uncommitted Files</h3>
 <div class = "ZeroMP"><pre>
-nothing to commit, working tree clean
+</pre></div><h3>Files Not yet Staged</h3><div class = "Diffbody Uncommitted"><pre>
+	deleted:    changes.log
 </pre></div><h3>Files Diff (Excluding Untracked Files)</h3><div class = "Diffbody"><pre>
+<h3 class = "Untracked"> changes.log
+</h3>
+<span class = "Delete">     1|      |-&lt;!DOCTYPE html&gt; &lt;html&gt;&lt;head&gt;&lt;title&gt;Project Diffs&lt;/title&gt;&lt;style&gt;.Uncommitted{color:#007E00}span{display:inline-block;width:100%}pre{white-space:pre-wrap}.ZeroMP{margin:0;padding:0}.Untracked{color:#AE6666}hr{border-color:black}.Diffbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}.Delete{background-color:#FFAAAA}.Add{background-color:#AAFFAA}&lt;/style&gt;&lt;/head&gt;</span>
+<span class = "Delete">     2|      |-&lt;h3&gt;Uncommitted Files&lt;/h3&gt;</span>
+<span class = "Delete">     3|      |-&lt;div class = &quot;ZeroMP&quot;&gt;&lt;pre&gt;</span>
+<span class = "Delete">     4|      |-nothing to commit, working tree clean</span>
+<span class = "Delete">     5|      |-&lt;/pre&gt;&lt;/div&gt;&lt;h3&gt;Files Diff (Excluding Untracked Files)&lt;/h3&gt;&lt;div class = &quot;Diffbody&quot;&gt;&lt;pre&gt;</span>
+<span class = "Delete">     6|      |-&lt;/pre&gt;&lt;/div&gt;&lt;/html&gt;</span>
 </pre></div></html>
