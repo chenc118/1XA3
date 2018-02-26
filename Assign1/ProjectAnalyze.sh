@@ -259,7 +259,7 @@ if [[ $Moore = "False" ]]; then
 	TIgnore+=("$TodoLog")
 fi
 
-TIgnore+=("ProjectAnalzye.sh")
+TIgnore+=("ProjectAnalyze.sh")
 
 # Idea taken from https://github.com/gwgundersen/gp/blob/master/gp.sh
 Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} "//TODO|#TODO" )
@@ -300,7 +300,7 @@ if [[ $Report = "True" ]]; then
 fi
 
 shopt -s nullglob
-for hsFile in *.hs
+for hsFile in `find -name "*.hs" -type f` # last minute fix from https://stackoverflow.com/questions/14505047/loop-through-all-the-files-with-a-specific-extension
 do
 	#error capture from https://stackoverflow.com/questions/962255/how-to-store-standard-error-in-a-variable-in-a-bash-script
 	HSErr=$(ghc -fno-code "$hsFile" 2>&1 >/dev/null)

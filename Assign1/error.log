@@ -1,6 +1,9 @@
+<!DOCTYPE html> <html><head><title>Haskell ErrorLog</title><style>.ZeroMP{margin:0;padding:0}.Errorbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}</style></head>
+<body><div class="ZeroMP"><pre>
 
-File: rand.hs
+</pre></div><h3> ./rand.hs </h3><div class = "Errorbody"><pre>
 rand.hs:1:13: error: parse error on input `->'
   |
 1 | rand = Long -> Float
   |             ^^
+</pre></div></body></html>
