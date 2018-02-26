@@ -1,6 +1,8 @@
 #!/git-bash.exe
 
+non="changes.log"
 Something+=("todo.log")
-Something+=("changes.log")
+Something+=("$non")
 
-grep -rnIE ${Something[@]/#/--exclude=} "#TODO"
+Stat=$(git diff -- . "${Something[@]/#/\:\(exclude\)}")
+echo $Stat

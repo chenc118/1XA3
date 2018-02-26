@@ -52,7 +52,7 @@ fi
 #----Find uncommitted changes I ----
 #AKA feature # 1 adds the stuff form git status to the diff stuff
 
-
+TodoLog="todo.log"
 Changelog="changes.log" #var to change the file in the future if I ever use this thing again
 
 #first sed cleans blank lines, second cleans mess in brackets, third cleans first line telling status of branch
@@ -70,11 +70,11 @@ fi
 untracked=$( git status | grep "Untracked files:" | wc -l )
 
 if [[ $Moore = "False" ]];then
-	DiffFilter=":(exclude)$Changelog\" \":(exclude)$TodoLog"
+	DiffFilter+=("$Changelog")
+	DiffFilter+=("$TodoLog")
 fi
-
 Status=$(git status)
-Diff=$( git diff -- . "$DiffFilter" 2>/dev/null ) # Consume the error (warning LF replaced by CRLF on windows)
+Diff=$( git diff -- . "${DiffFilter[@]/#/\:\(exclude\)}" 2>/dev/null ) # Consume the error (warning LF replaced by CRLF on windows)
 
 if [[ $Report = "True" ]];then
 	#Pre wrapping whitespace from https://css-tricks.com/snippets/css/make-pre-text-wrap/
@@ -251,7 +251,7 @@ fi
 
 PadL=5 # new padding length for this part
 
-TodoLog="todo.log"
+
 > $TodoLog #clears log
 
 if [[ $Moore = "False" ]]; then

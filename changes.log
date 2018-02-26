@@ -2,288 +2,86 @@
 <h3>Uncommitted Files</h3>
 <div class = "ZeroMP"><pre>
 </pre></div><h3>Files Not yet Staged</h3><div class = "Diffbody Uncommitted"><pre>
+	modified:   Assign1/ProjectAnalyze.sh
+	modified:   Assign1/testscript.sh
+	modified:   ProjectAnalyze.sh
 	deleted:    changes.log
 	modified:   todo.log
 </pre></div><h3>Files Diff (Excluding Untracked Files)</h3><div class = "Diffbody"><pre>
-<h3 class = "Untracked"> changes.log
+<h3>Assign1/ProjectAnalyze.sh
 </h3>
-<span class = "Delete">     1|      |-&lt;!DOCTYPE html&gt; &lt;html&gt;&lt;head&gt;&lt;title&gt;Project Diffs&lt;/title&gt;&lt;style&gt;.Uncommitted{color:#007E00}span{display:inline-block;width:100%}pre{white-space:pre-wrap}.ZeroMP{margin:0;padding:0}.Untracked{color:#AE6666}hr{border-color:black}.Diffbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}.Delete{background-color:#FFAAAA}.Add{background-color:#AAFFAA}&lt;/style&gt;&lt;/head&gt;</span>
-<span class = "Delete">     2|      |-&lt;h3&gt;Uncommitted Files&lt;/h3&gt;</span>
-<span class = "Delete">     3|      |-&lt;div class = &quot;ZeroMP&quot;&gt;&lt;pre&gt;</span>
-<span class = "Delete">     4|      |-&lt;/pre&gt;&lt;/div&gt;&lt;h3&gt;Files Not yet Staged&lt;/h3&gt;&lt;div class = &quot;Diffbody Uncommitted&quot;&gt;&lt;pre&gt;</span>
-<span class = "Delete">     5|      |-	modified:   Assign1/ProjectAnalyze.sh</span>
-<span class = "Delete">     6|      |-	modified:   Assign1/changes.log</span>
-<span class = "Delete">     7|      |-	modified:   Assign1/error.log</span>
-<span class = "Delete">     8|      |-	modified:   ProjectAnalyze.sh</span>
-<span class = "Delete">     9|      |-	deleted:    changes.log</span>
-<span class = "Delete">    10|      |-	modified:   error.log</span>
-<span class = "Delete">    11|      |-	modified:   todo.log</span>
-<span class = "Delete">    12|      |-&lt;/pre&gt;&lt;/div&gt;&lt;h3&gt;Files Diff (Excluding Untracked Files)&lt;/h3&gt;&lt;div class = &quot;Diffbody&quot;&gt;&lt;pre&gt;</span>
-<span class = "Delete">    13|      |-&lt;h3&gt;Assign1/ProjectAnalyze.sh</span>
-<span class = "Delete">    14|      |-&lt;/h3&gt;</span>
-<span class = "Delete">    15|      |-&lt;span&gt;   259|   259| 	TIgnore+=(&amp;quot;$TodoLog&amp;quot;)&lt;/span&gt;</span>
-<span class = "Delete">    16|      |-&lt;span&gt;   260|   260| fi&lt;/span&gt;</span>
-<span class = "Delete">    17|      |-&lt;span&gt;   261|   261| &lt;/span&gt;</span>
-<span class = "Delete">    18|      |-&lt;span class = &quot;Delete&quot;&gt;   262|      |-TIgnore+=(&amp;quot;ProjectAnalzye.sh&amp;quot;)&lt;/span&gt;</span>
-<span class = "Delete">    19|      |-&lt;span class = &quot;Add&quot;&gt;      |   262|+TIgnore+=(&amp;quot;ProjectAnalyze.sh&amp;quot;)&lt;/span&gt; </span>
-<span class = "Delete">    20|      |-&lt;span&gt;   263|   263| &lt;/span&gt;</span>
-<span class = "Delete">    21|      |-&lt;span&gt;   264|   264| # Idea taken from https://github.com/gwgundersen/gp/blob/master/gp.sh&lt;/span&gt;</span>
-<span class = "Delete">    22|      |-&lt;span&gt;   265|   265| Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;quot;//TODO|#TODO&amp;quot; )&lt;/span&gt;</span>
-<span class = "Delete">    23|      |-&lt;hr width = &quot;100%&quot;&gt;&lt;span&gt;   300|   300| fi&lt;/span&gt;</span>
-<span class = "Delete">    24|      |-&lt;span&gt;   301|   301| &lt;/span&gt;</span>
-<span class = "Delete">    25|      |-&lt;span&gt;   302|   302| shopt -s nullglob&lt;/span&gt;</span>
-<span class = "Delete">    26|      |-&lt;span class = &quot;Delete&quot;&gt;   303|      |-for hsFile in *.hs&lt;/span&gt;</span>
-<span class = "Delete">    27|      |-&lt;span class = &quot;Add&quot;&gt;      |   303|+for hsFile in `find -name &amp;quot;*.hs&amp;quot; -type f` # last minute fix from https://stackoverflow.com/questions/14505047/loop-through-all-the-files-with-a-specific-extension&lt;/span&gt; </span>
-<span class = "Delete">    28|      |-&lt;span&gt;   304|   304| do&lt;/span&gt;</span>
-<span class = "Delete">    29|      |-&lt;span&gt;   305|   305| 	#error capture from https://stackoverflow.com/questions/962255/how-to-store-standard-error-in-a-variable-in-a-bash-script&lt;/span&gt;</span>
-<span class = "Delete">    30|      |-&lt;span&gt;   306|   306| 	HSErr=$(ghc -fno-code &amp;quot;$hsFile&amp;quot; 2&amp;gt;&amp;amp;1 &amp;gt;/dev/null)&lt;/span&gt;</span>
-<span class = "Delete">    31|      |-&lt;hr width = &quot;100%&quot;&gt;&lt;h3&gt;Assign1/changes.log</span>
-<span class = "Delete">    32|      |-&lt;/h3&gt;</span>
-<span class = "Delete">    33|      |-&lt;span class = &quot;Delete&quot;&gt;     1|      |-The following files have not been committed&lt;/span&gt;</span>
-<span class = "Delete">    34|      |-&lt;span class = &quot;Delete&quot;&gt;     2|      |-	deleted:    changes.log&lt;/span&gt;</span>
-<span class = "Delete">    35|      |-&lt;span class = &quot;Add&quot;&gt;      |     1|+&amp;lt;!DOCTYPE html&amp;gt; &amp;lt;html&amp;gt;&amp;lt;head&amp;gt;&amp;lt;title&amp;gt;Project Diffs&amp;lt;/title&amp;gt;&amp;lt;style&amp;gt;.Uncommitted{color:#007E00}span{display:inline-block;width:100%}pre{white-space:pre-wrap}.ZeroMP{margin:0;padding:0}.Untracked{color:#AE6666}hr{border-color:black}.Diffbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}.Delete{background-color:#FFAAAA}.Add{background-color:#AAFFAA}&amp;lt;/style&amp;gt;&amp;lt;/head&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">    36|      |-&lt;span class = &quot;Add&quot;&gt;      |     2|+&amp;lt;h3&amp;gt;Uncommitted Files&amp;lt;/h3&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">    37|      |-&lt;span class = &quot;Add&quot;&gt;      |     3|+&amp;lt;div class = &amp;quot;ZeroMP&amp;quot;&amp;gt;&amp;lt;pre&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">    38|      |-&lt;span class = &quot;Add&quot;&gt;      |     4|+&amp;lt;/pre&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;h3&amp;gt;Files Not yet Staged&amp;lt;/h3&amp;gt;&amp;lt;div class = &amp;quot;Diffbody Uncommitted&amp;quot;&amp;gt;&amp;lt;pre&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">    39|      |-&lt;span&gt;     3|     5| 	modified:   ProjectAnalyze.sh&lt;/span&gt;</span>
-<span class = "Delete">    40|      |-&lt;span class = &quot;Add&quot;&gt;      |     6|+	deleted:    changes.log&lt;/span&gt; </span>
-<span class = "Delete">    41|      |-&lt;span&gt;     4|     7| 	modified:   error.log&lt;/span&gt;</span>
-<span class = "Delete">    42|      |-&lt;span class = &quot;Delete&quot;&gt;     5|      |-	modified:   todo.log&lt;/span&gt;</span>
-<span class = "Delete">    43|      |-&lt;span class = &quot;Delete&quot;&gt;     6|      |-Current git diff:&lt;/span&gt;</span>
-<span class = "Delete">    44|      |-&lt;span class = &quot;Delete&quot;&gt;     7|      |-&lt;/span&gt;</span>
-<span class = "Delete">    45|      |-&lt;span class = &quot;Delete&quot;&gt;     8|      |-File diff: Assign1/ProjectAnalyze.sh&lt;/span&gt;</span>
-<span class = "Delete">    46|      |-&lt;span class = &quot;Delete&quot;&gt;     9|      |-   205|   205| 				Diffl=$(echo &amp;quot;$Diffl&amp;quot; | sed &amp;#39;s/&amp;amp;/\&amp;amp;amp;/g; s/&amp;lt;/\&amp;amp;lt;/g; s/&amp;gt;/\&amp;amp;gt;/g; s/&amp;quot;/\&amp;amp;quot;/g; s/&amp;#39;&amp;quot;&amp;#39;&amp;quot;&amp;#39;/\&amp;amp;#39;/g&amp;#39;)&lt;/span&gt;</span>
-<span class = "Delete">    47|      |-&lt;span class = &quot;Delete&quot;&gt;    10|      |-   206|   206| 				echo &amp;quot;&amp;lt;span class = \&amp;quot;Add\&amp;quot;&amp;gt;$Diffl&amp;lt;/span&amp;gt; &amp;quot; &amp;gt;&amp;gt; &amp;quot;$Changelog&amp;quot;&lt;/span&gt;</span>
-<span class = "Delete">    48|      |-&lt;span class = &quot;Delete&quot;&gt;    11|      |-   207|   207| 			else&lt;/span&gt;</span>
-<span class = "Delete">    49|      |-&lt;span class = &quot;Delete&quot;&gt;    12|      |-   208|      |-				echo $Diffl &amp;gt;&amp;gt; &amp;quot;$Changelog&amp;quot;&lt;/span&gt;</span>
-<span class = "Delete">    50|      |-&lt;span class = &quot;Delete&quot;&gt;    13|      |-      |   208|+				echo &amp;quot;$Diffl&amp;quot; &amp;gt;&amp;gt; &amp;quot;$Changelog&amp;quot;&lt;/span&gt;</span>
-<span class = "Delete">    51|      |-&lt;span class = &quot;Delete&quot;&gt;    14|      |-   209|   209| 			fi&lt;/span&gt;</span>
-<span class = "Delete">    52|      |-&lt;span class = &quot;Delete&quot;&gt;    15|      |-   210|   210| 			ANum=$(( $ANum + 1 ))&lt;/span&gt;</span>
-<span class = "Delete">    53|      |-&lt;span class = &quot;Delete&quot;&gt;    16|      |-   211|   211| 			ACodeCount=$(( $ACodeCount - 1 ))&lt;/span&gt;</span>
-<span class = "Delete">    54|      |-&lt;span class = &quot;Delete&quot;&gt;    17|      |-_________________________&lt;/span&gt;</span>
-<span class = "Delete">    55|      |-&lt;span class = &quot;Delete&quot;&gt;    18|      |-   217|   217| 				Diffl=$(echo &amp;quot;$Diffl&amp;quot; | sed &amp;#39;s/&amp;amp;/\&amp;amp;amp;/g; s/&amp;lt;/\&amp;amp;lt;/g; s/&amp;gt;/\&amp;amp;gt;/g; s/&amp;quot;/\&amp;amp;quot;/g; s/&amp;#39;&amp;quot;&amp;#39;&amp;quot;&amp;#39;/\&amp;amp;#39;/g&amp;#39;)&lt;/span&gt;</span>
-<span class = "Delete">    56|      |-&lt;span class = &quot;Delete&quot;&gt;    19|      |-   218|   218| 				echo &amp;quot;&amp;lt;span class = \&amp;quot;Delete\&amp;quot;&amp;gt;$Diffl&amp;lt;/span&amp;gt;&amp;quot; &amp;gt;&amp;gt; &amp;quot;$Changelog&amp;quot;&lt;/span&gt;</span>
-<span class = "Delete">    57|      |-&lt;span class = &quot;Delete&quot;&gt;    20|      |-   219|   219| 			else&lt;/span&gt;</span>
-<span class = "Delete">    58|      |-&lt;span class = &quot;Delete&quot;&gt;    21|      |-   220|      |-				echo &amp;quot;$Diffl&amp;quot; &amp;gt;&amp;gt; Changelog&lt;/span&gt;</span>
-<span class = "Delete">    59|      |-&lt;span class = &quot;Delete&quot;&gt;    22|      |-      |   220|+				echo &amp;quot;$Diffl&amp;quot; &amp;gt;&amp;gt; &amp;quot;$Changelog&amp;quot;&lt;/span&gt;</span>
-<span class = "Delete">    60|      |-&lt;span class = &quot;Delete&quot;&gt;    23|      |-   221|   221| 			fi&lt;/span&gt;</span>
-<span class = "Delete">    61|      |-&lt;span class = &quot;Delete&quot;&gt;    24|      |-   222|   222| 			RNum=$(( $RNum + 1 ))&lt;/span&gt;</span>
-<span class = "Delete">    62|      |-&lt;span class = &quot;Delete&quot;&gt;    25|      |-   223|   223| 			RCodeCount=$(( $RCodeCount - 1 ))&lt;/span&gt;</span>
-<span class = "Delete">    63|      |-&lt;span class = &quot;Delete&quot;&gt;    26|      |-_________________________&lt;/span&gt;</span>
-<span class = "Delete">    64|      |-&lt;span class = &quot;Delete&quot;&gt;    27|      |-   237|   237| 			RCodeCount=$(( $RCodeCount - 1 ))&lt;/span&gt;</span>
-<span class = "Delete">    65|      |-&lt;span class = &quot;Delete&quot;&gt;    28|      |-   238|   238| 			ACodeCount=$(( $ACodeCount - 1 ))&lt;/span&gt;</span>
-<span class = "Delete">    66|      |-&lt;span class = &quot;Delete&quot;&gt;    29|      |-   239|   239| 		fi&lt;/span&gt;</span>
-<span class = "Delete">    67|      |-&lt;span class = &quot;Delete&quot;&gt;    30|      |-   240|      |-		if [[ $Report = &amp;quot;False&amp;quot; ]];then&lt;/span&gt;</span>
-<span class = "Delete">    68|      |-&lt;span class = &quot;Delete&quot;&gt;    31|      |-   241|      |-			$(echo &amp;gt;&amp;gt; &amp;quot;$Changelog&amp;quot;) #to add newline&lt;/span&gt;</span>
-<span class = "Delete">    69|      |-&lt;span class = &quot;Delete&quot;&gt;    32|      |-   242|      |-		fi&lt;/span&gt;</span>
-<span class = "Delete">    70|      |-&lt;span class = &quot;Delete&quot;&gt;    33|      |-   243|   240| 	fi&lt;/span&gt;</span>
-<span class = "Delete">    71|      |-&lt;span class = &quot;Delete&quot;&gt;    34|      |-   244|   241| &lt;/span&gt;</span>
-<span class = "Delete">    72|      |-&lt;span class = &quot;Delete&quot;&gt;    35|      |-   245|   242| done &amp;lt;&amp;lt;&amp;lt; $Diff&lt;/span&gt;</span>
-<span class = "Delete">    73|      |-&lt;span class = &quot;Delete&quot;&gt;    36|      |-_________________________&lt;/span&gt;</span>
-<span class = "Delete">    74|      |-&lt;span class = &quot;Delete&quot;&gt;    37|      |-&lt;/span&gt;</span>
-<span class = "Delete">    75|      |-&lt;span class = &quot;Delete&quot;&gt;    38|      |-File diff: Assign1/error.log&lt;/span&gt;</span>
-<span class = "Delete">    76|      |-&lt;span class = &quot;Delete&quot;&gt;    39|      |-     1|      |-&amp;lt;!DOCTYPE html&amp;gt; &amp;lt;html&amp;gt;&amp;lt;head&amp;gt;&amp;lt;title&amp;gt;Haskell ErrorLog&amp;lt;/title&amp;gt;&amp;lt;style&amp;gt;.ZeroMP{margin:0;padding:0}.Errorbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}&amp;lt;/style&amp;gt;&amp;lt;/head&amp;gt;&lt;/span&gt;</span>
-<span class = "Delete">    77|      |-&lt;span class = &quot;Delete&quot;&gt;    40|      |-     2|      |-&amp;lt;body&amp;gt;&amp;lt;div class=&amp;quot;ZeroMP&amp;quot;&amp;gt;&amp;lt;pre&amp;gt;&lt;/span&gt;</span>
-<span class = "Delete">    78|      |-&lt;span class = &quot;Delete&quot;&gt;    41|      |-     3|     1| &lt;/span&gt;</span>
-<span class = "Delete">    79|      |-&lt;span class = &quot;Delete&quot;&gt;    42|      |-     4|      |-&amp;lt;/pre&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;h3&amp;gt; rand.hs &amp;lt;/h3&amp;gt;&amp;lt;div class = &amp;quot;Errorbody&amp;quot;&amp;gt;&amp;lt;pre&amp;gt;&lt;/span&gt;</span>
-<span class = "Delete">    80|      |-&lt;span class = &quot;Delete&quot;&gt;    43|      |-      |     2|+File: rand.hs&lt;/span&gt;</span>
-<span class = "Delete">    81|      |-&lt;span class = &quot;Delete&quot;&gt;    44|      |-     5|     3| rand.hs:1:13: error: parse error on input `-&amp;gt;&amp;#39;&lt;/span&gt;</span>
-<span class = "Delete">    82|      |-&lt;span class = &quot;Delete&quot;&gt;    45|      |-     6|     4|   |&lt;/span&gt;</span>
-<span class = "Delete">    83|      |-&lt;span class = &quot;Delete&quot;&gt;    46|      |-     7|     5| 1 | rand = Long -&amp;gt; Float&lt;/span&gt;</span>
-<span class = "Delete">    84|      |-&lt;span class = &quot;Delete&quot;&gt;    47|      |-     8|     6|   |             ^^&lt;/span&gt;</span>
-<span class = "Delete">    85|      |-&lt;span class = &quot;Delete&quot;&gt;    48|      |-     9|      |-&amp;lt;/pre&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&lt;/span&gt;</span>
-<span class = "Delete">    86|      |-&lt;span class = &quot;Delete&quot;&gt;    49|      |-_________________________&lt;/span&gt;</span>
-<span class = "Delete">    87|      |-&lt;span class = &quot;Delete&quot;&gt;    50|      |-&lt;/span&gt;</span>
-<span class = "Delete">    88|      |-&lt;span class = &quot;Delete&quot;&gt;    51|      |-File diff: Assign1/todo.log&lt;/span&gt;</span>
-<span class = "Delete">    89|      |-&lt;span class = &quot;Delete&quot;&gt;    52|      |-     1|     1| File: ProjectAnalyze.sh&lt;/span&gt;</span>
-<span class = "Delete">    90|      |-&lt;span class = &quot;Delete&quot;&gt;    53|      |-     2|      |-  268|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;quot;//TODO|#TODO&amp;quot; )&lt;/span&gt;</span>
-<span class = "Delete">    91|      |-&lt;span class = &quot;Delete&quot;&gt;    54|      |-      |     2|+  266|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;quot;//TODO|#TODO&amp;quot; )&lt;/span&gt;</span>
-<span class = "Delete">    92|      |-&lt;span class = &quot;Delete&quot;&gt;    55|      |-     3|     3| File: testscript.sh&lt;/span&gt;</span>
-<span class = "Delete">    93|      |-&lt;span class = &quot;Delete&quot;&gt;    56|      |-     4|     4|     6|grep -rnIE ${Something[@]/#/--exclude=} &amp;quot;#TODO&amp;quot;&lt;/span&gt;</span>
-<span class = "Delete">    94|      |-&lt;span class = &quot;Add&quot;&gt;      |     8|+	modified:   ../ProjectAnalyze.sh&lt;/span&gt; </span>
-<span class = "Delete">    95|      |-&lt;span class = &quot;Add&quot;&gt;      |     9|+	modified:   ../changes.log&lt;/span&gt; </span>
-<span class = "Delete">    96|      |-&lt;span class = &quot;Add&quot;&gt;      |    10|+	modified:   ../error.log&lt;/span&gt; </span>
-<span class = "Delete">    97|      |-&lt;span class = &quot;Add&quot;&gt;      |    11|+&amp;lt;/pre&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;h3&amp;gt;Files Diff (Excluding Untracked Files)&amp;lt;/h3&amp;gt;&amp;lt;div class = &amp;quot;Diffbody&amp;quot;&amp;gt;&amp;lt;pre&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">    98|      |-&lt;span class = &quot;Add&quot;&gt;      |    12|+&amp;lt;h3&amp;gt;Assign1/ProjectAnalyze.sh&lt;/span&gt; </span>
-<span class = "Delete">    99|      |-&lt;span class = &quot;Add&quot;&gt;      |    13|+&amp;lt;/h3&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   100|      |-&lt;span class = &quot;Add&quot;&gt;      |    14|+&amp;lt;span&amp;gt;   300|   300| fi&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   101|      |-&lt;span class = &quot;Add&quot;&gt;      |    15|+&amp;lt;span&amp;gt;   301|   301| &amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   102|      |-&lt;span class = &quot;Add&quot;&gt;      |    16|+&amp;lt;span&amp;gt;   302|   302| shopt -s nullglob&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   103|      |-&lt;span class = &quot;Add&quot;&gt;      |    17|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;   303|      |-for hsFile in *.hs&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   104|      |-&lt;span class = &quot;Add&quot;&gt;      |    18|+&amp;lt;span class = &amp;quot;Add&amp;quot;&amp;gt;      |   303|+for hsFile in `find -name &amp;amp;quot;*.hs&amp;amp;quot; -type f` # last minute fix from https://stackoverflow.com/questions/14505047/loop-through-all-the-files-with-a-specific-extension&amp;lt;/span&amp;gt; &lt;/span&gt; </span>
-<span class = "Delete">   105|      |-&lt;span class = &quot;Add&quot;&gt;      |    19|+&amp;lt;span&amp;gt;   304|   304| do&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   106|      |-&lt;span class = &quot;Add&quot;&gt;      |    20|+&amp;lt;span&amp;gt;   305|   305| 	#error capture from https://stackoverflow.com/questions/962255/how-to-store-standard-error-in-a-variable-in-a-bash-script&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   107|      |-&lt;span class = &quot;Add&quot;&gt;      |    21|+&amp;lt;span&amp;gt;   306|   306| 	HSErr=$(ghc -fno-code &amp;amp;quot;$hsFile&amp;amp;quot; 2&amp;amp;gt;&amp;amp;amp;1 &amp;amp;gt;/dev/null)&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   108|      |-&lt;span class = &quot;Add&quot;&gt;      |    22|+&amp;lt;hr width = &amp;quot;100%&amp;quot;&amp;gt;&amp;lt;h3 class = &amp;quot;Untracked&amp;quot;&amp;gt; Assign1/changes.log&lt;/span&gt; </span>
-<span class = "Delete">   109|      |-&lt;span class = &quot;Add&quot;&gt;      |    23|+&amp;lt;/h3&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   110|      |-&lt;span class = &quot;Add&quot;&gt;      |    24|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     1|      |-The following files have not been committed&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   111|      |-&lt;span class = &quot;Add&quot;&gt;      |    25|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     2|      |-	deleted:    changes.log&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   112|      |-&lt;span class = &quot;Add&quot;&gt;      |    26|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     3|      |-	modified:   ProjectAnalyze.sh&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   113|      |-&lt;span class = &quot;Add&quot;&gt;      |    27|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     4|      |-	modified:   error.log&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   114|      |-&lt;span class = &quot;Add&quot;&gt;      |    28|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     5|      |-	modified:   todo.log&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   115|      |-&lt;span class = &quot;Add&quot;&gt;      |    29|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     6|      |-Current git diff:&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   116|      |-&lt;span class = &quot;Add&quot;&gt;      |    30|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     7|      |-&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   117|      |-&lt;span class = &quot;Add&quot;&gt;      |    31|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     8|      |-File diff: Assign1/ProjectAnalyze.sh&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   118|      |-&lt;span class = &quot;Add&quot;&gt;      |    32|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     9|      |-   205|   205| 				Diffl=$(echo &amp;amp;quot;$Diffl&amp;amp;quot; | sed &amp;amp;#39;s/&amp;amp;amp;/\&amp;amp;amp;amp;/g; s/&amp;amp;lt;/\&amp;amp;amp;lt;/g; s/&amp;amp;gt;/\&amp;amp;amp;gt;/g; s/&amp;amp;quot;/\&amp;amp;amp;quot;/g; s/&amp;amp;#39;&amp;amp;quot;&amp;amp;#39;&amp;amp;quot;&amp;amp;#39;/\&amp;amp;amp;#39;/g&amp;amp;#39;)&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   119|      |-&lt;span class = &quot;Add&quot;&gt;      |    33|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    10|      |-   206|   206| 				echo &amp;amp;quot;&amp;amp;lt;span class = \&amp;amp;quot;Add\&amp;amp;quot;&amp;amp;gt;$Diffl&amp;amp;lt;/span&amp;amp;gt; &amp;amp;quot; &amp;amp;gt;&amp;amp;gt; &amp;amp;quot;$Changelog&amp;amp;quot;&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   120|      |-&lt;span class = &quot;Add&quot;&gt;      |    34|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    11|      |-   207|   207| 			else&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   121|      |-&lt;span class = &quot;Add&quot;&gt;      |    35|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    12|      |-   208|      |-				echo $Diffl &amp;amp;gt;&amp;amp;gt; &amp;amp;quot;$Changelog&amp;amp;quot;&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   122|      |-&lt;span class = &quot;Add&quot;&gt;      |    36|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    13|      |-      |   208|+				echo &amp;amp;quot;$Diffl&amp;amp;quot; &amp;amp;gt;&amp;amp;gt; &amp;amp;quot;$Changelog&amp;amp;quot;&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   123|      |-&lt;span class = &quot;Add&quot;&gt;      |    37|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    14|      |-   209|   209| 			fi&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   124|      |-&lt;span class = &quot;Add&quot;&gt;      |    38|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    15|      |-   210|   210| 			ANum=$(( $ANum + 1 ))&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   125|      |-&lt;span class = &quot;Add&quot;&gt;      |    39|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    16|      |-   211|   211| 			ACodeCount=$(( $ACodeCount - 1 ))&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   126|      |-&lt;span class = &quot;Add&quot;&gt;      |    40|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    17|      |-_________________________&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   127|      |-&lt;span class = &quot;Add&quot;&gt;      |    41|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    18|      |-   217|   217| 				Diffl=$(echo &amp;amp;quot;$Diffl&amp;amp;quot; | sed &amp;amp;#39;s/&amp;amp;amp;/\&amp;amp;amp;amp;/g; s/&amp;amp;lt;/\&amp;amp;amp;lt;/g; s/&amp;amp;gt;/\&amp;amp;amp;gt;/g; s/&amp;amp;quot;/\&amp;amp;amp;quot;/g; s/&amp;amp;#39;&amp;amp;quot;&amp;amp;#39;&amp;amp;quot;&amp;amp;#39;/\&amp;amp;amp;#39;/g&amp;amp;#39;)&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   128|      |-&lt;span class = &quot;Add&quot;&gt;      |    42|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    19|      |-   218|   218| 				echo &amp;amp;quot;&amp;amp;lt;span class = \&amp;amp;quot;Delete\&amp;amp;quot;&amp;amp;gt;$Diffl&amp;amp;lt;/span&amp;amp;gt;&amp;amp;quot; &amp;amp;gt;&amp;amp;gt; &amp;amp;quot;$Changelog&amp;amp;quot;&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   129|      |-&lt;span class = &quot;Add&quot;&gt;      |    43|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    20|      |-   219|   219| 			else&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   130|      |-&lt;span class = &quot;Add&quot;&gt;      |    44|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    21|      |-   220|      |-				echo &amp;amp;quot;$Diffl&amp;amp;quot; &amp;amp;gt;&amp;amp;gt; Changelog&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   131|      |-&lt;span class = &quot;Add&quot;&gt;      |    45|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    22|      |-      |   220|+				echo &amp;amp;quot;$Diffl&amp;amp;quot; &amp;amp;gt;&amp;amp;gt; &amp;amp;quot;$Changelog&amp;amp;quot;&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   132|      |-&lt;span class = &quot;Add&quot;&gt;      |    46|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    23|      |-   221|   221| 			fi&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   133|      |-&lt;span class = &quot;Add&quot;&gt;      |    47|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    24|      |-   222|   222| 			RNum=$(( $RNum + 1 ))&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   134|      |-&lt;span class = &quot;Add&quot;&gt;      |    48|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    25|      |-   223|   223| 			RCodeCount=$(( $RCodeCount - 1 ))&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   135|      |-&lt;span class = &quot;Add&quot;&gt;      |    49|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    26|      |-_________________________&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   136|      |-&lt;span class = &quot;Add&quot;&gt;      |    50|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    27|      |-   237|   237| 			RCodeCount=$(( $RCodeCount - 1 ))&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   137|      |-&lt;span class = &quot;Add&quot;&gt;      |    51|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    28|      |-   238|   238| 			ACodeCount=$(( $ACodeCount - 1 ))&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   138|      |-&lt;span class = &quot;Add&quot;&gt;      |    52|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    29|      |-   239|   239| 		fi&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   139|      |-&lt;span class = &quot;Add&quot;&gt;      |    53|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    30|      |-   240|      |-		if [[ $Report = &amp;amp;quot;False&amp;amp;quot; ]];then&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   140|      |-&lt;span class = &quot;Add&quot;&gt;      |    54|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    31|      |-   241|      |-			$(echo &amp;amp;gt;&amp;amp;gt; &amp;amp;quot;$Changelog&amp;amp;quot;) #to add newline&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   141|      |-&lt;span class = &quot;Add&quot;&gt;      |    55|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    32|      |-   242|      |-		fi&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   142|      |-&lt;span class = &quot;Add&quot;&gt;      |    56|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    33|      |-   243|   240| 	fi&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   143|      |-&lt;span class = &quot;Add&quot;&gt;      |    57|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    34|      |-   244|   241| &amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   144|      |-&lt;span class = &quot;Add&quot;&gt;      |    58|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    35|      |-   245|   242| done &amp;amp;lt;&amp;amp;lt;&amp;amp;lt; $Diff&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   145|      |-&lt;span class = &quot;Add&quot;&gt;      |    59|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    36|      |-_________________________&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   146|      |-&lt;span class = &quot;Add&quot;&gt;      |    60|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    37|      |-&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   147|      |-&lt;span class = &quot;Add&quot;&gt;      |    61|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    38|      |-File diff: Assign1/error.log&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   148|      |-&lt;span class = &quot;Add&quot;&gt;      |    62|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    39|      |-     1|      |-&amp;amp;lt;!DOCTYPE html&amp;amp;gt; &amp;amp;lt;html&amp;amp;gt;&amp;amp;lt;head&amp;amp;gt;&amp;amp;lt;title&amp;amp;gt;Haskell ErrorLog&amp;amp;lt;/title&amp;amp;gt;&amp;amp;lt;style&amp;amp;gt;.ZeroMP{margin:0;padding:0}.Errorbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}&amp;amp;lt;/style&amp;amp;gt;&amp;amp;lt;/head&amp;amp;gt;&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   149|      |-&lt;span class = &quot;Add&quot;&gt;      |    63|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    40|      |-     2|      |-&amp;amp;lt;body&amp;amp;gt;&amp;amp;lt;div class=&amp;amp;quot;ZeroMP&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;pre&amp;amp;gt;&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   150|      |-&lt;span class = &quot;Add&quot;&gt;      |    64|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    41|      |-     3|     1| &amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   151|      |-&lt;span class = &quot;Add&quot;&gt;      |    65|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    42|      |-     4|      |-&amp;amp;lt;/pre&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;&amp;amp;lt;h3&amp;amp;gt; rand.hs &amp;amp;lt;/h3&amp;amp;gt;&amp;amp;lt;div class = &amp;amp;quot;Errorbody&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;pre&amp;amp;gt;&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   152|      |-&lt;span class = &quot;Add&quot;&gt;      |    66|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    43|      |-      |     2|+File: rand.hs&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   153|      |-&lt;span class = &quot;Add&quot;&gt;      |    67|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    44|      |-     5|     3| rand.hs:1:13: error: parse error on input `-&amp;amp;gt;&amp;amp;#39;&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   154|      |-&lt;span class = &quot;Add&quot;&gt;      |    68|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    45|      |-     6|     4|   |&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   155|      |-&lt;span class = &quot;Add&quot;&gt;      |    69|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    46|      |-     7|     5| 1 | rand = Long -&amp;amp;gt; Float&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   156|      |-&lt;span class = &quot;Add&quot;&gt;      |    70|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    47|      |-     8|     6|   |             ^^&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   157|      |-&lt;span class = &quot;Add&quot;&gt;      |    71|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    48|      |-     9|      |-&amp;amp;lt;/pre&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;&amp;amp;lt;/body&amp;amp;gt;&amp;amp;lt;/html&amp;amp;gt;&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   158|      |-&lt;span class = &quot;Add&quot;&gt;      |    72|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    49|      |-_________________________&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   159|      |-&lt;span class = &quot;Add&quot;&gt;      |    73|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    50|      |-&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   160|      |-&lt;span class = &quot;Add&quot;&gt;      |    74|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    51|      |-File diff: Assign1/todo.log&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   161|      |-&lt;span class = &quot;Add&quot;&gt;      |    75|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    52|      |-     1|     1| File: ProjectAnalyze.sh&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   162|      |-&lt;span class = &quot;Add&quot;&gt;      |    76|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    53|      |-     2|      |-  268|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;amp;quot;//TODO|#TODO&amp;amp;quot; )&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   163|      |-&lt;span class = &quot;Add&quot;&gt;      |    77|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    54|      |-      |     2|+  266|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;amp;quot;//TODO|#TODO&amp;amp;quot; )&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   164|      |-&lt;span class = &quot;Add&quot;&gt;      |    78|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    55|      |-     3|     3| File: testscript.sh&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   165|      |-&lt;span class = &quot;Add&quot;&gt;      |    79|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    56|      |-     4|     4|     6|grep -rnIE ${Something[@]/#/--exclude=} &amp;amp;quot;#TODO&amp;amp;quot;&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   166|      |-&lt;span class = &quot;Add&quot;&gt;      |    80|+&amp;lt;hr width = &amp;quot;100%&amp;quot;&amp;gt;&amp;lt;h3&amp;gt;Assign1/error.log&lt;/span&gt; </span>
-<span class = "Delete">   167|      |-&lt;span class = &quot;Add&quot;&gt;      |    81|+&amp;lt;/h3&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   168|      |-&lt;span class = &quot;Add&quot;&gt;      |    82|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     1|      |-&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   169|      |-&lt;span class = &quot;Add&quot;&gt;      |    83|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     2|      |-File: rand.hs&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   170|      |-&lt;span class = &quot;Add&quot;&gt;      |    84|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     3|      |-rand.hs:1:13: error: parse error on input `-&amp;amp;gt;&amp;amp;#39;&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   171|      |-&lt;span class = &quot;Add&quot;&gt;      |    85|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     4|      |-  |&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   172|      |-&lt;span class = &quot;Add&quot;&gt;      |    86|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     5|      |-1 | rand = Long -&amp;amp;gt; Float&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   173|      |-&lt;span class = &quot;Add&quot;&gt;      |    87|+&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     6|      |-  |             ^^&amp;lt;/span&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   174|      |-&lt;span class = &quot;Add&quot;&gt;      |    88|+&amp;lt;span class = &amp;quot;Add&amp;quot;&amp;gt;      |     1|+&amp;amp;lt;!DOCTYPE html&amp;amp;gt; &amp;amp;lt;html&amp;amp;gt;&amp;amp;lt;head&amp;amp;gt;&amp;amp;lt;title&amp;amp;gt;Haskell ErrorLog&amp;amp;lt;/title&amp;amp;gt;&amp;amp;lt;style&amp;amp;gt;.ZeroMP{margin:0;padding:0}.Errorbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}&amp;amp;lt;/style&amp;amp;gt;&amp;amp;lt;/head&amp;amp;gt;&amp;lt;/span&amp;gt; &lt;/span&gt; </span>
-<span class = "Delete">   175|      |-&lt;span class = &quot;Add&quot;&gt;      |    89|+&amp;lt;span class = &amp;quot;Add&amp;quot;&amp;gt;      |     2|+&amp;amp;lt;body&amp;amp;gt;&amp;amp;lt;div class=&amp;amp;quot;ZeroMP&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;pre&amp;amp;gt;&amp;lt;/span&amp;gt; &lt;/span&gt; </span>
-<span class = "Delete">   176|      |-&lt;span class = &quot;Add&quot;&gt;      |    90|+&amp;lt;span class = &amp;quot;Add&amp;quot;&amp;gt;      |     3|+&amp;amp;lt;/pre&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;&amp;amp;lt;/body&amp;amp;gt;&amp;amp;lt;/html&amp;amp;gt;&amp;lt;/span&amp;gt; &lt;/span&gt; </span>
-<span class = "Delete">   177|      |-&lt;span class = &quot;Add&quot;&gt;      |    91|+&amp;lt;/pre&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/html&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   178|      |-&lt;hr width = &quot;100%&quot;&gt;&lt;h3&gt;Assign1/error.log</span>
-<span class = "Delete">   179|      |-&lt;/h3&gt;</span>
-<span class = "Delete">   180|      |-&lt;span class = &quot;Add&quot;&gt;      |     1|+&amp;lt;!DOCTYPE html&amp;gt; &amp;lt;html&amp;gt;&amp;lt;head&amp;gt;&amp;lt;title&amp;gt;Haskell ErrorLog&amp;lt;/title&amp;gt;&amp;lt;style&amp;gt;.ZeroMP{margin:0;padding:0}.Errorbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}&amp;lt;/style&amp;gt;&amp;lt;/head&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   181|      |-&lt;span class = &quot;Add&quot;&gt;      |     2|+&amp;lt;body&amp;gt;&amp;lt;div class=&amp;quot;ZeroMP&amp;quot;&amp;gt;&amp;lt;pre&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   182|      |-&lt;span&gt;     1|     3| &lt;/span&gt;</span>
-<span class = "Delete">   183|      |-&lt;span class = &quot;Delete&quot;&gt;     2|      |-File: rand.hs&lt;/span&gt;</span>
-<span class = "Delete">   184|      |-&lt;span class = &quot;Add&quot;&gt;      |     4|+&amp;lt;/pre&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;h3&amp;gt; ./rand.hs &amp;lt;/h3&amp;gt;&amp;lt;div class = &amp;quot;Errorbody&amp;quot;&amp;gt;&amp;lt;pre&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   185|      |-&lt;span&gt;     3|     5| rand.hs:1:13: error: parse error on input `-&amp;gt;&amp;#39;&lt;/span&gt;</span>
-<span class = "Delete">   186|      |-&lt;span&gt;     4|     6|   |&lt;/span&gt;</span>
-<span class = "Delete">   187|      |-&lt;span&gt;     5|     7| 1 | rand = Long -&amp;gt; Float&lt;/span&gt;</span>
-<span class = "Delete">   188|      |-&lt;span&gt;     6|     8|   |             ^^&lt;/span&gt;</span>
-<span class = "Delete">   189|      |-&lt;span class = &quot;Add&quot;&gt;      |     9|+&amp;lt;/pre&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   190|      |-&lt;hr width = &quot;100%&quot;&gt;&lt;h3&gt;ProjectAnalyze.sh</span>
-<span class = "Delete">   191|      |-&lt;/h3&gt;</span>
-<span class = "Delete">   192|      |-&lt;span&gt;   259|   259| 	TIgnore+=(&amp;quot;$TodoLog&amp;quot;)&lt;/span&gt;</span>
-<span class = "Delete">   193|      |-&lt;span&gt;   260|   260| fi&lt;/span&gt;</span>
-<span class = "Delete">   194|      |-&lt;span&gt;   261|   261| &lt;/span&gt;</span>
-<span class = "Delete">   195|      |-&lt;span class = &quot;Delete&quot;&gt;   262|      |-TIgnore+=(&amp;quot;ProjectAnalzye.sh&amp;quot;)&lt;/span&gt;</span>
-<span class = "Delete">   196|      |-&lt;span class = &quot;Add&quot;&gt;      |   262|+TIgnore+=(&amp;quot;ProjectAnalyze.sh&amp;quot;)&lt;/span&gt; </span>
-<span class = "Delete">   197|      |-&lt;span&gt;   263|   263| &lt;/span&gt;</span>
-<span class = "Delete">   198|      |-&lt;span&gt;   264|   264| # Idea taken from https://github.com/gwgundersen/gp/blob/master/gp.sh&lt;/span&gt;</span>
-<span class = "Delete">   199|      |-&lt;span&gt;   265|   265| Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;quot;//TODO|#TODO&amp;quot; )&lt;/span&gt;</span>
-<span class = "Delete">   200|      |-&lt;hr width = &quot;100%&quot;&gt;&lt;span&gt;   300|   300| fi&lt;/span&gt;</span>
-<span class = "Delete">   201|      |-&lt;span&gt;   301|   301| &lt;/span&gt;</span>
-<span class = "Delete">   202|      |-&lt;span&gt;   302|   302| shopt -s nullglob&lt;/span&gt;</span>
-<span class = "Delete">   203|      |-&lt;span class = &quot;Delete&quot;&gt;   303|      |-for hsFile in *.hs&lt;/span&gt;</span>
-<span class = "Delete">   204|      |-&lt;span class = &quot;Add&quot;&gt;      |   303|+for hsFile in `find -name &amp;quot;*.hs&amp;quot; -type f` # last minute fix from https://stackoverflow.com/questions/14505047/loop-through-all-the-files-with-a-specific-extension&lt;/span&gt; </span>
-<span class = "Delete">   205|      |-&lt;span&gt;   304|   304| do&lt;/span&gt;</span>
-<span class = "Delete">   206|      |-&lt;span&gt;   305|   305| 	#error capture from https://stackoverflow.com/questions/962255/how-to-store-standard-error-in-a-variable-in-a-bash-script&lt;/span&gt;</span>
-<span class = "Delete">   207|      |-&lt;span&gt;   306|   306| 	HSErr=$(ghc -fno-code &amp;quot;$hsFile&amp;quot; 2&amp;gt;&amp;amp;1 &amp;gt;/dev/null)&lt;/span&gt;</span>
-<span class = "Delete">   208|      |-&lt;hr width = &quot;100%&quot;&gt;&lt;h3 class = &quot;Untracked&quot;&gt; changes.log</span>
-<span class = "Delete">   209|      |-&lt;/h3&gt;</span>
-<span class = "Delete">   210|      |-&lt;span class = &quot;Delete&quot;&gt;     1|      |-&amp;lt;!DOCTYPE html&amp;gt; &amp;lt;html&amp;gt;&amp;lt;head&amp;gt;&amp;lt;title&amp;gt;Project Diffs&amp;lt;/title&amp;gt;&amp;lt;style&amp;gt;.Uncommitted{color:#007E00}span{display:inline-block;width:100%}pre{white-space:pre-wrap}.ZeroMP{margin:0;padding:0}.Untracked{color:#AE6666}hr{border-color:black}.Diffbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}.Delete{background-color:#FFAAAA}.Add{background-color:#AAFFAA}&amp;lt;/style&amp;gt;&amp;lt;/head&amp;gt;&lt;/span&gt;</span>
-<span class = "Delete">   211|      |-&lt;span class = &quot;Delete&quot;&gt;     2|      |-&amp;lt;h3&amp;gt;Uncommitted Files&amp;lt;/h3&amp;gt;&lt;/span&gt;</span>
-<span class = "Delete">   212|      |-&lt;span class = &quot;Delete&quot;&gt;     3|      |-&amp;lt;div class = &amp;quot;ZeroMP&amp;quot;&amp;gt;&amp;lt;pre&amp;gt;&lt;/span&gt;</span>
-<span class = "Delete">   213|      |-&lt;span class = &quot;Delete&quot;&gt;     4|      |-&amp;lt;/pre&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;h3&amp;gt;Files Not yet Staged&amp;lt;/h3&amp;gt;&amp;lt;div class = &amp;quot;Diffbody Uncommitted&amp;quot;&amp;gt;&amp;lt;pre&amp;gt;&lt;/span&gt;</span>
-<span class = "Delete">   214|      |-&lt;span class = &quot;Delete&quot;&gt;     5|      |-	deleted:    changes.log&lt;/span&gt;</span>
-<span class = "Delete">   215|      |-&lt;span class = &quot;Delete&quot;&gt;     6|      |-&amp;lt;/pre&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;h3&amp;gt;Files Diff (Excluding Untracked Files)&amp;lt;/h3&amp;gt;&amp;lt;div class = &amp;quot;Diffbody&amp;quot;&amp;gt;&amp;lt;pre&amp;gt;&lt;/span&gt;</span>
-<span class = "Delete">   216|      |-&lt;span class = &quot;Delete&quot;&gt;     7|      |-&amp;lt;h3 class = &amp;quot;Untracked&amp;quot;&amp;gt; changes.log&lt;/span&gt;</span>
-<span class = "Delete">   217|      |-&lt;span class = &quot;Delete&quot;&gt;     8|      |-&amp;lt;/h3&amp;gt;&lt;/span&gt;</span>
-<span class = "Delete">   218|      |-&lt;span class = &quot;Delete&quot;&gt;     9|      |-&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     1|      |-&amp;amp;lt;!DOCTYPE html&amp;amp;gt; &amp;amp;lt;html&amp;amp;gt;&amp;amp;lt;head&amp;amp;gt;&amp;amp;lt;title&amp;amp;gt;Project Diffs&amp;amp;lt;/title&amp;amp;gt;&amp;amp;lt;style&amp;amp;gt;.Uncommitted{color:#007E00}span{display:inline-block;width:100%}pre{white-space:pre-wrap}.ZeroMP{margin:0;padding:0}.Untracked{color:#AE6666}hr{border-color:black}.Diffbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}.Delete{background-color:#FFAAAA}.Add{background-color:#AAFFAA}&amp;amp;lt;/style&amp;amp;gt;&amp;amp;lt;/head&amp;amp;gt;&amp;lt;/span&amp;gt;&lt;/span&gt;</span>
-<span class = "Delete">   219|      |-&lt;span class = &quot;Delete&quot;&gt;    10|      |-&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     2|      |-&amp;amp;lt;h3&amp;amp;gt;Uncommitted Files&amp;amp;lt;/h3&amp;amp;gt;&amp;lt;/span&amp;gt;&lt;/span&gt;</span>
-<span class = "Delete">   220|      |-&lt;span class = &quot;Delete&quot;&gt;    11|      |-&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     3|      |-&amp;amp;lt;div class = &amp;amp;quot;ZeroMP&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;pre&amp;amp;gt;&amp;lt;/span&amp;gt;&lt;/span&gt;</span>
-<span class = "Delete">   221|      |-&lt;span class = &quot;Delete&quot;&gt;    12|      |-&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     4|      |-nothing to commit, working tree clean&amp;lt;/span&amp;gt;&lt;/span&gt;</span>
-<span class = "Delete">   222|      |-&lt;span class = &quot;Delete&quot;&gt;    13|      |-&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     5|      |-&amp;amp;lt;/pre&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;&amp;amp;lt;h3&amp;amp;gt;Files Diff (Excluding Untracked Files)&amp;amp;lt;/h3&amp;amp;gt;&amp;amp;lt;div class = &amp;amp;quot;Diffbody&amp;amp;quot;&amp;amp;gt;&amp;amp;lt;pre&amp;amp;gt;&amp;lt;/span&amp;gt;&lt;/span&gt;</span>
-<span class = "Delete">   223|      |-&lt;span class = &quot;Delete&quot;&gt;    14|      |-&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     6|      |-&amp;amp;lt;/pre&amp;amp;gt;&amp;amp;lt;/div&amp;amp;gt;&amp;amp;lt;/html&amp;amp;gt;&amp;lt;/span&amp;gt;&lt;/span&gt;</span>
-<span class = "Delete">   224|      |-&lt;span class = &quot;Delete&quot;&gt;    15|      |-&amp;lt;/pre&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/html&amp;gt;&lt;/span&gt;</span>
-<span class = "Delete">   225|      |-&lt;hr width = &quot;100%&quot;&gt;&lt;h3&gt;error.log</span>
-<span class = "Delete">   226|      |-&lt;/h3&gt;</span>
-<span class = "Delete">   227|      |-&lt;span&gt;     1|     1| &amp;lt;!DOCTYPE html&amp;gt; &amp;lt;html&amp;gt;&amp;lt;head&amp;gt;&amp;lt;title&amp;gt;Haskell ErrorLog&amp;lt;/title&amp;gt;&amp;lt;style&amp;gt;.ZeroMP{margin:0;padding:0}.Errorbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}&amp;lt;/style&amp;gt;&amp;lt;/head&amp;gt;&lt;/span&gt;</span>
-<span class = "Delete">   228|      |-&lt;span&gt;     2|     2| &amp;lt;body&amp;gt;&amp;lt;div class=&amp;quot;ZeroMP&amp;quot;&amp;gt;&amp;lt;pre&amp;gt;&lt;/span&gt;</span>
-<span class = "Delete">   229|      |-&lt;span class = &quot;Add&quot;&gt;      |     3|+&lt;/span&gt; </span>
-<span class = "Delete">   230|      |-&lt;span class = &quot;Add&quot;&gt;      |     4|+&amp;lt;/pre&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;h3&amp;gt; ./Assign1/rand.hs &amp;lt;/h3&amp;gt;&amp;lt;div class = &amp;quot;Errorbody&amp;quot;&amp;gt;&amp;lt;pre&amp;gt;&lt;/span&gt; </span>
-<span class = "Delete">   231|      |-&lt;span class = &quot;Add&quot;&gt;      |     5|+Assign1\rand.hs:1:13: error: parse error on input `-&amp;gt;&amp;#39;&lt;/span&gt; </span>
-<span class = "Delete">   232|      |-&lt;span class = &quot;Add&quot;&gt;      |     6|+  |&lt;/span&gt; </span>
-<span class = "Delete">   233|      |-&lt;span class = &quot;Add&quot;&gt;      |     7|+1 | rand = Long -&amp;gt; Float&lt;/span&gt; </span>
-<span class = "Delete">   234|      |-&lt;span class = &quot;Add&quot;&gt;      |     8|+  |             ^^&lt;/span&gt; </span>
-<span class = "Delete">   235|      |-&lt;span&gt;     3|     9| &amp;lt;/pre&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&lt;/span&gt;</span>
-<span class = "Delete">   236|      |-&lt;hr width = &quot;100%&quot;&gt;&lt;h3&gt;todo.log</span>
-<span class = "Delete">   237|      |-&lt;/h3&gt;</span>
-<span class = "Delete">   238|      |-&lt;span class = &quot;Delete&quot;&gt;     1|      |-File: Assign1/changes.log&lt;/span&gt;</span>
-<span class = "Delete">   239|      |-&lt;span class = &quot;Delete&quot;&gt;     2|      |-   53|     2|      |-  268|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;quot;//TODO|#TODO&amp;quot; )&lt;/span&gt;</span>
-<span class = "Delete">   240|      |-&lt;span class = &quot;Delete&quot;&gt;     3|      |-   54|      |     2|+  266|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;quot;//TODO|#TODO&amp;quot; )&lt;/span&gt;</span>
-<span class = "Delete">   241|      |-&lt;span class = &quot;Delete&quot;&gt;     4|      |-   56|     4|     4|     6|grep -rnIE ${Something[@]/#/--exclude=} &amp;quot;#TODO&amp;quot;&lt;/span&gt;</span>
-<span class = "Delete">   242|      |-&lt;span class = &quot;Delete&quot;&gt;     5|      |-File: Assign1/ProjectAnalyze.sh&lt;/span&gt;</span>
-<span class = "Delete">   243|      |-&lt;span class = &quot;Delete&quot;&gt;     6|      |-  265|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;quot;//TODO|#TODO&amp;quot; )&lt;/span&gt;</span>
-<span class = "Delete">   244|      |-&lt;span&gt;     7|     1| File: Assign1/testscript.sh&lt;/span&gt;</span>
-<span class = "Delete">   245|      |-&lt;span&gt;     8|     2|     6|grep -rnIE ${Something[@]/#/--exclude=} &amp;quot;#TODO&amp;quot;&lt;/span&gt;</span>
-<span class = "Delete">   246|      |-&lt;span class = &quot;Delete&quot;&gt;     9|      |-File: Assign1/todo.log&lt;/span&gt;</span>
-<span class = "Delete">   247|      |-&lt;span class = &quot;Delete&quot;&gt;    10|      |-    2|  265|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;quot;//TODO|#TODO&amp;quot; )&lt;/span&gt;</span>
-<span class = "Delete">   248|      |-&lt;span class = &quot;Delete&quot;&gt;    11|      |-    4|    6|grep -rnIE ${Something[@]/#/--exclude=} &amp;quot;#TODO&amp;quot;&lt;/span&gt;</span>
-<span class = "Delete">   249|      |-&lt;span class = &quot;Delete&quot;&gt;    12|      |-File: ProjectAnalyze.sh&lt;/span&gt;</span>
-<span class = "Delete">   250|      |-&lt;span class = &quot;Delete&quot;&gt;    13|      |-  265|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;quot;//TODO|#TODO&amp;quot; )&lt;/span&gt;</span>
-<span class = "Delete">   251|      |-&lt;/pre&gt;&lt;/div&gt;&lt;/html&gt;</span>
-<hr width = "100%"><h3>todo.log
+<span>    52|    52| #----Find uncommitted changes I ----</span>
+<span>    53|    53| #AKA feature # 1 adds the stuff form git status to the diff stuff</span>
+<span>    54|    54| </span>
+<span class = "Delete">    55|      |-</span>
+<span class = "Add">      |    55|+TodoLog=&quot;todo.log&quot;</span> 
+<span>    56|    56| Changelog=&quot;changes.log&quot; #var to change the file in the future if I ever use this thing again</span>
+<span>    57|    57| </span>
+<span>    58|    58| #first sed cleans blank lines, second cleans mess in brackets, third cleans first line telling status of branch</span>
+<hr width = "100%"><span>    70|    70| untracked=$( git status | grep &quot;Untracked files:&quot; | wc -l )</span>
+<span>    71|    71| </span>
+<span>    72|    72| if [[ $Moore = &quot;False&quot; ]];then</span>
+<span class = "Delete">    73|      |-	DiffFilter=&quot;:(exclude)$Changelog\&quot; \&quot;:(exclude)$TodoLog&quot;</span>
+<span class = "Add">      |    73|+	DiffFilter+=(&quot;$Changelog&quot;)</span> 
+<span class = "Add">      |    74|+	DiffFilter+=(&quot;$TodoLog&quot;)</span> 
+<span>    74|    75| fi</span>
+<span class = "Delete">    75|      |-</span>
+<span>    76|    76| Status=$(git status)</span>
+<span class = "Delete">    77|      |-Diff=$( git diff -- . &quot;$DiffFilter&quot; 2&gt;/dev/null ) # Consume the error (warning LF replaced by CRLF on windows)</span>
+<span class = "Add">      |    77|+Diff=$( git diff -- . &quot;${DiffFilter[@]/#/\:\(exclude\)}&quot; 2&gt;/dev/null ) # Consume the error (warning LF replaced by CRLF on windows)</span> 
+<span>    78|    78| </span>
+<span>    79|    79| if [[ $Report = &quot;True&quot; ]];then</span>
+<span>    80|    80| 	#Pre wrapping whitespace from https://css-tricks.com/snippets/css/make-pre-text-wrap/</span>
+<hr width = "100%"><span>   251|   251| </span>
+<span>   252|   252| PadL=5 # new padding length for this part</span>
+<span>   253|   253| </span>
+<span class = "Delete">   254|      |-TodoLog=&quot;todo.log&quot;</span>
+<span class = "Add">      |   254|+</span> 
+<span>   255|   255| &gt; $TodoLog #clears log</span>
+<span>   256|   256| </span>
+<span>   257|   257| if [[ $Moore = &quot;False&quot; ]]; then</span>
+<hr width = "100%"><h3>Assign1/testscript.sh
 </h3>
-<span class = "Add">      |     1|+File: Assign1/changes.log</span> 
-<span class = "Add">      |     2|+   76|&lt;span class = &quot;Delete&quot;&gt;    53|      |-     2|      |-  268|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;quot;//TODO|#TODO&amp;quot; )&lt;/span&gt;</span> 
-<span class = "Add">      |     3|+   77|&lt;span class = &quot;Delete&quot;&gt;    54|      |-      |     2|+  266|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;quot;//TODO|#TODO&amp;quot; )&lt;/span&gt;</span> 
-<span class = "Add">      |     4|+   79|&lt;span class = &quot;Delete&quot;&gt;    56|      |-     4|     4|     6|grep -rnIE ${Something[@]/#/--exclude=} &amp;quot;#TODO&amp;quot;&lt;/span&gt;</span> 
-<span>     1|     5| File: Assign1/testscript.sh</span>
-<span>     2|     6|     6|grep -rnIE ${Something[@]/#/--exclude=} &quot;#TODO&quot;</span>
-<span class = "Add">      |     7|+File: Assign1/todo.log</span> 
-<span class = "Add">      |     8|+    2|  265|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &quot;//TODO|#TODO&quot; )</span> 
-<span class = "Add">      |     9|+    4|    6|grep -rnIE ${Something[@]/#/--exclude=} &quot;#TODO&quot;</span> 
-<span class = "Add">      |    10|+File: changes.log</span> 
-<span class = "Add">      |    11|+   30|&lt;span class = &quot;Delete&quot;&gt;    22|      |-&amp;lt;span&amp;gt;   265|   265| Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;amp;quot;//TODO|#TODO&amp;amp;quot; )&amp;lt;/span&amp;gt;&lt;/span&gt;</span> 
-<span class = "Add">      |    12|+   98|&lt;span class = &quot;Delete&quot;&gt;    90|      |-&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    53|      |-     2|      |-  268|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;amp;quot;//TODO|#TODO&amp;amp;quot; )&amp;lt;/span&amp;gt;&lt;/span&gt;</span> 
-<span class = "Add">      |    13|+   99|&lt;span class = &quot;Delete&quot;&gt;    91|      |-&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    54|      |-      |     2|+  266|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;amp;quot;//TODO|#TODO&amp;amp;quot; )&amp;lt;/span&amp;gt;&lt;/span&gt;</span> 
-<span class = "Add">      |    14|+  101|&lt;span class = &quot;Delete&quot;&gt;    93|      |-&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    56|      |-     4|     4|     6|grep -rnIE ${Something[@]/#/--exclude=} &amp;amp;quot;#TODO&amp;amp;quot;&amp;lt;/span&amp;gt;&lt;/span&gt;</span> 
-<span class = "Add">      |    15|+  170|&lt;span class = &quot;Delete&quot;&gt;   162|      |-&amp;lt;span class = &amp;quot;Add&amp;quot;&amp;gt;      |    76|+&amp;amp;lt;span class = &amp;amp;quot;Delete&amp;amp;quot;&amp;amp;gt;    53|      |-     2|      |-  268|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;amp;amp;quot;//TODO|#TODO&amp;amp;amp;quot; )&amp;amp;lt;/span&amp;amp;gt;&amp;lt;/span&amp;gt; &lt;/span&gt;</span> 
-<span class = "Add">      |    16|+  171|&lt;span class = &quot;Delete&quot;&gt;   163|      |-&amp;lt;span class = &amp;quot;Add&amp;quot;&amp;gt;      |    77|+&amp;amp;lt;span class = &amp;amp;quot;Delete&amp;amp;quot;&amp;amp;gt;    54|      |-      |     2|+  266|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;amp;amp;quot;//TODO|#TODO&amp;amp;amp;quot; )&amp;amp;lt;/span&amp;amp;gt;&amp;lt;/span&amp;gt; &lt;/span&gt;</span> 
-<span class = "Add">      |    17|+  173|&lt;span class = &quot;Delete&quot;&gt;   165|      |-&amp;lt;span class = &amp;quot;Add&amp;quot;&amp;gt;      |    79|+&amp;amp;lt;span class = &amp;amp;quot;Delete&amp;amp;quot;&amp;amp;gt;    56|      |-     4|     4|     6|grep -rnIE ${Something[@]/#/--exclude=} &amp;amp;amp;quot;#TODO&amp;amp;amp;quot;&amp;amp;lt;/span&amp;amp;gt;&amp;lt;/span&amp;gt; &lt;/span&gt;</span> 
-<span class = "Add">      |    18|+  207|&lt;span class = &quot;Delete&quot;&gt;   199|      |-&amp;lt;span&amp;gt;   265|   265| Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;amp;quot;//TODO|#TODO&amp;amp;quot; )&amp;lt;/span&amp;gt;&lt;/span&gt;</span> 
-<span class = "Add">      |    19|+  247|&lt;span class = &quot;Delete&quot;&gt;   239|      |-&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     2|      |-   53|     2|      |-  268|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;amp;quot;//TODO|#TODO&amp;amp;quot; )&amp;lt;/span&amp;gt;&lt;/span&gt;</span> 
-<span class = "Add">      |    20|+  248|&lt;span class = &quot;Delete&quot;&gt;   240|      |-&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     3|      |-   54|      |     2|+  266|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;amp;quot;//TODO|#TODO&amp;amp;quot; )&amp;lt;/span&amp;gt;&lt;/span&gt;</span> 
-<span class = "Add">      |    21|+  249|&lt;span class = &quot;Delete&quot;&gt;   241|      |-&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     4|      |-   56|     4|     4|     6|grep -rnIE ${Something[@]/#/--exclude=} &amp;amp;quot;#TODO&amp;amp;quot;&amp;lt;/span&amp;gt;&lt;/span&gt;</span> 
-<span class = "Add">      |    22|+  251|&lt;span class = &quot;Delete&quot;&gt;   243|      |-&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;     6|      |-  265|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;amp;quot;//TODO|#TODO&amp;amp;quot; )&amp;lt;/span&amp;gt;&lt;/span&gt;</span> 
-<span class = "Add">      |    23|+  253|&lt;span class = &quot;Delete&quot;&gt;   245|      |-&amp;lt;span&amp;gt;     8|     2|     6|grep -rnIE ${Something[@]/#/--exclude=} &amp;amp;quot;#TODO&amp;amp;quot;&amp;lt;/span&amp;gt;&lt;/span&gt;</span> 
-<span class = "Add">      |    24|+  255|&lt;span class = &quot;Delete&quot;&gt;   247|      |-&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    10|      |-    2|  265|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;amp;quot;//TODO|#TODO&amp;amp;quot; )&amp;lt;/span&amp;gt;&lt;/span&gt;</span> 
-<span class = "Add">      |    25|+  256|&lt;span class = &quot;Delete&quot;&gt;   248|      |-&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    11|      |-    4|    6|grep -rnIE ${Something[@]/#/--exclude=} &amp;amp;quot;#TODO&amp;amp;quot;&amp;lt;/span&amp;gt;&lt;/span&gt;</span> 
-<span class = "Add">      |    26|+  258|&lt;span class = &quot;Delete&quot;&gt;   250|      |-&amp;lt;span class = &amp;quot;Delete&amp;quot;&amp;gt;    13|      |-  265|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} &amp;amp;quot;//TODO|#TODO&amp;amp;quot; )&amp;lt;/span&amp;gt;&lt;/span&gt;</span> 
+<span>     1|     1| #!/git-bash.exe</span>
+<span>     2|     2| </span>
+<span class = "Add">      |     3|+non=&quot;changes.log&quot;</span> 
+<span>     3|     4| Something+=(&quot;todo.log&quot;)</span>
+<span class = "Delete">     4|      |-Something+=(&quot;changes.log&quot;)</span>
+<span class = "Add">      |     5|+Something+=(&quot;$non&quot;)</span> 
+<span>     5|     6| </span>
+<span class = "Delete">     6|      |-grep -rnIE ${Something[@]/#/--exclude=} &quot;#TODO&quot;</span>
+<span class = "Add">      |     7|+Stat=$(git diff -- . &quot;${Something[@]/#/\:\(exclude\)}&quot;)</span> 
+<span class = "Add">      |     8|+echo $Stat</span> 
+<hr width = "100%"><h3>ProjectAnalyze.sh
+</h3>
+<span>    52|    52| #----Find uncommitted changes I ----</span>
+<span>    53|    53| #AKA feature # 1 adds the stuff form git status to the diff stuff</span>
+<span>    54|    54| </span>
+<span class = "Delete">    55|      |-</span>
+<span class = "Add">      |    55|+TodoLog=&quot;todo.log&quot;</span> 
+<span>    56|    56| Changelog=&quot;changes.log&quot; #var to change the file in the future if I ever use this thing again</span>
+<span>    57|    57| </span>
+<span>    58|    58| #first sed cleans blank lines, second cleans mess in brackets, third cleans first line telling status of branch</span>
+<hr width = "100%"><span>    70|    70| untracked=$( git status | grep &quot;Untracked files:&quot; | wc -l )</span>
+<span>    71|    71| </span>
+<span>    72|    72| if [[ $Moore = &quot;False&quot; ]];then</span>
+<span class = "Delete">    73|      |-	DiffFilter=&quot;:(exclude)$Changelog\&quot; \&quot;:(exclude)$TodoLog&quot;</span>
+<span class = "Add">      |    73|+	DiffFilter+=(&quot;$Changelog&quot;)</span> 
+<span class = "Add">      |    74|+	DiffFilter+=(&quot;$TodoLog&quot;)</span> 
+<span>    74|    75| fi</span>
+<span class = "Delete">    75|      |-</span>
+<span>    76|    76| Status=$(git status)</span>
+<span class = "Delete">    77|      |-Diff=$( git diff -- . &quot;$DiffFilter&quot; 2&gt;/dev/null ) # Consume the error (warning LF replaced by CRLF on windows)</span>
+<span class = "Add">      |    77|+Diff=$( git diff -- . &quot;${DiffFilter[@]/#/\:\(exclude\)}&quot; 2&gt;/dev/null ) # Consume the error (warning LF replaced by CRLF on windows)</span> 
+<span>    78|    78| </span>
+<span>    79|    79| if [[ $Report = &quot;True&quot; ]];then</span>
+<span>    80|    80| 	#Pre wrapping whitespace from https://css-tricks.com/snippets/css/make-pre-text-wrap/</span>
+<hr width = "100%"><span>   251|   251| </span>
+<span>   252|   252| PadL=5 # new padding length for this part</span>
+<span>   253|   253| </span>
+<span class = "Delete">   254|      |-TodoLog=&quot;todo.log&quot;</span>
+<span class = "Add">      |   254|+</span> 
+<span>   255|   255| &gt; $TodoLog #clears log</span>
+<span>   256|   256| </span>
+<span>   257|   257| if [[ $Moore = &quot;False&quot; ]]; then</span>
 </pre></div></html>
