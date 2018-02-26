@@ -1,0 +1,6 @@
+File: Assign1/ProjectAnalyze.sh
+  265|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} "//TODO|#TODO" )
+File: Assign1/testscript.sh
+    6|grep -rnIE ${Something[@]/#/--exclude=} "#TODO"
+File: ProjectAnalyze.sh
+  265|Todo=$(grep -rnIE ${TIgnore[@]/#/--exclude=} "//TODO|#TODO" )

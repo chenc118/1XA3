@@ -1,0 +1,6 @@
+<!DOCTYPE html> <html><head><title>Project Diffs</title><style>.Uncommitted{color:#007E00}span{display:inline-block;width:100%}pre{white-space:pre-wrap}.ZeroMP{margin:0;padding:0}.Untracked{color:#AE6666}hr{border-color:black}.Diffbody{background-color:#CCCCCC}h3{text-align:center;text-decoration:underline}.Delete{background-color:#FFAAAA}.Add{background-color:#AAFFAA}</style></head>
+<h3>Uncommitted Files</h3>
+<div class = "ZeroMP"><pre>
+nothing to commit, working tree clean
+</pre></div><h3>Files Diff (Excluding Untracked Files)</h3><div class = "Diffbody"><pre>
+</pre></div></html>
