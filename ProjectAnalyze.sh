@@ -25,11 +25,15 @@ do
 			Pull="True"
 		elif [[ ${arg,,} = "-1718" ]]; then
 			Moore="True"
+		else
+			echo "Argument $arg does not exist"
 		fi
 		Mode="Null"
 	#Modal check if argument accepts several values, otherwise gets appended to the GL Value var
 	elif [[ $Mode = "Null" ]];then
-		ArgValue+="$arg"
+		ArgValue+=("$arg")
+	else
+		echo "A branch that should not be accesible has been reached"
 	fi
 done
 
