@@ -11,13 +11,13 @@ headerStyle = style [("color","white"),
 
 asdfText: Int -> String
 asdfText num = case num of 
-                      0 -> "asdf"
+                      1 -> "asdf"
                       _ -> "asdf "++(asdfText (num-1))
 main = div [][
           header[][
               h1 [style [("text-align","center"),("color","white"),("background-color","dodgerblue"),("margin","0"),("padding","0")]] [text "My Ugly Nonsense Webpage"]
             ]
-          ,div [style [("color","white"),("background-color","tomato"),("padding","2em 2em 0em 2em")]][
+          ,div [style [("color","white"),("background-color","tomato"),("padding","2em 5em 0em 12em")]][
             section[style [("float","right"),("text","white")]][
               h2[headerStyle][text "Useless List"],
               ol[][
@@ -41,7 +41,7 @@ main = div [][
               h2 [headerStyle] [text "Second Section of More Nonsense"]
               ,p[][
                 div [style [("text-align","center"),("padding","0"),("margin","0"),("float","left"),("clear","left")]][
-                  div[] [text "fat man does small door"]
+                  div[] [text "fat man sees small door"]
                   ,div[][text "he knows he cannot fit through"]
                   ,div[][text "tears flow free now"]
                   ]

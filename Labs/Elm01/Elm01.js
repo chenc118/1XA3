@@ -8147,7 +8147,7 @@ var _elm_lang$html$Html_Attributes$style = _elm_lang$virtual_dom$VirtualDom$styl
 
 var _user$project$Main$asdfText = function (num) {
 	var _p0 = num;
-	if (_p0 === 0) {
+	if (_p0 === 1) {
 		return 'asdf';
 	} else {
 		return A2(
@@ -8231,7 +8231,7 @@ var _user$project$Main$main = _elm_lang$virtual_dom$Native_VirtualDom.staticProg
 									_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'tomato'},
 									_1: {
 										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'padding', _1: '2em 2em 0em 2em'},
+										_0: {ctor: '_Tuple2', _0: 'padding', _1: '2em 5em 0em 12em'},
 										_1: {ctor: '[]'}
 									}
 								}
@@ -8483,7 +8483,7 @@ var _user$project$Main$main = _elm_lang$virtual_dom$Native_VirtualDom.staticProg
 																{ctor: '[]'},
 																{
 																	ctor: '::',
-																	_0: _elm_lang$html$Html$text('fat man does small door'),
+																	_0: _elm_lang$html$Html$text('fat man sees small door'),
 																	_1: {ctor: '[]'}
 																}),
 															_1: {
