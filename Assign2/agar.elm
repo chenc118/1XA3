@@ -21,7 +21,7 @@ type Msg = KeyMsg Key.KeyCode | RandResult (Int,Int)
 
 
 init : (Model, Cmd.Cmd Msg)
-init = ({x=0,y=0,feed=[],size=25}, Cmd.none)
+init = ({x=round<| (toFloat svWidth)/2,y=round <| (toFloat svHeight)/2,feed=[],size=25}, Cmd.none)
 
 incNum : Int
 incNum = 10
@@ -152,7 +152,7 @@ view model =
         feeds = buildFeeds model.feed
     in div[][
         svg[Svg.Attributes.width (toString svWidth),Svg.Attributes.height (toString svHeight)](feeds++[Svg.circle [cx posX,cy posY, r (toString <| mr <| round model.size),fill "red"] []])
-        ,div[][Html.text ("Score "++(toString <| model.size-25))]
+        ,div[][Html.text ("Score "++(toString <|round<| model.size-25))]
         ]
 
 subscriptions : Model -> Sub.Sub Msg

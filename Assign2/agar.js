@@ -9554,7 +9554,8 @@ var _user$project$Main$view = function (model) {
 							A2(
 								_elm_lang$core$Basics_ops['++'],
 								'Score ',
-								_elm_lang$core$Basics$toString(model.size - 25))),
+								_elm_lang$core$Basics$toString(
+									_elm_lang$core$Basics$round(model.size - 25)))),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
@@ -9585,8 +9586,10 @@ var _user$project$Main$incNum = 10;
 var _user$project$Main$init = {
 	ctor: '_Tuple2',
 	_0: {
-		x: 0,
-		y: 0,
+		x: _elm_lang$core$Basics$round(
+			_elm_lang$core$Basics$toFloat(_user$project$Main$svWidth) / 2),
+		y: _elm_lang$core$Basics$round(
+			_elm_lang$core$Basics$toFloat(_user$project$Main$svHeight) / 2),
 		feed: {ctor: '[]'},
 		size: 25
 	},
