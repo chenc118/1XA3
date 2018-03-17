@@ -8776,6 +8776,356 @@ var _elm_lang$html$Html$summary = _elm_lang$html$Html$node('summary');
 var _elm_lang$html$Html$menuitem = _elm_lang$html$Html$node('menuitem');
 var _elm_lang$html$Html$menu = _elm_lang$html$Html$node('menu');
 
+var _elm_lang$html$Html_Attributes$map = _elm_lang$virtual_dom$VirtualDom$mapProperty;
+var _elm_lang$html$Html_Attributes$attribute = _elm_lang$virtual_dom$VirtualDom$attribute;
+var _elm_lang$html$Html_Attributes$contextmenu = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'contextmenu', value);
+};
+var _elm_lang$html$Html_Attributes$draggable = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'draggable', value);
+};
+var _elm_lang$html$Html_Attributes$itemprop = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'itemprop', value);
+};
+var _elm_lang$html$Html_Attributes$tabindex = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'tabIndex',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$charset = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'charset', value);
+};
+var _elm_lang$html$Html_Attributes$height = function (value) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'height',
+		_elm_lang$core$Basics$toString(value));
+};
+var _elm_lang$html$Html_Attributes$width = function (value) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'width',
+		_elm_lang$core$Basics$toString(value));
+};
+var _elm_lang$html$Html_Attributes$formaction = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'formAction', value);
+};
+var _elm_lang$html$Html_Attributes$list = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'list', value);
+};
+var _elm_lang$html$Html_Attributes$minlength = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'minLength',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$maxlength = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'maxlength',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$size = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'size',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$form = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'form', value);
+};
+var _elm_lang$html$Html_Attributes$cols = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'cols',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$rows = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'rows',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$challenge = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'challenge', value);
+};
+var _elm_lang$html$Html_Attributes$media = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'media', value);
+};
+var _elm_lang$html$Html_Attributes$rel = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'rel', value);
+};
+var _elm_lang$html$Html_Attributes$datetime = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'datetime', value);
+};
+var _elm_lang$html$Html_Attributes$pubdate = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'pubdate', value);
+};
+var _elm_lang$html$Html_Attributes$colspan = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'colspan',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$rowspan = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'rowspan',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$manifest = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'manifest', value);
+};
+var _elm_lang$html$Html_Attributes$property = _elm_lang$virtual_dom$VirtualDom$property;
+var _elm_lang$html$Html_Attributes$stringProperty = F2(
+	function (name, string) {
+		return A2(
+			_elm_lang$html$Html_Attributes$property,
+			name,
+			_elm_lang$core$Json_Encode$string(string));
+	});
+var _elm_lang$html$Html_Attributes$class = function (name) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'className', name);
+};
+var _elm_lang$html$Html_Attributes$id = function (name) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'id', name);
+};
+var _elm_lang$html$Html_Attributes$title = function (name) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'title', name);
+};
+var _elm_lang$html$Html_Attributes$accesskey = function ($char) {
+	return A2(
+		_elm_lang$html$Html_Attributes$stringProperty,
+		'accessKey',
+		_elm_lang$core$String$fromChar($char));
+};
+var _elm_lang$html$Html_Attributes$dir = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'dir', value);
+};
+var _elm_lang$html$Html_Attributes$dropzone = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'dropzone', value);
+};
+var _elm_lang$html$Html_Attributes$lang = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'lang', value);
+};
+var _elm_lang$html$Html_Attributes$content = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'content', value);
+};
+var _elm_lang$html$Html_Attributes$httpEquiv = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'httpEquiv', value);
+};
+var _elm_lang$html$Html_Attributes$language = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'language', value);
+};
+var _elm_lang$html$Html_Attributes$src = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'src', value);
+};
+var _elm_lang$html$Html_Attributes$alt = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'alt', value);
+};
+var _elm_lang$html$Html_Attributes$preload = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'preload', value);
+};
+var _elm_lang$html$Html_Attributes$poster = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'poster', value);
+};
+var _elm_lang$html$Html_Attributes$kind = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'kind', value);
+};
+var _elm_lang$html$Html_Attributes$srclang = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'srclang', value);
+};
+var _elm_lang$html$Html_Attributes$sandbox = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'sandbox', value);
+};
+var _elm_lang$html$Html_Attributes$srcdoc = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'srcdoc', value);
+};
+var _elm_lang$html$Html_Attributes$type_ = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'type', value);
+};
+var _elm_lang$html$Html_Attributes$value = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'value', value);
+};
+var _elm_lang$html$Html_Attributes$defaultValue = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'defaultValue', value);
+};
+var _elm_lang$html$Html_Attributes$placeholder = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'placeholder', value);
+};
+var _elm_lang$html$Html_Attributes$accept = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'accept', value);
+};
+var _elm_lang$html$Html_Attributes$acceptCharset = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'acceptCharset', value);
+};
+var _elm_lang$html$Html_Attributes$action = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'action', value);
+};
+var _elm_lang$html$Html_Attributes$autocomplete = function (bool) {
+	return A2(
+		_elm_lang$html$Html_Attributes$stringProperty,
+		'autocomplete',
+		bool ? 'on' : 'off');
+};
+var _elm_lang$html$Html_Attributes$enctype = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'enctype', value);
+};
+var _elm_lang$html$Html_Attributes$method = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'method', value);
+};
+var _elm_lang$html$Html_Attributes$name = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'name', value);
+};
+var _elm_lang$html$Html_Attributes$pattern = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'pattern', value);
+};
+var _elm_lang$html$Html_Attributes$for = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'htmlFor', value);
+};
+var _elm_lang$html$Html_Attributes$max = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'max', value);
+};
+var _elm_lang$html$Html_Attributes$min = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'min', value);
+};
+var _elm_lang$html$Html_Attributes$step = function (n) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'step', n);
+};
+var _elm_lang$html$Html_Attributes$wrap = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'wrap', value);
+};
+var _elm_lang$html$Html_Attributes$usemap = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'useMap', value);
+};
+var _elm_lang$html$Html_Attributes$shape = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'shape', value);
+};
+var _elm_lang$html$Html_Attributes$coords = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'coords', value);
+};
+var _elm_lang$html$Html_Attributes$keytype = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'keytype', value);
+};
+var _elm_lang$html$Html_Attributes$align = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'align', value);
+};
+var _elm_lang$html$Html_Attributes$cite = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'cite', value);
+};
+var _elm_lang$html$Html_Attributes$href = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'href', value);
+};
+var _elm_lang$html$Html_Attributes$target = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'target', value);
+};
+var _elm_lang$html$Html_Attributes$downloadAs = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'download', value);
+};
+var _elm_lang$html$Html_Attributes$hreflang = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'hreflang', value);
+};
+var _elm_lang$html$Html_Attributes$ping = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'ping', value);
+};
+var _elm_lang$html$Html_Attributes$start = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$stringProperty,
+		'start',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$headers = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'headers', value);
+};
+var _elm_lang$html$Html_Attributes$scope = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'scope', value);
+};
+var _elm_lang$html$Html_Attributes$boolProperty = F2(
+	function (name, bool) {
+		return A2(
+			_elm_lang$html$Html_Attributes$property,
+			name,
+			_elm_lang$core$Json_Encode$bool(bool));
+	});
+var _elm_lang$html$Html_Attributes$hidden = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'hidden', bool);
+};
+var _elm_lang$html$Html_Attributes$contenteditable = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'contentEditable', bool);
+};
+var _elm_lang$html$Html_Attributes$spellcheck = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'spellcheck', bool);
+};
+var _elm_lang$html$Html_Attributes$async = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'async', bool);
+};
+var _elm_lang$html$Html_Attributes$defer = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'defer', bool);
+};
+var _elm_lang$html$Html_Attributes$scoped = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'scoped', bool);
+};
+var _elm_lang$html$Html_Attributes$autoplay = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'autoplay', bool);
+};
+var _elm_lang$html$Html_Attributes$controls = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'controls', bool);
+};
+var _elm_lang$html$Html_Attributes$loop = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'loop', bool);
+};
+var _elm_lang$html$Html_Attributes$default = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'default', bool);
+};
+var _elm_lang$html$Html_Attributes$seamless = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'seamless', bool);
+};
+var _elm_lang$html$Html_Attributes$checked = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'checked', bool);
+};
+var _elm_lang$html$Html_Attributes$selected = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'selected', bool);
+};
+var _elm_lang$html$Html_Attributes$autofocus = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'autofocus', bool);
+};
+var _elm_lang$html$Html_Attributes$disabled = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'disabled', bool);
+};
+var _elm_lang$html$Html_Attributes$multiple = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'multiple', bool);
+};
+var _elm_lang$html$Html_Attributes$novalidate = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'noValidate', bool);
+};
+var _elm_lang$html$Html_Attributes$readonly = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'readOnly', bool);
+};
+var _elm_lang$html$Html_Attributes$required = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'required', bool);
+};
+var _elm_lang$html$Html_Attributes$ismap = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'isMap', value);
+};
+var _elm_lang$html$Html_Attributes$download = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'download', bool);
+};
+var _elm_lang$html$Html_Attributes$reversed = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'reversed', bool);
+};
+var _elm_lang$html$Html_Attributes$classList = function (list) {
+	return _elm_lang$html$Html_Attributes$class(
+		A2(
+			_elm_lang$core$String$join,
+			' ',
+			A2(
+				_elm_lang$core$List$map,
+				_elm_lang$core$Tuple$first,
+				A2(_elm_lang$core$List$filter, _elm_lang$core$Tuple$second, list))));
+};
+var _elm_lang$html$Html_Attributes$style = _elm_lang$virtual_dom$VirtualDom$style;
+
 var _elm_lang$keyboard$Keyboard$onSelfMsg = F3(
 	function (router, _p0, state) {
 		var _p1 = _p0;
@@ -9286,8 +9636,28 @@ var _elm_lang$svg$Svg_Attributes$accumulate = _elm_lang$virtual_dom$VirtualDom$a
 var _elm_lang$svg$Svg_Attributes$accelerate = _elm_lang$virtual_dom$VirtualDom$attribute('accelerate');
 var _elm_lang$svg$Svg_Attributes$accentHeight = _elm_lang$virtual_dom$VirtualDom$attribute('accent-height');
 
+var _user$project$ImgDim$getDim = _elm_lang$core$Native_Platform.outgoingPort(
+	'getDim',
+	function (v) {
+		return v;
+	});
+var _user$project$ImgDim$newDim = _elm_lang$core$Native_Platform.incomingPort(
+	'newDim',
+	A2(
+		_elm_lang$core$Json_Decode$andThen,
+		function (x0) {
+			return A2(
+				_elm_lang$core$Json_Decode$andThen,
+				function (x1) {
+					return _elm_lang$core$Json_Decode$succeed(
+						{ctor: '_Tuple2', _0: x0, _1: x1});
+				},
+				A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$int));
+		},
+		A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$int)));
+
 var _user$project$Main$genColor = function (x) {
-	var y = A2(_elm_lang$core$Basics_ops['%'], x, 11);
+	var y = A2(_elm_lang$core$Basics_ops['%'], x, 14);
 	var _p0 = y;
 	switch (_p0) {
 		case 0:
@@ -9310,6 +9680,12 @@ var _user$project$Main$genColor = function (x) {
 			return 'cyan';
 		case 9:
 			return 'black';
+		case 10:
+			return 'teal';
+		case 11:
+			return 'grey';
+		case 12:
+			return 'brown';
 		default:
 			return 'white';
 	}
@@ -9400,7 +9776,7 @@ var _user$project$Main$radius = 10;
 var _user$project$Main$mr = function (i) {
 	return _elm_lang$core$Basics$round(
 		_elm_lang$core$Basics$sqrt(
-			_elm_lang$core$Basics$toFloat(i) / _elm_lang$core$Basics$pi) * 2);
+			(_elm_lang$core$Basics$toFloat(i) / _elm_lang$core$Basics$pi) * 2));
 };
 var _user$project$Main$buildFeeds = function (feed) {
 	var _p5 = feed;
@@ -9492,6 +9868,70 @@ var _user$project$Main$genFeed = F3(
 		}
 	});
 var _user$project$Main$view = function (model) {
+	var vBox = function () {
+		var _p8 = model.display;
+		if (_p8.ctor === 'LS') {
+			return _elm_lang$svg$Svg_Attributes$viewBox('0 0 512 512');
+		} else {
+			var _p9 = _p8._0;
+			return _elm_lang$svg$Svg_Attributes$viewBox(
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'0 0 ',
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						_elm_lang$core$Basics$toString(_p9.x),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							' ',
+							_elm_lang$core$Basics$toString(_p9.y)))));
+		}
+	}();
+	var pImage = function () {
+		var _p10 = model.display;
+		if (_p10.ctor === 'LS') {
+			return A2(
+				_elm_lang$svg$Svg$image,
+				{ctor: '[]'},
+				{ctor: '[]'});
+		} else {
+			var _p11 = _p10._0;
+			return A2(
+				_elm_lang$svg$Svg$image,
+				{
+					ctor: '::',
+					_0: _elm_lang$svg$Svg_Attributes$x('0%'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$y('0%'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$height(
+								_elm_lang$core$Basics$toString(_p11.y)),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$width(
+									_elm_lang$core$Basics$toString(_p11.x)),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$xlinkHref(_p11.source),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}
+				},
+				{ctor: '[]'});
+		}
+	}();
+	var pfill = function () {
+		var _p12 = model.display;
+		if (_p12.ctor === 'LS') {
+			return _p12._0;
+		} else {
+			return 'url(#player)';
+		}
+	}();
 	var feeds = _user$project$Main$buildFeeds(model.feed);
 	var posY = _elm_lang$core$Basics$toString(model.y);
 	var posX = _elm_lang$core$Basics$toString(model.x);
@@ -9515,34 +9955,87 @@ var _user$project$Main$view = function (model) {
 				},
 				A2(
 					_elm_lang$core$Basics_ops['++'],
-					feeds,
 					{
 						ctor: '::',
 						_0: A2(
-							_elm_lang$svg$Svg$circle,
+							_elm_lang$svg$Svg$defs,
+							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$svg$Svg_Attributes$cx(posX),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$svg$Svg_Attributes$cy(posY),
-									_1: {
+								_0: A2(
+									_elm_lang$svg$Svg$pattern,
+									{
 										ctor: '::',
-										_0: _elm_lang$svg$Svg_Attributes$r(
-											_elm_lang$core$Basics$toString(
-												_user$project$Main$mr(
-													_elm_lang$core$Basics$round(model.size)))),
+										_0: _elm_lang$svg$Svg_Attributes$id('player'),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$svg$Svg_Attributes$fill('red'),
-											_1: {ctor: '[]'}
+											_0: _elm_lang$svg$Svg_Attributes$x('0%'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$svg$Svg_Attributes$y('0%'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$svg$Svg_Attributes$height('100%'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$svg$Svg_Attributes$width('100%'),
+														_1: {
+															ctor: '::',
+															_0: vBox,
+															_1: {ctor: '[]'}
+														}
+													}
+												}
+											}
+										}
+									},
+									{
+										ctor: '::',
+										_0: pImage,
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					},
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						feeds,
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$svg$Svg$circle,
+								{
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$cx(posX),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$cy(posY),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$r(
+												_elm_lang$core$Basics$toString(
+													_user$project$Main$mr(
+														_elm_lang$core$Basics$round(model.size)))),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$svg$Svg_Attributes$fill(pfill),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$svg$Svg_Attributes$stroke('black'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
+														_1: {ctor: '[]'}
+													}
+												}
+											}
 										}
 									}
-								}
-							},
-							{ctor: '[]'}),
-						_1: {ctor: '[]'}
-					})),
+								},
+								{ctor: '[]'}),
+							_1: {ctor: '[]'}
+						}))),
 			_1: {
 				ctor: '::',
 				_0: A2(
@@ -9558,7 +10051,18 @@ var _user$project$Main$view = function (model) {
 									_elm_lang$core$Basics$round(model.size - 25)))),
 						_1: {ctor: '[]'}
 					}),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('To play use the arrow keys to move the red circle around. The goal is to consume the small dots and grow as much as possible, if you get over 2236 you win!'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
 			}
 		});
 };
@@ -9583,6 +10087,28 @@ var _user$project$Main$bChecky = F2(
 			_user$project$Main$mr(size));
 	});
 var _user$project$Main$incNum = 10;
+var _user$project$Main$extractMod = function (_p13) {
+	var _p14 = _p13;
+	return _p14._0;
+};
+var _user$project$Main$Feed = F4(
+	function (a, b, c, d) {
+		return {x: a, y: b, value: c, color: d};
+	});
+var _user$project$Main$PImage = F3(
+	function (a, b, c) {
+		return {source: a, x: b, y: c};
+	});
+var _user$project$Main$Model = F5(
+	function (a, b, c, d, e) {
+		return {x: a, y: b, feed: c, size: d, display: e};
+	});
+var _user$project$Main$LS = function (a) {
+	return {ctor: 'LS', _0: a};
+};
+var _user$project$Main$RS = function (a) {
+	return {ctor: 'RS', _0: a};
+};
 var _user$project$Main$init = {
 	ctor: '_Tuple2',
 	_0: {
@@ -9591,18 +10117,18 @@ var _user$project$Main$init = {
 		y: _elm_lang$core$Basics$round(
 			_elm_lang$core$Basics$toFloat(_user$project$Main$svHeight) / 2),
 		feed: {ctor: '[]'},
-		size: 25
+		size: 25,
+		display: _user$project$Main$RS(
+			{x: 512, y: 512, source: 'https://images-na.ssl-images-amazon.com/images/I/51zLZbEVSTL._SY355_.jpg'})
 	},
 	_1: _elm_lang$core$Platform_Cmd$none
 };
-var _user$project$Main$Feed = F4(
-	function (a, b, c, d) {
-		return {x: a, y: b, value: c, color: d};
-	});
-var _user$project$Main$Model = F4(
-	function (a, b, c, d) {
-		return {x: a, y: b, feed: c, size: d};
-	});
+var _user$project$Main$resetGame = function (model) {
+	var initial = _user$project$Main$extractMod(_user$project$Main$init);
+	return _elm_lang$core$Native_Utils.update(
+		model,
+		{x: initial.x, y: initial.y, feed: initial.feed, size: initial.size});
+};
 var _user$project$Main$RandResult = function (a) {
 	return {ctor: 'RandResult', _0: a};
 };
@@ -9615,11 +10141,11 @@ var _user$project$Main$genRand = A2(
 		A2(_elm_lang$core$Random$int, 1, _user$project$Main$svWidth * _user$project$Main$svHeight)));
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p8 = msg;
-		_v15_9:
+		var _p15 = msg;
+		_v19_10:
 		do {
-			if (_p8.ctor === 'KeyMsg') {
-				switch (_p8._0) {
+			if (_p15.ctor === 'KeyMsg') {
+				switch (_p15._0) {
 					case 87:
 						return {
 							ctor: '_Tuple2',
@@ -9732,20 +10258,26 @@ var _user$project$Main$update = F2(
 									})),
 							_1: _user$project$Main$genRand
 						};
+					case 27:
+						return {
+							ctor: '_Tuple2',
+							_0: _user$project$Main$resetGame(model),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
 					default:
-						break _v15_9;
+						break _v19_10;
 				}
 			} else {
-				if (_p8._0.ctor === '_Tuple2') {
+				if (_p15._0.ctor === '_Tuple2') {
 					return (_elm_lang$core$Native_Utils.cmp(
 						_elm_lang$core$List$length(model.feed),
 						100) < 0) ? {
 						ctor: '_Tuple2',
-						_0: A3(_user$project$Main$genFeed, _p8._0._0, _p8._0._1, model),
+						_0: A3(_user$project$Main$genFeed, _p15._0._0, _p15._0._1, model),
 						_1: _elm_lang$core$Platform_Cmd$none
 					} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
-					break _v15_9;
+					break _v19_10;
 				}
 			}
 		} while(false);
@@ -9761,6 +10293,10 @@ var _user$project$Main$main = _elm_lang$html$Html$program(
 	{init: _user$project$Main$init, view: _user$project$Main$view, update: _user$project$Main$update, subscriptions: _user$project$Main$subscriptions})();
 
 var Elm = {};
+Elm['ImgDim'] = Elm['ImgDim'] || {};
+if (typeof _user$project$ImgDim$main !== 'undefined') {
+    _user$project$ImgDim$main(Elm['ImgDim'], 'ImgDim', undefined);
+}
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
     _user$project$Main$main(Elm['Main'], 'Main', undefined);

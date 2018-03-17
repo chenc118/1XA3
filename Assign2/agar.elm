@@ -7,6 +7,7 @@ import Keyboard as Key
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Random exposing (..)
+import ImgDim exposing (..)
 
 --a highly simplified version of agar.io, not going to bother with the time needed to make the background scroll and other stuff
 
@@ -14,14 +15,32 @@ import Random exposing (..)
 type alias FeedBit = List Feed
 type alias Feed = {x:Int,y:Int,value:Int,color:String}
 
-type alias Model = {x:Int, y:Int,
-                    feed: FeedBit,size:Float} -- list of records representing the different dots etc
+type Either a b = RS a | LS b -- lazy implementation of Haskell's Either
 
-type Msg = KeyMsg Key.KeyCode | RandResult (Int,Int)
+type alias Display = Either PImage String -- can be one or the other, need to extract on display
+type alias PImage = {source:String, x: Int, y:Int} -- basic stuff needed to model the player image
+
+type alias Model = {x:Int, y:Int,
+                    feed: FeedBit,size:Float,display:Display} -- list of records representing the different dots etc
+
+type Msg = KeyMsg Key.KeyCode | RandResult (Int,Int) 
 
 
 init : (Model, Cmd.Cmd Msg)
-init = ({x=round<| (toFloat svWidth)/2,y=round <| (toFloat svHeight)/2,feed=[],size=25}, Cmd.none)
+init = ({x=round<| (toFloat svWidth)/2,y=round <| (toFloat svHeight)/2,feed=[],size=25,display = RS {x = 512,y=512, source = "https://images-na.ssl-images-amazon.com/images/I/51zLZbEVSTL._SY355_.jpg"}}, Cmd.none)
+
+
+extractMod : (Model, Cmd.Cmd Msg) -> Model
+extractMod (model,_)=model
+
+--resets the game model
+resetGame : Model -> Model
+resetGame model = let 
+        initial = extractMod init
+
+    in {model | x=initial.x, y = initial.y, feed = initial.feed, size = initial.size}
+
+
 
 incNum : Int
 incNum = 10
@@ -41,7 +60,7 @@ svHeight = 600
 
 --compute the radius based on the size
 mr :Int -> Int 
-mr i = round <| ((Basics.sqrt ((toFloat i)/Basics.pi))*2)
+mr i = round <| Basics.sqrt <| ((toFloat i)/Basics.pi)*2
 
 --legacy stuff
 radius : Int
@@ -69,8 +88,9 @@ testConsume model = let
     in {model | feed = filterOut both [], size = shrink <|consume both model.size}--update model
 
 shrink:Float -> Float
---shrink size = size - (sqrt ((size-25) /10000000) ) -- basically shrink faster if larger, though at a slower rate
-shrink size = size - (((size*size)-625) / 10000000) --shrink really fast when
+--shrink size = size - (sqrt ((size-25) /10000000) ) -- basically shrink faster if larger, though at a slower rate, pretty much grow forever like this
+shrink size = size - (((size*size)-625) / 10000000) --shrink really fast when big, constant gen max ~ 2236 (can get higher if you game it), rng god gen max about 70711
+
 --lazy wrapping cause seriously no way to do this kind of thing without going into a bunch of messy case x of and Maybes
 --Also the two lists should be the same size in the usage scenario
 wrap : List a -> List b -> List (a,b)
@@ -109,7 +129,7 @@ addFeed f v x y = {x=x, y=y,value=v,color=genColor (x+y)}::f
 --semi random based on position
 genColor : Int -> String
 genColor x = let 
-            y= x%11 --change to suit colors
+            y= x%14 --change to suit colors
         in 
             case y of 
                 0 -> "red"
@@ -122,7 +142,10 @@ genColor x = let
                 7 -> "lime"
                 8 -> "cyan"
                 9 -> "black"
-                _ -> "white"
+                10 -> "teal"
+                11 -> "grey"
+                12 -> "brown"
+                _ -> "white" -- the devil's dot, aka it can't be seen
 
 update : Msg -> Model -> (Model, Cmd.Cmd Msg)
 update msg model = case msg of --wasd
@@ -131,11 +154,12 @@ update msg model = case msg of --wasd
             (KeyMsg 83) -> (testConsume {model|y = bChecky (model.y+incNum) (round <| model.size)},genRand)
             (KeyMsg 68) -> (testConsume {model|x = bCheckx (model.x+incNum) (round <| model.size)},genRand)
             --arrow keys
-
             (KeyMsg 38) -> (testConsume {model|y = bChecky (model.y-incNum) (round <| model.size)},genRand)
             (KeyMsg 37) -> (testConsume {model|x = bCheckx (model.x-incNum) (round <| model.size)},genRand)
             (KeyMsg 40) -> (testConsume {model|y = bChecky (model.y+incNum) (round <| model.size)},genRand)
             (KeyMsg 39) -> (testConsume {model|x = bCheckx (model.x+incNum) (round <| model.size)},genRand)
+            --reset the game if escape key is pressed
+            (KeyMsg 27) -> (resetGame model, Cmd.none)
             (RandResult (a,b)) -> if (List.length model.feed < 100)  --limit so there's an upper bound to the size
                                 then (genFeed a b model,Cmd.none) 
                                 else (model,Cmd.none)
@@ -150,9 +174,27 @@ view model =
         posX = (toString model.x)
         posY = (toString model.y)
         feeds = buildFeeds model.feed
+        pfill = case model.display of 
+            (LS c) -> c
+            (RS _) -> "url(#player)" -- use the pattern image
+        pImage = case model.display of
+            (LS _) -> image [][]
+            (RS r) -> image [x "0%",y "0%",height (toString r.y),width (toString r.x),Svg.Attributes.xlinkHref r.source][]
+        vBox = case model.display of
+            (LS _) -> viewBox "0 0 512 512"
+            (RS r) -> viewBox ("0 0 "++(r.x |>toString)++" "++(r.y |> toString))
+
     in div[][
-        svg[Svg.Attributes.width (toString svWidth),Svg.Attributes.height (toString svHeight)](feeds++[Svg.circle [cx posX,cy posY, r (toString <| mr <| round model.size),fill "red"] []])
+        svg[Svg.Attributes.width (toString svWidth),Svg.Attributes.height (toString svHeight)](
+            [--image in svg based on this https://stackoverflow.com/questions/29442833/svg-image-inside-circle
+            defs [][
+                pattern[id "player", x "0%", y "0%", height "100%", width "100%", vBox][
+                    pImage
+                    ]
+                ]
+            ]++feeds++[Svg.circle [cx posX,cy posY, r (toString <| mr <| round model.size),fill pfill, stroke "black", Svg.Attributes.strokeWidth "1px"] []])
         ,div[][Html.text ("Score "++(toString <|round<| model.size-25))]
+        ,div[][Html.text "To play use the arrow keys to move the red circle around. The goal is to consume the small dots and grow as much as possible, if you get over 2236 you win!"]
         ]
 
 subscriptions : Model -> Sub.Sub Msg
