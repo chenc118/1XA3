@@ -135,6 +135,29 @@ function A9(fun, a, b, c, d, e, f, g, h, i)
     : fun(a)(b)(c)(d)(e)(f)(g)(h)(i);
 }
 
+var _elm_lang$animation_frame$Native_AnimationFrame = function()
+{
+
+function create()
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		var id = requestAnimationFrame(function() {
+			callback(_elm_lang$core$Native_Scheduler.succeed(Date.now()));
+		});
+
+		return function() {
+			cancelAnimationFrame(id);
+		};
+	});
+}
+
+return {
+	create: create
+};
+
+}();
+
 //import Native.Utils //
 
 var _elm_lang$core$Native_Basics = function() {
@@ -4500,6 +4523,148 @@ var _elm_lang$core$Tuple$first = function (_p6) {
 	var _p7 = _p6;
 	return _p7._0;
 };
+
+var _elm_lang$animation_frame$AnimationFrame$rAF = _elm_lang$animation_frame$Native_AnimationFrame.create(
+	{ctor: '_Tuple0'});
+var _elm_lang$animation_frame$AnimationFrame$subscription = _elm_lang$core$Native_Platform.leaf('AnimationFrame');
+var _elm_lang$animation_frame$AnimationFrame$State = F3(
+	function (a, b, c) {
+		return {subs: a, request: b, oldTime: c};
+	});
+var _elm_lang$animation_frame$AnimationFrame$init = _elm_lang$core$Task$succeed(
+	A3(
+		_elm_lang$animation_frame$AnimationFrame$State,
+		{ctor: '[]'},
+		_elm_lang$core$Maybe$Nothing,
+		0));
+var _elm_lang$animation_frame$AnimationFrame$onEffects = F3(
+	function (router, subs, _p0) {
+		var _p1 = _p0;
+		var _p5 = _p1.request;
+		var _p4 = _p1.oldTime;
+		var _p2 = {ctor: '_Tuple2', _0: _p5, _1: subs};
+		if (_p2._0.ctor === 'Nothing') {
+			if (_p2._1.ctor === '[]') {
+				return _elm_lang$core$Task$succeed(
+					A3(
+						_elm_lang$animation_frame$AnimationFrame$State,
+						{ctor: '[]'},
+						_elm_lang$core$Maybe$Nothing,
+						_p4));
+			} else {
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (pid) {
+						return A2(
+							_elm_lang$core$Task$andThen,
+							function (time) {
+								return _elm_lang$core$Task$succeed(
+									A3(
+										_elm_lang$animation_frame$AnimationFrame$State,
+										subs,
+										_elm_lang$core$Maybe$Just(pid),
+										time));
+							},
+							_elm_lang$core$Time$now);
+					},
+					_elm_lang$core$Process$spawn(
+						A2(
+							_elm_lang$core$Task$andThen,
+							_elm_lang$core$Platform$sendToSelf(router),
+							_elm_lang$animation_frame$AnimationFrame$rAF)));
+			}
+		} else {
+			if (_p2._1.ctor === '[]') {
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (_p3) {
+						return _elm_lang$core$Task$succeed(
+							A3(
+								_elm_lang$animation_frame$AnimationFrame$State,
+								{ctor: '[]'},
+								_elm_lang$core$Maybe$Nothing,
+								_p4));
+					},
+					_elm_lang$core$Process$kill(_p2._0._0));
+			} else {
+				return _elm_lang$core$Task$succeed(
+					A3(_elm_lang$animation_frame$AnimationFrame$State, subs, _p5, _p4));
+			}
+		}
+	});
+var _elm_lang$animation_frame$AnimationFrame$onSelfMsg = F3(
+	function (router, newTime, _p6) {
+		var _p7 = _p6;
+		var _p10 = _p7.subs;
+		var diff = newTime - _p7.oldTime;
+		var send = function (sub) {
+			var _p8 = sub;
+			if (_p8.ctor === 'Time') {
+				return A2(
+					_elm_lang$core$Platform$sendToApp,
+					router,
+					_p8._0(newTime));
+			} else {
+				return A2(
+					_elm_lang$core$Platform$sendToApp,
+					router,
+					_p8._0(diff));
+			}
+		};
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (pid) {
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (_p9) {
+						return _elm_lang$core$Task$succeed(
+							A3(
+								_elm_lang$animation_frame$AnimationFrame$State,
+								_p10,
+								_elm_lang$core$Maybe$Just(pid),
+								newTime));
+					},
+					_elm_lang$core$Task$sequence(
+						A2(_elm_lang$core$List$map, send, _p10)));
+			},
+			_elm_lang$core$Process$spawn(
+				A2(
+					_elm_lang$core$Task$andThen,
+					_elm_lang$core$Platform$sendToSelf(router),
+					_elm_lang$animation_frame$AnimationFrame$rAF)));
+	});
+var _elm_lang$animation_frame$AnimationFrame$Diff = function (a) {
+	return {ctor: 'Diff', _0: a};
+};
+var _elm_lang$animation_frame$AnimationFrame$diffs = function (tagger) {
+	return _elm_lang$animation_frame$AnimationFrame$subscription(
+		_elm_lang$animation_frame$AnimationFrame$Diff(tagger));
+};
+var _elm_lang$animation_frame$AnimationFrame$Time = function (a) {
+	return {ctor: 'Time', _0: a};
+};
+var _elm_lang$animation_frame$AnimationFrame$times = function (tagger) {
+	return _elm_lang$animation_frame$AnimationFrame$subscription(
+		_elm_lang$animation_frame$AnimationFrame$Time(tagger));
+};
+var _elm_lang$animation_frame$AnimationFrame$subMap = F2(
+	function (func, sub) {
+		var _p11 = sub;
+		if (_p11.ctor === 'Time') {
+			return _elm_lang$animation_frame$AnimationFrame$Time(
+				function (_p12) {
+					return func(
+						_p11._0(_p12));
+				});
+		} else {
+			return _elm_lang$animation_frame$AnimationFrame$Diff(
+				function (_p13) {
+					return func(
+						_p11._0(_p13));
+				});
+		}
+	});
+_elm_lang$core$Native_Platform.effectManagers['AnimationFrame'] = {pkg: 'elm-lang/animation-frame', init: _elm_lang$animation_frame$AnimationFrame$init, onEffects: _elm_lang$animation_frame$AnimationFrame$onEffects, onSelfMsg: _elm_lang$animation_frame$AnimationFrame$onSelfMsg, tag: 'sub', subMap: _elm_lang$animation_frame$AnimationFrame$subMap};
 
 //import Native.List //
 
@@ -9410,6 +9575,189 @@ var _elm_lang$keyboard$Keyboard$subMap = F2(
 	});
 _elm_lang$core$Native_Platform.effectManagers['Keyboard'] = {pkg: 'elm-lang/keyboard', init: _elm_lang$keyboard$Keyboard$init, onEffects: _elm_lang$keyboard$Keyboard$onEffects, onSelfMsg: _elm_lang$keyboard$Keyboard$onSelfMsg, tag: 'sub', subMap: _elm_lang$keyboard$Keyboard$subMap};
 
+var _elm_lang$mouse$Mouse_ops = _elm_lang$mouse$Mouse_ops || {};
+_elm_lang$mouse$Mouse_ops['&>'] = F2(
+	function (t1, t2) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (_p0) {
+				return t2;
+			},
+			t1);
+	});
+var _elm_lang$mouse$Mouse$onSelfMsg = F3(
+	function (router, _p1, state) {
+		var _p2 = _p1;
+		var _p3 = A2(_elm_lang$core$Dict$get, _p2.category, state);
+		if (_p3.ctor === 'Nothing') {
+			return _elm_lang$core$Task$succeed(state);
+		} else {
+			var send = function (tagger) {
+				return A2(
+					_elm_lang$core$Platform$sendToApp,
+					router,
+					tagger(_p2.position));
+			};
+			return A2(
+				_elm_lang$mouse$Mouse_ops['&>'],
+				_elm_lang$core$Task$sequence(
+					A2(_elm_lang$core$List$map, send, _p3._0.taggers)),
+				_elm_lang$core$Task$succeed(state));
+		}
+	});
+var _elm_lang$mouse$Mouse$init = _elm_lang$core$Task$succeed(_elm_lang$core$Dict$empty);
+var _elm_lang$mouse$Mouse$categorizeHelpHelp = F2(
+	function (value, maybeValues) {
+		var _p4 = maybeValues;
+		if (_p4.ctor === 'Nothing') {
+			return _elm_lang$core$Maybe$Just(
+				{
+					ctor: '::',
+					_0: value,
+					_1: {ctor: '[]'}
+				});
+		} else {
+			return _elm_lang$core$Maybe$Just(
+				{ctor: '::', _0: value, _1: _p4._0});
+		}
+	});
+var _elm_lang$mouse$Mouse$categorizeHelp = F2(
+	function (subs, subDict) {
+		categorizeHelp:
+		while (true) {
+			var _p5 = subs;
+			if (_p5.ctor === '[]') {
+				return subDict;
+			} else {
+				var _v4 = _p5._1,
+					_v5 = A3(
+					_elm_lang$core$Dict$update,
+					_p5._0._0,
+					_elm_lang$mouse$Mouse$categorizeHelpHelp(_p5._0._1),
+					subDict);
+				subs = _v4;
+				subDict = _v5;
+				continue categorizeHelp;
+			}
+		}
+	});
+var _elm_lang$mouse$Mouse$categorize = function (subs) {
+	return A2(_elm_lang$mouse$Mouse$categorizeHelp, subs, _elm_lang$core$Dict$empty);
+};
+var _elm_lang$mouse$Mouse$subscription = _elm_lang$core$Native_Platform.leaf('Mouse');
+var _elm_lang$mouse$Mouse$Position = F2(
+	function (a, b) {
+		return {x: a, y: b};
+	});
+var _elm_lang$mouse$Mouse$position = A3(
+	_elm_lang$core$Json_Decode$map2,
+	_elm_lang$mouse$Mouse$Position,
+	A2(_elm_lang$core$Json_Decode$field, 'pageX', _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$field, 'pageY', _elm_lang$core$Json_Decode$int));
+var _elm_lang$mouse$Mouse$Watcher = F2(
+	function (a, b) {
+		return {taggers: a, pid: b};
+	});
+var _elm_lang$mouse$Mouse$Msg = F2(
+	function (a, b) {
+		return {category: a, position: b};
+	});
+var _elm_lang$mouse$Mouse$onEffects = F3(
+	function (router, newSubs, oldState) {
+		var rightStep = F3(
+			function (category, taggers, task) {
+				var tracker = A3(
+					_elm_lang$dom$Dom_LowLevel$onDocument,
+					category,
+					_elm_lang$mouse$Mouse$position,
+					function (_p6) {
+						return A2(
+							_elm_lang$core$Platform$sendToSelf,
+							router,
+							A2(_elm_lang$mouse$Mouse$Msg, category, _p6));
+					});
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (state) {
+						return A2(
+							_elm_lang$core$Task$andThen,
+							function (pid) {
+								return _elm_lang$core$Task$succeed(
+									A3(
+										_elm_lang$core$Dict$insert,
+										category,
+										A2(_elm_lang$mouse$Mouse$Watcher, taggers, pid),
+										state));
+							},
+							_elm_lang$core$Process$spawn(tracker));
+					},
+					task);
+			});
+		var bothStep = F4(
+			function (category, _p7, taggers, task) {
+				var _p8 = _p7;
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (state) {
+						return _elm_lang$core$Task$succeed(
+							A3(
+								_elm_lang$core$Dict$insert,
+								category,
+								A2(_elm_lang$mouse$Mouse$Watcher, taggers, _p8.pid),
+								state));
+					},
+					task);
+			});
+		var leftStep = F3(
+			function (category, _p9, task) {
+				var _p10 = _p9;
+				return A2(
+					_elm_lang$mouse$Mouse_ops['&>'],
+					_elm_lang$core$Process$kill(_p10.pid),
+					task);
+			});
+		return A6(
+			_elm_lang$core$Dict$merge,
+			leftStep,
+			bothStep,
+			rightStep,
+			oldState,
+			_elm_lang$mouse$Mouse$categorize(newSubs),
+			_elm_lang$core$Task$succeed(_elm_lang$core$Dict$empty));
+	});
+var _elm_lang$mouse$Mouse$MySub = F2(
+	function (a, b) {
+		return {ctor: 'MySub', _0: a, _1: b};
+	});
+var _elm_lang$mouse$Mouse$clicks = function (tagger) {
+	return _elm_lang$mouse$Mouse$subscription(
+		A2(_elm_lang$mouse$Mouse$MySub, 'click', tagger));
+};
+var _elm_lang$mouse$Mouse$moves = function (tagger) {
+	return _elm_lang$mouse$Mouse$subscription(
+		A2(_elm_lang$mouse$Mouse$MySub, 'mousemove', tagger));
+};
+var _elm_lang$mouse$Mouse$downs = function (tagger) {
+	return _elm_lang$mouse$Mouse$subscription(
+		A2(_elm_lang$mouse$Mouse$MySub, 'mousedown', tagger));
+};
+var _elm_lang$mouse$Mouse$ups = function (tagger) {
+	return _elm_lang$mouse$Mouse$subscription(
+		A2(_elm_lang$mouse$Mouse$MySub, 'mouseup', tagger));
+};
+var _elm_lang$mouse$Mouse$subMap = F2(
+	function (func, _p11) {
+		var _p12 = _p11;
+		return A2(
+			_elm_lang$mouse$Mouse$MySub,
+			_p12._0,
+			function (_p13) {
+				return func(
+					_p12._1(_p13));
+			});
+	});
+_elm_lang$core$Native_Platform.effectManagers['Mouse'] = {pkg: 'elm-lang/mouse', init: _elm_lang$mouse$Mouse$init, onEffects: _elm_lang$mouse$Mouse$onEffects, onSelfMsg: _elm_lang$mouse$Mouse$onSelfMsg, tag: 'sub', subMap: _elm_lang$mouse$Mouse$subMap};
+
 var _elm_lang$svg$Svg$map = _elm_lang$virtual_dom$VirtualDom$map;
 var _elm_lang$svg$Svg$text = _elm_lang$virtual_dom$VirtualDom$text;
 var _elm_lang$svg$Svg$svgNamespace = A2(
@@ -10035,7 +10383,7 @@ var _user$project$Main$drawYLines = F5(
 											_elm_lang$core$Basics$toString(len)),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
+											_0: _elm_lang$svg$Svg_Attributes$strokeWidth('0.5px'),
 											_1: {
 												ctor: '::',
 												_0: _elm_lang$svg$Svg_Attributes$stroke('lightgrey'),
@@ -10090,7 +10438,7 @@ var _user$project$Main$drawXLines = F5(
 											_elm_lang$core$Basics$toString(len)),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
+											_0: _elm_lang$svg$Svg_Attributes$strokeWidth('0.5px'),
 											_1: {
 												ctor: '::',
 												_0: _elm_lang$svg$Svg_Attributes$stroke('lightgrey'),
@@ -10205,50 +10553,75 @@ var _user$project$Main$drawLines = A2(
 		0,
 		_user$project$Main$svHeight,
 		{ctor: '[]'}));
-var _user$project$Main$genFeed = F3(
-	function (a, b, model) {
-		var _p7 = a;
-		if (_p7 === 1) {
-			return _elm_lang$core$Native_Utils.update(
-				model,
-				{
-					feed: A4(
-						_user$project$Main$addFeed,
-						model.feed,
-						5,
-						A2(_elm_lang$core$Basics_ops['%'], b, _user$project$Main$svWidth),
-						_elm_lang$core$Basics$round(
-							_elm_lang$core$Basics$toFloat(b) / _elm_lang$core$Basics$toFloat(_user$project$Main$svWidth)))
-				});
-		} else {
-			return model;
-		}
+var _user$project$Main$genFeed = F4(
+	function (rng, a, b, model) {
+		return (_elm_lang$core$Native_Utils.cmp(a, rng.regChance) < 1) ? _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				feed: A4(
+					_user$project$Main$addFeed,
+					model.feed,
+					5,
+					A2(_elm_lang$core$Basics_ops['%'], b, _user$project$Main$svWidth),
+					_elm_lang$core$Basics$round(
+						_elm_lang$core$Basics$toFloat(b) / _elm_lang$core$Basics$toFloat(_user$project$Main$svWidth)))
+			}) : ((_elm_lang$core$Native_Utils.cmp(a, rng.regChance + rng.superChance) < 1) ? _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				feed: A4(
+					_user$project$Main$addFeed,
+					model.feed,
+					10,
+					A2(_elm_lang$core$Basics_ops['%'], b, _user$project$Main$svWidth),
+					_elm_lang$core$Basics$round(
+						_elm_lang$core$Basics$toFloat(b) / _elm_lang$core$Basics$toFloat(_user$project$Main$svWidth)))
+			}) : model);
+	});
+var _user$project$Main$genVBox = F2(
+	function (rad, _p7) {
+		var _p8 = _p7;
+		return {
+			ctor: '_Tuple4',
+			_0: _elm_lang$core$Basics$toString(_p8._0 - (rad * 4)),
+			_1: _elm_lang$core$Basics$toString(_p8._1 - (rad * 4)),
+			_2: _elm_lang$core$Basics$toString(rad * 8),
+			_3: _elm_lang$core$Basics$toString(rad * 8)
+		};
 	});
 var _user$project$Main$genViewBox = F2(
-	function (rad, _p8) {
-		var _p9 = _p8;
+	function (rad, _p9) {
+		var _p10 = _p9;
 		return _elm_lang$svg$Svg_Attributes$viewBox(
 			A2(
 				_elm_lang$core$Basics_ops['++'],
-				_elm_lang$core$Basics$toString(_p9._0 - (rad * 4)),
+				_elm_lang$core$Basics$toString(_p10._0 - (rad * 8)),
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					' ',
 					A2(
 						_elm_lang$core$Basics_ops['++'],
-						_elm_lang$core$Basics$toString(_p9._1 - (rad * 4)),
+						_elm_lang$core$Basics$toString(_p10._1 - (rad * 8)),
 						A2(
 							_elm_lang$core$Basics_ops['++'],
 							' ',
 							A2(
 								_elm_lang$core$Basics_ops['++'],
-								_elm_lang$core$Basics$toString(rad * 8),
+								_elm_lang$core$Basics$toString(rad * 16),
 								A2(
 									_elm_lang$core$Basics_ops['++'],
 									' ',
-									_elm_lang$core$Basics$toString(rad * 8))))))));
+									_elm_lang$core$Basics$toString(rad * 16))))))));
 	});
 var _user$project$Main$gameView = function (model) {
+	var _p11 = A2(
+		_user$project$Main$genVBox,
+		_user$project$Main$mr(
+			_elm_lang$core$Basics$round(model.size)),
+		{ctor: '_Tuple2', _0: model.x, _1: model.y});
+	var vx1 = _p11._0;
+	var vy1 = _p11._1;
+	var vw = _p11._2;
+	var vh = _p11._3;
 	var gridlines = _user$project$Main$drawLines;
 	var vBox = A2(
 		_user$project$Main$genViewBox,
@@ -10256,8 +10629,8 @@ var _user$project$Main$gameView = function (model) {
 			_elm_lang$core$Basics$round(model.size)),
 		{ctor: '_Tuple2', _0: model.x, _1: model.y});
 	var pImage = function () {
-		var _p10 = model.display;
-		if (_p10.ctor === 'LS') {
+		var _p12 = model.display;
+		if (_p12.ctor === 'LS') {
 			return A2(
 				_elm_lang$svg$Svg$image,
 				{ctor: '[]'},
@@ -10279,7 +10652,7 @@ var _user$project$Main$gameView = function (model) {
 								_0: _elm_lang$svg$Svg_Attributes$width('5000'),
 								_1: {
 									ctor: '::',
-									_0: _elm_lang$svg$Svg_Attributes$xlinkHref(_p10._0.source),
+									_0: _elm_lang$svg$Svg_Attributes$xlinkHref(_p12._0.source),
 									_1: {ctor: '[]'}
 								}
 							}
@@ -10290,9 +10663,9 @@ var _user$project$Main$gameView = function (model) {
 		}
 	}();
 	var pfill = function () {
-		var _p11 = model.display;
-		if (_p11.ctor === 'LS') {
-			return _p11._0;
+		var _p13 = model.display;
+		if (_p13.ctor === 'LS') {
+			return _p13._0;
 		} else {
 			return 'url(#player)';
 		}
@@ -10405,41 +10778,136 @@ var _user$project$Main$gameView = function (model) {
 						A2(
 							_elm_lang$core$Basics_ops['++'],
 							feeds,
-							{
-								ctor: '::',
-								_0: A2(
-									_elm_lang$svg$Svg$circle,
-									{
-										ctor: '::',
-										_0: _elm_lang$svg$Svg_Attributes$cx(posX),
-										_1: {
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$svg$Svg$circle,
+										{
 											ctor: '::',
-											_0: _elm_lang$svg$Svg_Attributes$cy(posY),
+											_0: _elm_lang$svg$Svg_Attributes$cx(posX),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$svg$Svg_Attributes$r(
-													_elm_lang$core$Basics$toString(
-														_user$project$Main$mr(
-															_elm_lang$core$Basics$round(model.size)))),
+												_0: _elm_lang$svg$Svg_Attributes$cy(posY),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$svg$Svg_Attributes$fill(pfill),
+													_0: _elm_lang$svg$Svg_Attributes$r(
+														_elm_lang$core$Basics$toString(
+															_user$project$Main$mr(
+																_elm_lang$core$Basics$round(model.size)))),
 													_1: {
 														ctor: '::',
-														_0: _elm_lang$svg$Svg_Attributes$stroke('black'),
+														_0: _elm_lang$svg$Svg_Attributes$fill(pfill),
 														_1: {
 															ctor: '::',
-															_0: _elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
+															_0: _elm_lang$svg$Svg_Attributes$stroke('black'),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
+																_1: {ctor: '[]'}
+															}
+														}
+													}
+												}
+											}
+										},
+										{ctor: '[]'}),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$svg$Svg$text_,
+										{
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$x(posX),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$svg$Svg_Attributes$y(posY),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$svg$Svg_Attributes$textAnchor('middle'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$svg$Svg_Attributes$alignmentBaseline('middle'),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$style(
+																{
+																	ctor: '::',
+																	_0: {
+																		ctor: '_Tuple2',
+																		_0: 'font-size',
+																		_1: A2(
+																			_elm_lang$core$Basics_ops['++'],
+																			_elm_lang$core$Basics$toString(
+																				_elm_lang$core$Basics$toFloat(
+																					_user$project$Main$mr(
+																						_elm_lang$core$Basics$round(model.size))) / 2),
+																			'px')
+																	},
+																	_1: {
+																		ctor: '::',
+																		_0: {ctor: '_Tuple2', _0: 'font-weight', _1: 'bold'},
+																		_1: {
+																			ctor: '::',
+																			_0: {ctor: '_Tuple2', _0: 'fill', _1: 'white'},
+																			_1: {
+																				ctor: '::',
+																				_0: {ctor: '_Tuple2', _0: 'fill-opacity', _1: '1'},
+																				_1: {
+																					ctor: '::',
+																					_0: {ctor: '_Tuple2', _0: 'stroke', _1: '#000'},
+																					_1: {
+																						ctor: '::',
+																						_0: {
+																							ctor: '_Tuple2',
+																							_0: 'stroke-width',
+																							_1: A2(
+																								_elm_lang$core$Basics_ops['++'],
+																								_elm_lang$core$Basics$toString(
+																									_elm_lang$core$Basics$toFloat(
+																										_user$project$Main$mr(
+																											_elm_lang$core$Basics$round(model.size))) / 50),
+																								'px')
+																						},
+																						_1: {
+																							ctor: '::',
+																							_0: {ctor: '_Tuple2', _0: 'stroke-linecap', _1: 'butt'},
+																							_1: {
+																								ctor: '::',
+																								_0: {ctor: '_Tuple2', _0: 'stroke-linejoin', _1: 'miter'},
+																								_1: {
+																									ctor: '::',
+																									_0: {ctor: '_Tuple2', _0: 'stroke-opacity', _1: '1'},
+																									_1: {
+																										ctor: '::',
+																										_0: {ctor: '_Tuple2', _0: 'font-family', _1: 'Sans-Serif'},
+																										_1: {ctor: '[]'}
+																									}
+																								}
+																							}
+																						}
+																					}
+																				}
+																			}
+																		}
+																	}
+																}),
 															_1: {ctor: '[]'}
 														}
 													}
 												}
 											}
-										}
-									},
-									{ctor: '[]'}),
-								_1: {ctor: '[]'}
-							})))),
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$svg$Svg$text(model.name),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}))))),
 			_1: {
 				ctor: '::',
 				_0: A2(
@@ -10515,10 +10983,31 @@ var _user$project$Main$bChecky = F2(
 			pos,
 			_user$project$Main$mr(size));
 	});
+var _user$project$Main$scCenter = function (model) {
+	var y = _elm_lang$core$Basics$toFloat(model.winH);
+	var x = _elm_lang$core$Basics$toFloat(model.winW);
+	return {ctor: '_Tuple2', _0: x / 2, _1: y / 2};
+};
+var _user$project$Main$mouseSpeed = F3(
+	function (_p15, _p14, speed) {
+		var _p16 = _p15;
+		var _p17 = _p14;
+		var my = _elm_lang$core$Basics$toFloat(_p17._1);
+		var dy = 1.0e-2 * (my - _p16._1);
+		var val2 = (_elm_lang$core$Native_Utils.cmp(
+			_elm_lang$core$Basics$abs(dy),
+			speed) < 0) ? dy : ((_elm_lang$core$Native_Utils.cmp(dy, 0) < 0) ? (0 - speed) : speed);
+		var mx = _elm_lang$core$Basics$toFloat(_p17._0);
+		var dx = 1.0e-2 * (mx - _p16._0);
+		var val1 = (_elm_lang$core$Native_Utils.cmp(
+			_elm_lang$core$Basics$abs(dx),
+			speed) < 0) ? dx : ((_elm_lang$core$Native_Utils.cmp(dx, 0) < 0) ? (0 - speed) : speed);
+		return {ctor: '_Tuple2', _0: val1, _1: val2};
+	});
 var _user$project$Main$incNum = 10;
-var _user$project$Main$extractMod = function (_p12) {
-	var _p13 = _p12;
-	return _p13._0;
+var _user$project$Main$extractMod = function (_p18) {
+	var _p19 = _p18;
+	return _p19._0;
 };
 var _user$project$Main$Feed = F4(
 	function (a, b, c, d) {
@@ -10527,26 +11016,60 @@ var _user$project$Main$Feed = F4(
 var _user$project$Main$PImage = function (a) {
 	return {source: a};
 };
-var _user$project$Main$Model = F9(
-	function (a, b, c, d, e, f, g, h, i) {
-		return {x: a, y: b, winH: c, winW: d, name: e, feed: f, size: g, display: h, inGame: i};
+var _user$project$Main$RNG = F4(
+	function (a, b, c, d) {
+		return {range: a, regChance: b, superChance: c, limit: d};
 	});
+var _user$project$Main$Model = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return function (k) {
+											return function (l) {
+												return function (m) {
+													return {x: a, y: b, mx: c, my: d, winH: e, winW: f, name: g, feed: h, size: i, display: j, control: k, rng: l, inGame: m};
+												};
+											};
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
 var _user$project$Main$LS = function (a) {
 	return {ctor: 'LS', _0: a};
 };
 var _user$project$Main$RS = function (a) {
 	return {ctor: 'RS', _0: a};
 };
-var _user$project$Main$updatePlayerDisplay = F2(
-	function (du, model) {
-		var _p14 = du;
-		if (_p14.ctor === 'LS') {
-			return _user$project$Main$LS(_p14._0);
-		} else {
-			return _user$project$Main$RS(
-				{source: _p14._0});
-		}
-	});
+var _user$project$Main$updatePlayerDisplay = function (du) {
+	var _p20 = du;
+	if (_p20.ctor === 'LS') {
+		return _user$project$Main$LS(_p20._0);
+	} else {
+		return _user$project$Main$RS(
+			{source: _p20._0});
+	}
+};
+var _user$project$Main$Keys = {ctor: 'Keys'};
+var _user$project$Main$Mouse = {ctor: 'Mouse'};
+var _user$project$Main$MouseMsg = function (a) {
+	return {ctor: 'MouseMsg', _0: a};
+};
+var _user$project$Main$Tick = function (a) {
+	return {ctor: 'Tick', _0: a};
+};
 var _user$project$Main$UpdateWinSize = function (a) {
 	return {ctor: 'UpdateWinSize', _0: a};
 };
@@ -10557,12 +11080,16 @@ var _user$project$Main$init = {
 			_elm_lang$core$Basics$toFloat(_user$project$Main$svWidth) / 2),
 		y: _elm_lang$core$Basics$round(
 			_elm_lang$core$Basics$toFloat(_user$project$Main$svHeight) / 2),
+		mx: 0,
+		my: 0,
 		winH: 0,
 		winW: 0,
-		name: 'unknown',
+		name: '',
 		feed: {ctor: '[]'},
 		size: 25,
+		control: _user$project$Main$Keys,
 		display: _user$project$Main$LS('red'),
+		rng: {range: 20, regChance: 1, superChance: 1, limit: 100},
 		inGame: false
 	},
 	_1: A2(_elm_lang$core$Task$perform, _user$project$Main$UpdateWinSize, _elm_lang$window$Window$size)
@@ -10810,8 +11337,8 @@ var _user$project$Main$preView = function (model) {
 		});
 };
 var _user$project$Main$view = function (model) {
-	var _p15 = model.inGame;
-	if (_p15 === true) {
+	var _p21 = model.inGame;
+	if (_p21 === true) {
 		return _user$project$Main$gameView(model);
 	} else {
 		return _user$project$Main$preView(model);
@@ -10820,21 +11347,26 @@ var _user$project$Main$view = function (model) {
 var _user$project$Main$RandResult = function (a) {
 	return {ctor: 'RandResult', _0: a};
 };
-var _user$project$Main$genRand = A2(
-	_elm_lang$core$Random$generate,
-	_user$project$Main$RandResult,
-	A2(
-		_elm_lang$core$Random$pair,
-		A2(_elm_lang$core$Random$int, 1, 10),
-		A2(_elm_lang$core$Random$int, 1, _user$project$Main$svWidth * _user$project$Main$svHeight)));
+var _user$project$Main$genRand = function (rng) {
+	return A2(
+		_elm_lang$core$Random$generate,
+		_user$project$Main$RandResult,
+		A2(
+			_elm_lang$core$Random$pair,
+			A2(_elm_lang$core$Random$int, 1, rng.range),
+			A2(_elm_lang$core$Random$int, 1, _user$project$Main$svWidth * _user$project$Main$svHeight)));
+};
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p16 = msg;
-		_v31_14:
-		do {
-			switch (_p16.ctor) {
-				case 'KeyMsg':
-					switch (_p16._0) {
+		var rng = model.rng;
+		var rand = _user$project$Main$genRand(rng);
+		var _p22 = msg;
+		switch (_p22.ctor) {
+			case 'KeyMsg':
+				var _p25 = _p22._0;
+				if (_elm_lang$core$Native_Utils.eq(model.control, _user$project$Main$Keys)) {
+					var _p23 = _p25;
+					switch (_p23) {
 						case 87:
 							return {
 								ctor: '_Tuple2',
@@ -10847,7 +11379,7 @@ var _user$project$Main$update = F2(
 												model.y - _user$project$Main$incNum,
 												_elm_lang$core$Basics$round(model.size))
 										})),
-								_1: _user$project$Main$genRand
+								_1: rand
 							};
 						case 65:
 							return {
@@ -10861,7 +11393,7 @@ var _user$project$Main$update = F2(
 												model.x - _user$project$Main$incNum,
 												_elm_lang$core$Basics$round(model.size))
 										})),
-								_1: _user$project$Main$genRand
+								_1: rand
 							};
 						case 83:
 							return {
@@ -10875,7 +11407,7 @@ var _user$project$Main$update = F2(
 												model.y + _user$project$Main$incNum,
 												_elm_lang$core$Basics$round(model.size))
 										})),
-								_1: _user$project$Main$genRand
+								_1: rand
 							};
 						case 68:
 							return {
@@ -10889,7 +11421,7 @@ var _user$project$Main$update = F2(
 												model.x + _user$project$Main$incNum,
 												_elm_lang$core$Basics$round(model.size))
 										})),
-								_1: _user$project$Main$genRand
+								_1: rand
 							};
 						case 38:
 							return {
@@ -10903,7 +11435,7 @@ var _user$project$Main$update = F2(
 												model.y - _user$project$Main$incNum,
 												_elm_lang$core$Basics$round(model.size))
 										})),
-								_1: _user$project$Main$genRand
+								_1: rand
 							};
 						case 37:
 							return {
@@ -10917,7 +11449,7 @@ var _user$project$Main$update = F2(
 												model.x - _user$project$Main$incNum,
 												_elm_lang$core$Basics$round(model.size))
 										})),
-								_1: _user$project$Main$genRand
+								_1: rand
 							};
 						case 40:
 							return {
@@ -10931,7 +11463,7 @@ var _user$project$Main$update = F2(
 												model.y + _user$project$Main$incNum,
 												_elm_lang$core$Basics$round(model.size))
 										})),
-								_1: _user$project$Main$genRand
+								_1: rand
 							};
 						case 39:
 							return {
@@ -10945,7 +11477,7 @@ var _user$project$Main$update = F2(
 												model.x + _user$project$Main$incNum,
 												_elm_lang$core$Basics$round(model.size))
 										})),
-								_1: _user$project$Main$genRand
+								_1: rand
 							};
 						case 27:
 							return {
@@ -10954,75 +11486,130 @@ var _user$project$Main$update = F2(
 								_1: _elm_lang$core$Platform_Cmd$none
 							};
 						default:
-							break _v31_14;
+							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					}
-				case 'DispUpdate':
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								display: A2(_user$project$Main$updatePlayerDisplay, _p16._0, model.display)
-							}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				case 'NameUpdate':
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{name: _p16._0}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				case 'StartG':
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{inGame: true}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				case 'UpdateWinSize':
-					var _p17 = _p16._0;
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{winH: _p17.height, winW: _p17.width}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				default:
-					if (_p16._0.ctor === '_Tuple2') {
-						return (_elm_lang$core$Native_Utils.cmp(
-							_elm_lang$core$List$length(model.feed),
-							100) < 0) ? {
+				} else {
+					var _p24 = _p25;
+					if (_p24 === 27) {
+						return {
 							ctor: '_Tuple2',
-							_0: A3(_user$project$Main$genFeed, _p16._0._0, _p16._0._1, model),
+							_0: _user$project$Main$resetGame(model),
 							_1: _elm_lang$core$Platform_Cmd$none
-						} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+						};
 					} else {
-						break _v31_14;
+						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					}
-			}
-		} while(false);
-		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'Tick':
+				if (_elm_lang$core$Native_Utils.eq(model.control, _user$project$Main$Mouse)) {
+					var _p26 = A3(
+						_user$project$Main$mouseSpeed,
+						_user$project$Main$scCenter(model),
+						{ctor: '_Tuple2', _0: model.mx, _1: model.my},
+						1);
+					var dx = _p26._0;
+					var dy = _p26._1;
+					return {
+						ctor: '_Tuple2',
+						_0: _user$project$Main$testConsume(
+							_elm_lang$core$Native_Utils.update(
+								model,
+								{
+									x: A2(
+										_user$project$Main$bCheckx,
+										model.x + _elm_lang$core$Basics$round(dx),
+										_elm_lang$core$Basics$round(model.size)),
+									y: A2(
+										_user$project$Main$bChecky,
+										model.y + _elm_lang$core$Basics$round(dy),
+										_elm_lang$core$Basics$round(model.size))
+								})),
+						_1: rand
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'MouseMsg':
+				var _p27 = _p22._0;
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{mx: _p27.x, my: _p27.y}),
+					{ctor: '[]'});
+			case 'DispUpdate':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							display: _user$project$Main$updatePlayerDisplay(_p22._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'NameUpdate':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{name: _p22._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'StartG':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{inGame: true}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'UpdateWinSize':
+				var _p28 = _p22._0;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{winH: _p28.height, winW: _p28.width}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				return (_elm_lang$core$Native_Utils.cmp(
+					_elm_lang$core$List$length(model.feed),
+					rng.limit) < 0) ? {
+					ctor: '_Tuple2',
+					_0: A4(_user$project$Main$genFeed, rng, _p22._0._0, _p22._0._1, model),
+					_1: _elm_lang$core$Platform_Cmd$none
+				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+		}
 	});
 var _user$project$Main$KeyMsg = function (a) {
 	return {ctor: 'KeyMsg', _0: a};
 };
 var _user$project$Main$subscriptions = function (model) {
-	var _p18 = model.inGame;
-	if (_p18 === true) {
+	var ani = _elm_lang$core$Native_Utils.eq(model.control, _user$project$Main$Mouse) ? {
+		ctor: '::',
+		_0: _elm_lang$animation_frame$AnimationFrame$times(_user$project$Main$Tick),
+		_1: {
+			ctor: '::',
+			_0: _elm_lang$mouse$Mouse$moves(_user$project$Main$MouseMsg),
+			_1: {ctor: '[]'}
+		}
+	} : {ctor: '[]'};
+	var _p29 = model.inGame;
+	if (_p29 === true) {
 		return _elm_lang$core$Platform_Sub$batch(
-			{
-				ctor: '::',
-				_0: _elm_lang$keyboard$Keyboard$downs(_user$project$Main$KeyMsg),
-				_1: {
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
 					ctor: '::',
-					_0: _elm_lang$window$Window$resizes(_user$project$Main$UpdateWinSize),
-					_1: {ctor: '[]'}
-				}
-			});
+					_0: _elm_lang$keyboard$Keyboard$downs(_user$project$Main$KeyMsg),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$window$Window$resizes(_user$project$Main$UpdateWinSize),
+						_1: {ctor: '[]'}
+					}
+				},
+				ani));
 	} else {
 		return _elm_lang$core$Platform_Sub$none;
 	}
