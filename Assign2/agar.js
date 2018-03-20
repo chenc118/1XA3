@@ -10290,7 +10290,7 @@ var _user$project$Main$consume = F2(
 			if (_p1.ctor === '::') {
 				if (_p1._0._0 === true) {
 					var _v2 = _p1._1,
-						_v3 = size + _elm_lang$core$Basics$toFloat(_p1._0._1.value);
+						_v3 = size + _p1._0._1.value;
 					feeds = _v2;
 					size = _v3;
 					continue consume;
@@ -10349,7 +10349,7 @@ var _user$project$Main$wrap = F2(
 		}
 	});
 var _user$project$Main$shrink = function (size) {
-	return size - (((size * size) - 625) / 10000000);
+	return size - (((size * size) - 625) / 50000000);
 };
 var _user$project$Main$drawYLines = F5(
 	function (inc, len, ly, total, lines) {
@@ -10383,7 +10383,7 @@ var _user$project$Main$drawYLines = F5(
 											_elm_lang$core$Basics$toString(len)),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$svg$Svg_Attributes$strokeWidth('0.5px'),
+											_0: _elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
 											_1: {
 												ctor: '::',
 												_0: _elm_lang$svg$Svg_Attributes$stroke('lightgrey'),
@@ -10438,7 +10438,7 @@ var _user$project$Main$drawXLines = F5(
 											_elm_lang$core$Basics$toString(len)),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$svg$Svg_Attributes$strokeWidth('0.5px'),
+											_0: _elm_lang$svg$Svg_Attributes$strokeWidth('1px'),
 											_1: {
 												ctor: '::',
 												_0: _elm_lang$svg$Svg_Attributes$stroke('lightgrey'),
@@ -10461,11 +10461,8 @@ var _user$project$Main$drawXLines = F5(
 			}
 		}
 	});
-var _user$project$Main$radius = 10;
 var _user$project$Main$mr = function (i) {
-	return _elm_lang$core$Basics$round(
-		_elm_lang$core$Basics$sqrt(
-			(_elm_lang$core$Basics$toFloat(i) / _elm_lang$core$Basics$pi) * 2));
+	return _elm_lang$core$Basics$sqrt((i / _elm_lang$core$Basics$pi) * 2);
 };
 var _user$project$Main$buildFeeds = function (feed) {
 	var _p5 = feed;
@@ -10506,11 +10503,10 @@ var _user$project$Main$buildFeeds = function (feed) {
 var _user$project$Main$canConsume = F4(
 	function (r, x, y, f) {
 		var distance = _elm_lang$core$Basics$sqrt(
-			_elm_lang$core$Basics$toFloat(((f.x - x) * (f.x - x)) + ((f.y - y) * (f.y - y))));
+			((_elm_lang$core$Basics$toFloat(f.x) - x) * (_elm_lang$core$Basics$toFloat(f.x) - x)) + ((_elm_lang$core$Basics$toFloat(f.y) - y) * (_elm_lang$core$Basics$toFloat(f.y) - y)));
 		return _elm_lang$core$Native_Utils.cmp(
 			distance,
-			_elm_lang$core$Basics$toFloat(
-				r + _user$project$Main$mr(f.value))) < 0;
+			r + _user$project$Main$mr(f.value)) < 0;
 	});
 var _user$project$Main$testConsume = function (model) {
 	var feeds = model.feed;
@@ -10518,8 +10514,7 @@ var _user$project$Main$testConsume = function (model) {
 		_elm_lang$core$List$map,
 		A3(
 			_user$project$Main$canConsume,
-			_user$project$Main$mr(
-				_elm_lang$core$Basics$round(model.size)),
+			_user$project$Main$mr(model.size),
 			model.x,
 			model.y),
 		feeds);
@@ -10580,57 +10575,61 @@ var _user$project$Main$genFeed = F4(
 var _user$project$Main$genVBox = F2(
 	function (rad, _p7) {
 		var _p8 = _p7;
+		var factor = (2 * rad) + 26;
 		return {
 			ctor: '_Tuple4',
-			_0: _elm_lang$core$Basics$toString(_p8._0 - (rad * 4)),
-			_1: _elm_lang$core$Basics$toString(_p8._1 - (rad * 4)),
-			_2: _elm_lang$core$Basics$toString(rad * 8),
-			_3: _elm_lang$core$Basics$toString(rad * 8)
+			_0: _elm_lang$core$Basics$toString(_p8._0 - factor),
+			_1: _elm_lang$core$Basics$toString(_p8._1 - factor),
+			_2: _elm_lang$core$Basics$toString(factor * 2),
+			_3: _elm_lang$core$Basics$toString(factor * 2)
 		};
 	});
 var _user$project$Main$genViewBox = F2(
 	function (rad, _p9) {
 		var _p10 = _p9;
+		var _p11 = A2(
+			_user$project$Main$genVBox,
+			rad,
+			{ctor: '_Tuple2', _0: _p10._0, _1: _p10._1});
+		var vx = _p11._0;
+		var vy = _p11._1;
+		var vw = _p11._2;
+		var vh = _p11._3;
 		return _elm_lang$svg$Svg_Attributes$viewBox(
 			A2(
 				_elm_lang$core$Basics_ops['++'],
-				_elm_lang$core$Basics$toString(_p10._0 - (rad * 8)),
+				vx,
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					' ',
 					A2(
 						_elm_lang$core$Basics_ops['++'],
-						_elm_lang$core$Basics$toString(_p10._1 - (rad * 8)),
+						vy,
 						A2(
 							_elm_lang$core$Basics_ops['++'],
 							' ',
 							A2(
 								_elm_lang$core$Basics_ops['++'],
-								_elm_lang$core$Basics$toString(rad * 16),
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									' ',
-									_elm_lang$core$Basics$toString(rad * 16))))))));
+								vw,
+								A2(_elm_lang$core$Basics_ops['++'], ' ', vh)))))));
 	});
 var _user$project$Main$gameView = function (model) {
-	var _p11 = A2(
+	var _p12 = A2(
 		_user$project$Main$genVBox,
-		_user$project$Main$mr(
-			_elm_lang$core$Basics$round(model.size)),
+		_user$project$Main$mr(model.size),
 		{ctor: '_Tuple2', _0: model.x, _1: model.y});
-	var vx1 = _p11._0;
-	var vy1 = _p11._1;
-	var vw = _p11._2;
-	var vh = _p11._3;
+	var vx1 = _p12._0;
+	var vy1 = _p12._1;
+	var vw = _p12._2;
+	var vh = _p12._3;
 	var gridlines = _user$project$Main$drawLines;
 	var vBox = A2(
 		_user$project$Main$genViewBox,
-		_user$project$Main$mr(
-			_elm_lang$core$Basics$round(model.size)),
+		_user$project$Main$mr(model.size),
 		{ctor: '_Tuple2', _0: model.x, _1: model.y});
 	var pImage = function () {
-		var _p12 = model.display;
-		if (_p12.ctor === 'LS') {
+		var _p13 = model.display;
+		if (_p13.ctor === 'LS') {
 			return A2(
 				_elm_lang$svg$Svg$image,
 				{ctor: '[]'},
@@ -10652,7 +10651,7 @@ var _user$project$Main$gameView = function (model) {
 								_0: _elm_lang$svg$Svg_Attributes$width('5000'),
 								_1: {
 									ctor: '::',
-									_0: _elm_lang$svg$Svg_Attributes$xlinkHref(_p12._0.source),
+									_0: _elm_lang$svg$Svg_Attributes$xlinkHref(_p13._0.source),
 									_1: {ctor: '[]'}
 								}
 							}
@@ -10663,9 +10662,9 @@ var _user$project$Main$gameView = function (model) {
 		}
 	}();
 	var pfill = function () {
-		var _p13 = model.display;
-		if (_p13.ctor === 'LS') {
-			return _p13._0;
+		var _p14 = model.display;
+		if (_p14.ctor === 'LS') {
+			return _p14._0;
 		} else {
 			return 'url(#player)';
 		}
@@ -10794,8 +10793,7 @@ var _user$project$Main$gameView = function (model) {
 													ctor: '::',
 													_0: _elm_lang$svg$Svg_Attributes$r(
 														_elm_lang$core$Basics$toString(
-															_user$project$Main$mr(
-																_elm_lang$core$Basics$round(model.size)))),
+															_user$project$Main$mr(model.size))),
 													_1: {
 														ctor: '::',
 														_0: _elm_lang$svg$Svg_Attributes$fill(pfill),
@@ -10842,9 +10840,7 @@ var _user$project$Main$gameView = function (model) {
 																		_1: A2(
 																			_elm_lang$core$Basics_ops['++'],
 																			_elm_lang$core$Basics$toString(
-																				_elm_lang$core$Basics$toFloat(
-																					_user$project$Main$mr(
-																						_elm_lang$core$Basics$round(model.size))) / 2),
+																				_user$project$Main$mr(model.size) / 2),
 																			'px')
 																	},
 																	_1: {
@@ -10867,9 +10863,7 @@ var _user$project$Main$gameView = function (model) {
 																							_1: A2(
 																								_elm_lang$core$Basics_ops['++'],
 																								_elm_lang$core$Basics$toString(
-																									_elm_lang$core$Basics$toFloat(
-																										_user$project$Main$mr(
-																											_elm_lang$core$Basics$round(model.size))) / 50),
+																									_user$project$Main$mr(model.size) / 50),
 																								'px')
 																						},
 																						_1: {
@@ -10964,7 +10958,8 @@ var _user$project$Main$gameView = function (model) {
 		});
 };
 var _user$project$Main$boundsCheck = F3(
-	function (bounds, pos, rad) {
+	function (b, pos, rad) {
+		var bounds = _elm_lang$core$Basics$toFloat(b);
 		return (_elm_lang$core$Native_Utils.cmp(pos, bounds + rad) > -1) ? ((pos - bounds) - (2 * rad)) : ((_elm_lang$core$Native_Utils.cmp(pos, 0 - rad) < 1) ? ((pos + bounds) + (2 * rad)) : pos);
 	});
 var _user$project$Main$bCheckx = F2(
@@ -10988,26 +10983,35 @@ var _user$project$Main$scCenter = function (model) {
 	var x = _elm_lang$core$Basics$toFloat(model.winW);
 	return {ctor: '_Tuple2', _0: x / 2, _1: y / 2};
 };
+var _user$project$Main$pow = F2(
+	function (x, num) {
+		var _p15 = num;
+		if (_p15 === 0) {
+			return 1;
+		} else {
+			return x * A2(_user$project$Main$pow, x, num - 1);
+		}
+	});
 var _user$project$Main$mouseSpeed = F3(
-	function (_p15, _p14, speed) {
-		var _p16 = _p15;
-		var _p17 = _p14;
-		var my = _elm_lang$core$Basics$toFloat(_p17._1);
-		var dy = 1.0e-2 * (my - _p16._1);
-		var val2 = (_elm_lang$core$Native_Utils.cmp(
-			_elm_lang$core$Basics$abs(dy),
-			speed) < 0) ? dy : ((_elm_lang$core$Native_Utils.cmp(dy, 0) < 0) ? (0 - speed) : speed);
-		var mx = _elm_lang$core$Basics$toFloat(_p17._0);
-		var dx = 1.0e-2 * (mx - _p16._0);
-		var val1 = (_elm_lang$core$Native_Utils.cmp(
-			_elm_lang$core$Basics$abs(dx),
-			speed) < 0) ? dx : ((_elm_lang$core$Native_Utils.cmp(dx, 0) < 0) ? (0 - speed) : speed);
-		return {ctor: '_Tuple2', _0: val1, _1: val2};
+	function (_p17, _p16, speed) {
+		var _p18 = _p17;
+		var _p19 = _p16;
+		var my = _elm_lang$core$Basics$toFloat(_p19._1);
+		var ry = 1.0e-2 * (my - _p18._1);
+		var mx = _elm_lang$core$Basics$toFloat(_p19._0);
+		var rx = 1.0e-2 * (mx - _p18._0);
+		var r = _elm_lang$core$Basics$sqrt(
+			A2(_user$project$Main$pow, rx, 2) + A2(_user$project$Main$pow, ry, 2));
+		var ds = ((_elm_lang$core$Native_Utils.cmp(r, speed) > 0) || _elm_lang$core$Basics$isNaN(r)) ? speed : r;
+		var theta = A2(_elm_lang$core$Basics$atan2, ry, rx);
+		var dx = ds * _elm_lang$core$Basics$cos(theta);
+		var dy = ds * _elm_lang$core$Basics$sin(theta);
+		return {ctor: '_Tuple2', _0: dx, _1: dy};
 	});
 var _user$project$Main$incNum = 10;
-var _user$project$Main$extractMod = function (_p18) {
-	var _p19 = _p18;
-	return _p19._0;
+var _user$project$Main$extractMod = function (_p20) {
+	var _p21 = _p20;
+	return _p21._0;
 };
 var _user$project$Main$Feed = F4(
 	function (a, b, c, d) {
@@ -11054,12 +11058,12 @@ var _user$project$Main$RS = function (a) {
 	return {ctor: 'RS', _0: a};
 };
 var _user$project$Main$updatePlayerDisplay = function (du) {
-	var _p20 = du;
-	if (_p20.ctor === 'LS') {
-		return _user$project$Main$LS(_p20._0);
+	var _p22 = du;
+	if (_p22.ctor === 'LS') {
+		return _user$project$Main$LS(_p22._0);
 	} else {
 		return _user$project$Main$RS(
-			{source: _p20._0});
+			{source: _p22._0});
 	}
 };
 var _user$project$Main$Keys = {ctor: 'Keys'};
@@ -11076,10 +11080,8 @@ var _user$project$Main$UpdateWinSize = function (a) {
 var _user$project$Main$init = {
 	ctor: '_Tuple2',
 	_0: {
-		x: _elm_lang$core$Basics$round(
-			_elm_lang$core$Basics$toFloat(_user$project$Main$svWidth) / 2),
-		y: _elm_lang$core$Basics$round(
-			_elm_lang$core$Basics$toFloat(_user$project$Main$svHeight) / 2),
+		x: _elm_lang$core$Basics$toFloat(_user$project$Main$svWidth) / 2,
+		y: _elm_lang$core$Basics$toFloat(_user$project$Main$svHeight) / 2,
 		mx: 0,
 		my: 0,
 		winH: 0,
@@ -11087,9 +11089,9 @@ var _user$project$Main$init = {
 		name: '',
 		feed: {ctor: '[]'},
 		size: 25,
-		control: _user$project$Main$Keys,
+		control: _user$project$Main$Mouse,
 		display: _user$project$Main$LS('red'),
-		rng: {range: 20, regChance: 1, superChance: 1, limit: 100},
+		rng: {range: 50, regChance: 1, superChance: 0, limit: 100},
 		inGame: false
 	},
 	_1: A2(_elm_lang$core$Task$perform, _user$project$Main$UpdateWinSize, _elm_lang$window$Window$size)
@@ -11278,8 +11280,21 @@ var _user$project$Main$preView = function (model) {
 											_elm_lang$html$Html$button,
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$StartG),
-												_1: {ctor: '[]'}
+												_0: _elm_lang$html$Html_Attributes$style(
+													{
+														ctor: '::',
+														_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'green'},
+														_1: {
+															ctor: '::',
+															_0: {ctor: '_Tuple2', _0: 'color', _1: 'white'},
+															_1: {ctor: '[]'}
+														}
+													}),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$StartG),
+													_1: {ctor: '[]'}
+												}
 											},
 											{
 												ctor: '::',
@@ -11310,7 +11325,7 @@ var _user$project$Main$preView = function (model) {
 													{ctor: '[]'},
 													{
 														ctor: '::',
-														_0: _elm_lang$html$Html$text('Use the arrow keys or WASD to move the circle around'),
+														_0: _elm_lang$html$Html$text('Use the mouse move the circle around, press ESC to quit the game at any time'),
 														_1: {ctor: '[]'}
 													}),
 												_1: {
@@ -11337,8 +11352,8 @@ var _user$project$Main$preView = function (model) {
 		});
 };
 var _user$project$Main$view = function (model) {
-	var _p21 = model.inGame;
-	if (_p21 === true) {
+	var _p23 = model.inGame;
+	if (_p23 === true) {
 		return _user$project$Main$gameView(model);
 	} else {
 		return _user$project$Main$preView(model);
@@ -11360,13 +11375,13 @@ var _user$project$Main$update = F2(
 	function (msg, model) {
 		var rng = model.rng;
 		var rand = _user$project$Main$genRand(rng);
-		var _p22 = msg;
-		switch (_p22.ctor) {
+		var _p24 = msg;
+		switch (_p24.ctor) {
 			case 'KeyMsg':
-				var _p25 = _p22._0;
+				var _p27 = _p24._0;
 				if (_elm_lang$core$Native_Utils.eq(model.control, _user$project$Main$Keys)) {
-					var _p23 = _p25;
-					switch (_p23) {
+					var _p25 = _p27;
+					switch (_p25) {
 						case 87:
 							return {
 								ctor: '_Tuple2',
@@ -11374,10 +11389,7 @@ var _user$project$Main$update = F2(
 									_elm_lang$core$Native_Utils.update(
 										model,
 										{
-											y: A2(
-												_user$project$Main$bChecky,
-												model.y - _user$project$Main$incNum,
-												_elm_lang$core$Basics$round(model.size))
+											y: A2(_user$project$Main$bChecky, model.y - _user$project$Main$incNum, model.size)
 										})),
 								_1: rand
 							};
@@ -11388,10 +11400,7 @@ var _user$project$Main$update = F2(
 									_elm_lang$core$Native_Utils.update(
 										model,
 										{
-											x: A2(
-												_user$project$Main$bCheckx,
-												model.x - _user$project$Main$incNum,
-												_elm_lang$core$Basics$round(model.size))
+											x: A2(_user$project$Main$bCheckx, model.x - _user$project$Main$incNum, model.size)
 										})),
 								_1: rand
 							};
@@ -11402,10 +11411,7 @@ var _user$project$Main$update = F2(
 									_elm_lang$core$Native_Utils.update(
 										model,
 										{
-											y: A2(
-												_user$project$Main$bChecky,
-												model.y + _user$project$Main$incNum,
-												_elm_lang$core$Basics$round(model.size))
+											y: A2(_user$project$Main$bChecky, model.y + _user$project$Main$incNum, model.size)
 										})),
 								_1: rand
 							};
@@ -11416,10 +11422,7 @@ var _user$project$Main$update = F2(
 									_elm_lang$core$Native_Utils.update(
 										model,
 										{
-											x: A2(
-												_user$project$Main$bCheckx,
-												model.x + _user$project$Main$incNum,
-												_elm_lang$core$Basics$round(model.size))
+											x: A2(_user$project$Main$bCheckx, model.x + _user$project$Main$incNum, model.size)
 										})),
 								_1: rand
 							};
@@ -11430,10 +11433,7 @@ var _user$project$Main$update = F2(
 									_elm_lang$core$Native_Utils.update(
 										model,
 										{
-											y: A2(
-												_user$project$Main$bChecky,
-												model.y - _user$project$Main$incNum,
-												_elm_lang$core$Basics$round(model.size))
+											y: A2(_user$project$Main$bChecky, model.y - _user$project$Main$incNum, model.size)
 										})),
 								_1: rand
 							};
@@ -11444,10 +11444,7 @@ var _user$project$Main$update = F2(
 									_elm_lang$core$Native_Utils.update(
 										model,
 										{
-											x: A2(
-												_user$project$Main$bCheckx,
-												model.x - _user$project$Main$incNum,
-												_elm_lang$core$Basics$round(model.size))
+											x: A2(_user$project$Main$bCheckx, model.x - _user$project$Main$incNum, model.size)
 										})),
 								_1: rand
 							};
@@ -11458,10 +11455,7 @@ var _user$project$Main$update = F2(
 									_elm_lang$core$Native_Utils.update(
 										model,
 										{
-											y: A2(
-												_user$project$Main$bChecky,
-												model.y + _user$project$Main$incNum,
-												_elm_lang$core$Basics$round(model.size))
+											y: A2(_user$project$Main$bChecky, model.y + _user$project$Main$incNum, model.size)
 										})),
 								_1: rand
 							};
@@ -11472,10 +11466,7 @@ var _user$project$Main$update = F2(
 									_elm_lang$core$Native_Utils.update(
 										model,
 										{
-											x: A2(
-												_user$project$Main$bCheckx,
-												model.x + _user$project$Main$incNum,
-												_elm_lang$core$Basics$round(model.size))
+											x: A2(_user$project$Main$bCheckx, model.x + _user$project$Main$incNum, model.size)
 										})),
 								_1: rand
 							};
@@ -11489,8 +11480,8 @@ var _user$project$Main$update = F2(
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					}
 				} else {
-					var _p24 = _p25;
-					if (_p24 === 27) {
+					var _p26 = _p27;
+					if (_p26 === 27) {
 						return {
 							ctor: '_Tuple2',
 							_0: _user$project$Main$resetGame(model),
@@ -11502,27 +11493,21 @@ var _user$project$Main$update = F2(
 				}
 			case 'Tick':
 				if (_elm_lang$core$Native_Utils.eq(model.control, _user$project$Main$Mouse)) {
-					var _p26 = A3(
+					var _p28 = A3(
 						_user$project$Main$mouseSpeed,
 						_user$project$Main$scCenter(model),
 						{ctor: '_Tuple2', _0: model.mx, _1: model.my},
-						1);
-					var dx = _p26._0;
-					var dy = _p26._1;
+						2);
+					var dx = _p28._0;
+					var dy = _p28._1;
 					return {
 						ctor: '_Tuple2',
 						_0: _user$project$Main$testConsume(
 							_elm_lang$core$Native_Utils.update(
 								model,
 								{
-									x: A2(
-										_user$project$Main$bCheckx,
-										model.x + _elm_lang$core$Basics$round(dx),
-										_elm_lang$core$Basics$round(model.size)),
-									y: A2(
-										_user$project$Main$bChecky,
-										model.y + _elm_lang$core$Basics$round(dy),
-										_elm_lang$core$Basics$round(model.size))
+									x: A2(_user$project$Main$bCheckx, model.x + dx, model.size),
+									y: A2(_user$project$Main$bChecky, model.y + dy, model.size)
 								})),
 						_1: rand
 					};
@@ -11530,12 +11515,12 @@ var _user$project$Main$update = F2(
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'MouseMsg':
-				var _p27 = _p22._0;
+				var _p29 = _p24._0;
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{mx: _p27.x, my: _p27.y}),
+						{mx: _p29.x, my: _p29.y}),
 					{ctor: '[]'});
 			case 'DispUpdate':
 				return {
@@ -11543,7 +11528,7 @@ var _user$project$Main$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							display: _user$project$Main$updatePlayerDisplay(_p22._0)
+							display: _user$project$Main$updatePlayerDisplay(_p24._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -11552,7 +11537,7 @@ var _user$project$Main$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{name: _p22._0}),
+						{name: _p24._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'StartG':
@@ -11564,12 +11549,12 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UpdateWinSize':
-				var _p28 = _p22._0;
+				var _p30 = _p24._0;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{winH: _p28.height, winW: _p28.width}),
+						{winH: _p30.height, winW: _p30.width}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			default:
@@ -11577,7 +11562,7 @@ var _user$project$Main$update = F2(
 					_elm_lang$core$List$length(model.feed),
 					rng.limit) < 0) ? {
 					ctor: '_Tuple2',
-					_0: A4(_user$project$Main$genFeed, rng, _p22._0._0, _p22._0._1, model),
+					_0: A4(_user$project$Main$genFeed, rng, _p24._0._0, _p24._0._1, model),
 					_1: _elm_lang$core$Platform_Cmd$none
 				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
@@ -11595,8 +11580,8 @@ var _user$project$Main$subscriptions = function (model) {
 			_1: {ctor: '[]'}
 		}
 	} : {ctor: '[]'};
-	var _p29 = model.inGame;
-	if (_p29 === true) {
+	var _p31 = model.inGame;
+	if (_p31 === true) {
 		return _elm_lang$core$Platform_Sub$batch(
 			A2(
 				_elm_lang$core$Basics_ops['++'],
