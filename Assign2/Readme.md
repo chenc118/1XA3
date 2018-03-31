@@ -13,7 +13,8 @@ Based somewhat on agar.io after doing a bunch of stuff to transform the code fro
 - Custom image selection
 - FPS display option
 - Custom color selection
-- TODO keyboard/mouse control toggle
+- keyboard/mouse control toggle
+- Pause menu
 - TODO Custom board size?
 - TODO more controls in terms of hacking the game
 - TODO more efficient algorithms
