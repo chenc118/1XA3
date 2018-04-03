@@ -8,7 +8,7 @@ CV - [CV Page](chenc118.github.io)
 App - [Play Elm.Agar.Io](chenc118.github.io/projects/Elm.Agar.Io/)
 
 
-#### CV pAGE
+#### CV Page
 
 Modified version of the CeeVee template by Styleshout. Custom css bits in the custom.css file. 
 
