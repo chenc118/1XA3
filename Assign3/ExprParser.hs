@@ -1,4 +1,4 @@
-module ExprParser (parseExprD,parseExprF,parseExprI) where
+module ExprParser (parseExprD,parseExprF,parseExprI,parseExprInt) where
 
 import ExprType
 
@@ -29,10 +29,21 @@ parseExprI ss = case parse iFactor "" ss of
                     Left err -> error (show err)
                     Right expr -> expr
 
+parseExprInt :: String -> Expr Int
+parseExprInt ss = case parse intFactor "" ss of
+                    Left err -> error (show err)
+                    Right expr -> expr
+
 iFactor :: Parser (Expr Integer)
 iFactor = try (parens $ expr iFactor) <|> try iConst <|> var
 
 iConst = do {i <- integer;
+            return (Const i)}
+
+intFactor :: Parser (Expr Int)
+intFactor = try (parens $ expr intFactor) <|> try intConst <|> var
+
+intConst = do {i <- int;
             return (Const i)}
 
 dFactor :: Parser (Expr Double)
@@ -124,18 +135,33 @@ negDigits = do { neg <- symbol "-" ;
                  dig <- digits ;
                  return (neg ++ dig) }
 
+
+mantissa :: Parser String
+mantissa = do {
+            char 'e';
+            e <- (try negDigits<|>digits);
+            return ("e"++e);
+            }
+
+nilStr :: Parser String
+nilStr = do {return ""}
+
 decimal :: Parser String 
 decimal = do {r <- digits;
-                char '.';
-                a <- digits;
-            return (r++"."++a)}
+                a <- (try dec<|>nilStr);
+                e <- (try mantissa<|>nilStr);
+            return (r++a++e)}
+
+dec :: Parser String
+dec = do {
+            char '.';
+            a <- digits;
+            return ("."++a)}
 
 negDecimal :: Parser String
 negDecimal = do {neg <- symbol "-";
-                r <- digits;
-                char '.';
-                a <- digits;
-            return (neg++r++"."++a)}
+                dec <- decimal;
+            return (neg++dec)}
 
 float :: Parser Float
 float = fmap read $ try negDecimal <|> decimal
@@ -146,3 +172,5 @@ double = fmap read $ try negDecimal <|> decimal
 integer :: Parser Integer
 integer = fmap read $ try negDigits <|> digits
 
+int :: Parser Int
+int = fmap read $ try negDigits <|> digits
