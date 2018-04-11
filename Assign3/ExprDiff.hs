@@ -50,20 +50,14 @@ class DiffExpr a where
     exSin e1 = Sin e1
     exNExp :: Expr a -> Expr a
     exNExp e1 = NExp e1
+    (!**) :: Expr a -> Expr a -> Expr a
+    (!**) e1 e2 = Exp e1 e2
     val :: a -> Expr a
     val x = Const x
     var :: String -> Expr a
     var x = Var x
-{-Most intuative instance of DiffExpr   
-    Num instances relies on +,- 
-    Methods: 
-     eval : ...
-     simplify : ...
-    partDiff : ...
-    
--}
 
--- YOu can tell how annoyed I am with this based on the naming
+-- You can tell how annoyed I am with this based on the naming
 class (Num a) => ShoeHornFloating a where
     shoeHornCos :: a -> a
     shoeHornSin :: a -> a
@@ -92,7 +86,9 @@ instance ShoeHornFloating Int where
 instance (ShoeHornFloating a) => DiffExpr a where
     eval vrs (Add e1 e2) = eval vrs e1 + eval vrs e2
     eval vrs (Mult e1 e2) = eval vrs e1 * eval vrs e2
-    --eval vrs (Cos e1)     = cos $ eval vrs e1
+    eval vrs (Cos e1)     = shoeHornCos $ eval vrs e1
+    eval vrs (Sin e1)     = shoeHornSin $ eval vrs e1
+    eval vrs (Exp e1 e2)  = shoeHornExp (eval vrs e1) $ eval vrs e2
     eval vrs (Const x) = x
     eval vrs (Var x) = case Map.lookup x vrs of 
                             Just v -> v
@@ -126,17 +122,8 @@ instance (ShoeHornFloating a) => DiffExpr a where
     partDiff ss (Sin e1) = Mult (Cos e1) $ partDiff ss e1
     partDiff ss (Cos e1) = Mult (Mult (Const (-1)) (Sin e1)) $ partDiff ss e1
     partDiff ss (NExp e1) = Mult (NExp e1) $ partDiff ss e1
-    partDiff ss (Ln e1)   = Exp (partDiff ss e1) (Const $ -1)
+    partDiff ss (Ln e1)   = Exp (partDiff ss e1)  $ Const $ -1
     -- formula =  d/dx( f(x)^g(x) ) = f(x)^g(x) * d/dx( g(x) ) * ln( f(x) ) + f(x)^( g(x)-1 ) * g(x) * d/dx( f(x) ) 
-    partDiff ss (Exp e1 e2) = Add (Mult (Exp e1 e2) $ Mult (partDiff ss e2) $ Ln e1) $ Mult (Exp e1 $ Add e2 $ Const $ -1) $ Mult e2 $ partDiff ss e1
+    partDiff ss (Exp e1 e2) = Add (Mult (Exp e1 e2) $ Mult (partDiff ss e2) $ Ln e1) $ Mult (Exp e1 $ Add e2 $ Const $ -1) $ Mult e2 $ partDiff ss e1 -- overused $ cause hate brackets, TODO cleanup
     partDiff ss (Const _) = Const 0
     partDiff ss (Var x) = if x == ss then (Const 1) else (Const 0)
-
-{-instance (Floating a) => DiffExpr a where
-    eval vrs (Cos e1) = cos $ eval vrs e1
-    eval vrs (Sin e1) = sin $ eval vrs e1
--}
-
-{-instance  (Integral a) => DiffExpr a where
-    eval vrs (Cos e1) = round $ cos $ fromIntegral $ eval vrs e1
-    eval vrs (Sin e1) = round $ sin $ fromIntegral $ eval vrs e1-}
