@@ -10,26 +10,27 @@ import Text.Parsec.String
     Takes a string of format:
     and parses an expression of Expr + 
 -}
-{- | Parses an expression to Expr double
-    using the parsec package
--}
+
 parseExprD :: String -- ^ The string to be parsed 
-            -> Expr Double -- ^ The resulting parsed double Expr
+            -> Expr Double -- ^ The resulting parsed Double Expr
 parseExprD ss = case parse dFactor "" ss of
                     Left err -> error (show err)
                     Right expr -> expr
 
-parseExprF:: String -> Expr Float
+parseExprF:: String  -- ^ The string to be parsed 
+            -> Expr Float -- ^ The resulting parsed Float Expr
 parseExprF ss = case parse fFactor "" ss of
                     Left err -> error (show err)
                     Right expr -> expr
 
-parseExprI:: String -> Expr Integer
+parseExprI:: String -- ^ The string to be parsed
+            -> Expr Integer -- ^ The resulting parsed Integer Expr
 parseExprI ss = case parse iFactor "" ss of 
                     Left err -> error (show err)
                     Right expr -> expr
 
-parseExprInt :: String -> Expr Int
+parseExprInt :: String -- ^ The string to be parsed
+            -> Expr Int -- ^ The resulting parsed Int Expr
 parseExprInt ss = case parse intFactor "" ss of
                     Left err -> error (show err)
                     Right expr -> expr
@@ -88,17 +89,20 @@ trigOp :: String ->
 trigOp name val root = do {symbol name;
                             expr <- root;
                          return (val expr)}
-
+-- | Attempt to parse an expression consisting of terms separated by addition operations
 expr :: Parser (Expr a) -> Parser (Expr a)
 expr factor = (term factor) `chainl1` addOp
-
+-- | Attempt to parse a term consisting of trig expressions separated by multiplication operations
 term :: Parser (Expr a) -> Parser (Expr a)
 term factor = (trig factor) `chainl1` multOp
-
+{- | Attemtpt to parse a trig operation which is any operation of the form `name(Expr...)` wherein name
+    of the trig operation and Expr... is the nestled expressions within
+-}
 trig :: Parser (Expr a) -> Parser (Expr a)
 trig factor = try (trigOp "cos" Cos factor) 
             <|> try (trigOp "sin" Sin factor) 
-            <|> try (trigOp "log" Log factor) 
+            <|> try (trigOp "ln" Ln factor) 
+            <|> try (trigOp "e^" NExp factor)
             <|> factor
 
 
@@ -107,7 +111,15 @@ trig factor = try (trigOp "cos" Cos factor)
     symbol : parses some string that may be surrounded by spaces
     digits : parses a positive int or fails
     negDigits: parses a negative int or fails
-    integer : parses a positive or negative int or fails
+    dec : parses the decimal aka numbers after the `.` including `.`
+    mantissa : parses the number(+/-) after the `e` including `e`
+    nilStr : A parser that simply returns the empty string ""
+    decimal : parses a decimal in the general form `#.#e?#` # represenging any number of digits and ? indicating a potential position for `-`
+    negDecimal : same as Decimal except in the form `-#.#e?#`
+    float : parses a float of the form `?#.#e?#` # represenging any number of digits and ? indicating a potential position for `-`
+    double : parses a double of the form `?#.#e?#` # represenging any number of digits and ? indicating a potential position for `-
+    integer : parses a positive or negative integer or fails
+    int : parses a number to a machine integer or fails
 
 -}
 
@@ -135,6 +147,11 @@ negDigits = do { neg <- symbol "-" ;
                  dig <- digits ;
                  return (neg ++ dig) }
 
+dec :: Parser String
+dec = do {
+            char '.';
+            a <- digits;
+            return ("."++a)}
 
 mantissa :: Parser String
 mantissa = do {
@@ -151,12 +168,6 @@ decimal = do {r <- digits;
                 a <- (try dec<|>nilStr);
                 e <- (try mantissa<|>nilStr);
             return (r++a++e)}
-
-dec :: Parser String
-dec = do {
-            char '.';
-            a <- digits;
-            return ("."++a)}
 
 negDecimal :: Parser String
 negDecimal = do {neg <- symbol "-";

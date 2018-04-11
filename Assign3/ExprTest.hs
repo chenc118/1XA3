@@ -20,4 +20,4 @@ listToExpr1 xs = undefined
 
 --  etc and run quickCheck over those
 
-instance Arbitrary (Expr a) where
+--instance Arbitrary (Expr a) where
