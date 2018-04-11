@@ -122,7 +122,7 @@ instance (ShoeHornFloating a) => DiffExpr a where
     partDiff ss (Sin e1) = Mult (Cos e1) $ partDiff ss e1
     partDiff ss (Cos e1) = Mult (Mult (Const (-1)) (Sin e1)) $ partDiff ss e1
     partDiff ss (NExp e1) = Mult (NExp e1) $ partDiff ss e1
-    partDiff ss (Ln e1)   = Exp (partDiff ss e1)  $ Const $ -1
+    partDiff ss (Ln e1)   = Mult (partDiff ss e1) $ Exp e1  $ Const $ -1
     -- formula =  d/dx( f(x)^g(x) ) = f(x)^g(x) * d/dx( g(x) ) * ln( f(x) ) + f(x)^( g(x)-1 ) * g(x) * d/dx( f(x) ) 
     partDiff ss (Exp e1 e2) = Add (Mult (Exp e1 e2) $ Mult (partDiff ss e2) $ Ln e1) $ Mult (Exp e1 $ Add e2 $ Const $ -1) $ Mult e2 $ partDiff ss e1 -- overused $ cause hate brackets, TODO cleanup
     partDiff ss (Const _) = Const 0
