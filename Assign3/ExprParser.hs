@@ -11,6 +11,11 @@ import Text.Parsec.String
     and parses an expression of Expr + 
 -}
 
+-- * Parsers
+
+-- ** Main Parsers
+
+
 parseExprD :: String -- ^ The string to be parsed 
             -> Expr Double -- ^ The resulting parsed Double Expr
 parseExprD ss = case parse dFactor "" ss of
@@ -35,6 +40,8 @@ parseExprInt ss = case parse intFactor "" ss of
                     Left err -> error (show err)
                     Right expr -> expr
 
+-- ** Main parser Helpers
+
 iFactor :: Parser (Expr Integer)
 iFactor = try (parens $ expr iFactor) <|> try iConst <|> var
 
@@ -58,6 +65,8 @@ fFactor = try (parens $ expr fFactor) <|> try fConst <|> var
 
 fConst = do {f <- float;
             return (Const f)}
+
+-- ** Utility parsers
 {-Common parsers, common to most of the parser stuffs-}
 
 -- | attempt to parse an identifier for a variable consisting of alpha-numerical characters
@@ -122,6 +131,9 @@ trig factor = try (trigOp "cos" Cos factor)
     int : parses a number to a machine integer or fails
 
 -}
+-- ** Generic parsers
+
+-- *** General utility
 
 parens :: Parser a -> Parser a
 parens p = do { symbol "(";
@@ -138,6 +150,8 @@ symbol ss = let
                  spaces;
                  return ss' }
   in try symbol'
+
+-- *** Numeric Utility
 
 digits :: Parser String
 digits = many1 digit
@@ -173,6 +187,8 @@ negDecimal :: Parser String
 negDecimal = do {neg <- symbol "-";
                 dec <- decimal;
             return (neg++dec)}
+
+-- *** Number Parsers
 
 float :: Parser Float
 float = fmap read $ try negDecimal <|> decimal

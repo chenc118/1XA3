@@ -20,7 +20,7 @@ data Expr a = Add (Expr a) (Expr a) -- ^ Binary Addition
             | Sin (Expr a)
             | NExp (Expr a)   -- ^ Natural Exponentiation e^(Expr a)            
             | Ln (Expr a) 
-            | Exp (Expr a) (a) -- ^ Exponentiate a function using ^  -- really not sure how to approach this, TBD
+            | Exp (Expr a) (Expr a) -- ^ Exponentiate a function using ^  -- really not sure how to approach this, TBD
             | Const a               -- ^ Wrap a constant value
             | Var String            -- ^ Wrap a variable identifier
             deriving Eq
