@@ -50,37 +50,50 @@ class DiffExpr a where
     exSin e1 = Sin e1
     exNExp :: Expr a -> Expr a
     exNExp e1 = NExp e1
-    (!**) :: Expr a -> Expr a -> Expr a
-    (!**) e1 e2 = Exp e1 e2
+    exLn :: Expr a -> Expr a
+    exLn e1 = Ln e1
+    (!^) :: Expr a -> Expr a -> Expr a
+    (!^) e1 e2 = Exp e1 e2
     val :: a -> Expr a
     val x = Const x
     var :: String -> Expr a
     var x = Var x
 
 -- You can tell how annoyed I am with this based on the naming
+-- | A class to shoehorn the integral types into the floating type
 class (Num a) => ShoeHornFloating a where
-    shoeHornCos :: a -> a
-    shoeHornSin :: a -> a
-    shoeHornExp :: a -> a -> a
+    shoeHornCos :: a -> a -- ^ Cosine function
+    shoeHornSin :: a -> a -- ^ sine function
+    shoeHornLn :: a -> a  -- ^ Natural logarithm function aka ln(x) in haskell log
+    shoeHornNExp :: a -> a  -- ^ Natural Exponentiation function aka e^x in haskell exp
+    shoeHornExp :: a -> a -> a  -- ^ Exponentiation function a^b (**) in haskell
 
 instance ShoeHornFloating Double where
-    shoeHornCos x = cos x
-    shoeHornSin x = sin x
+    shoeHornCos x   = cos x
+    shoeHornSin x   = sin x
+    shoeHornLn x    = log x
+    shoeHornNExp x  = exp x
     shoeHornExp a b = a**b
 
 instance ShoeHornFloating Float where
-    shoeHornCos x = cos x
-    shoeHornSin x = sin x
+    shoeHornCos x   = cos x
+    shoeHornSin x   = sin x
+    shoeHornLn x    = log x
+    shoeHornNExp x  = exp x
     shoeHornExp a b = a**b
 
 instance ShoeHornFloating Integer where
-    shoeHornCos x = round $ cos $ fromInteger x
-    shoeHornSin x = round $ sin $ fromInteger x
+    shoeHornCos x   = round $ cos $ fromInteger x
+    shoeHornSin x   = round $ sin $ fromInteger x
+    shoeHornLn x    = round $ log $ fromInteger x
+    shoeHornNExp x  = round $ exp $ fromInteger x
     shoeHornExp a b = round $ (fromIntegral a) ** (fromIntegral b)
 
 instance ShoeHornFloating Int where
-    shoeHornCos x = round $ cos $ fromIntegral x
-    shoeHornSin x = round $ sin $ fromIntegral x
+    shoeHornCos x   = round $ cos $ fromIntegral x
+    shoeHornSin x   = round $ sin $ fromIntegral x
+    shoeHornLn x    = round $ log $ fromIntegral x
+    shoeHornNExp x  = round $ exp $ fromIntegral x
     shoeHornExp a b = round $ (fromIntegral a) ** (fromIntegral b)
 
 instance (ShoeHornFloating a) => DiffExpr a where
@@ -88,6 +101,8 @@ instance (ShoeHornFloating a) => DiffExpr a where
     eval vrs (Mult e1 e2) = eval vrs e1 * eval vrs e2
     eval vrs (Cos e1)     = shoeHornCos $ eval vrs e1
     eval vrs (Sin e1)     = shoeHornSin $ eval vrs e1
+    eval vrs (NExp e1)    = shoeHornNExp $ eval vrs e1
+    eval vrs (Ln e1)      = shoeHornLn $ eval vrs e1
     eval vrs (Exp e1 e2)  = shoeHornExp (eval vrs e1) $ eval vrs e2
     eval vrs (Const x) = x
     eval vrs (Var x) = case Map.lookup x vrs of 
@@ -112,6 +127,12 @@ instance (ShoeHornFloating a) => DiffExpr a where
                                             (Const 1,se2)     -> se2
                                             (se1,Const 1)     -> se1
                                             (se1,se2)         -> Mult se1 se2
+    simplify vrs (Ln e1)                   = let 
+                                            s1 = simplify vrs e1
+                                        in case s1 of
+                                            (Const 1)         -> Const 0
+                                            (Const a)         -> eval vrs (Ln s1)
+                                            (se1)             -> Ln se1
     simplify vrs (Var x)                   = case Map.lookup x vrs of
                                                         Just v -> Const v
                                                         Nothing -> Var x
