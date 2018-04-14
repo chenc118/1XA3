@@ -47,7 +47,6 @@ instance (Ord a,Num a) => Ord (Expr a) where
                                         in case (a1,a2) of
                                             (Add e1 _,Add e2 _)    -> compare e1 e2
                                             (e1,e2)                -> compare e1 e2
-                                            _                      -> error "Error in comparing Addition stuff"
     compare (Add _ _) _                   = LT
     compare _ (Add _ _)                   = GT
     compare (Exp e11 e12) (Exp e21 e22)   = let
@@ -73,7 +72,7 @@ multNorm (Mult e1 e2) = case (e1,e2) of
                                                                                         else if res == LT then
                                                                                             (Mult e11 (multNorm $ Mult e21 (Mult e12 e22)))
                                                                                         else 
-                                                                                            multNorm $ Mult (Exp e11 (Const 2)) (Mult e12 e22)
+                                                                                            multNorm $ Mult (expNorm $ Exp e11 (Const 2)) (Mult e12 e22)
                                                         (m1,m2)                      -> multNorm $ Mult m1 m2
                         (Mult e11 e12, e2)           -> case (multNorm $ Mult e11 e12) of
                                                         (Mult e1' e2') -> let 
@@ -82,7 +81,7 @@ multNorm (Mult e1 e2) = case (e1,e2) of
                                                                         Mult e2 (multNorm $ Mult e1' e2')
                                                                     else if res == GT then
                                                                         Mult e1' (multNorm $ Mult e2 e2')
-                                                                    else multNorm (Mult (Exp e2 (Const 2)) e2')
+                                                                    else multNorm (Mult (expNorm $ Exp e2 (Const 2)) e2')
                                                         m1             -> m1
                         (e1, Mult e21 e22)           -> case (multNorm $ Mult e21 e22) of
                                                         (Mult e1' e2') -> let
@@ -91,7 +90,7 @@ multNorm (Mult e1 e2) = case (e1,e2) of
                                                                         Mult e1 (multNorm $ Mult e1' e2')
                                                                     else if res == GT then
                                                                         Mult e1' (multNorm $ Mult e1 e2')
-                                                                    else multNorm (Mult (Exp e1 (Const 2)) e2')
+                                                                    else multNorm (Mult (expNorm $ Exp e1 (Const 2)) e2')
                                                         m1             -> m1
                         (Const a, Const b)           -> Const (a*b)
                         (e1, e2)                     -> let
@@ -104,7 +103,10 @@ multNorm (Mult e1 e2) = case (e1,e2) of
 multNorm e            = e -- Do nothing for expressions that are not multiplication 
 
 expNorm :: (Num a,Ord a) => Expr a -> Expr a
-exprNorm a = undefined
+expNorm (Exp e1 e2) = case e1 of 
+                        (Exp e21 e22)  -> Exp e21 (multNorm $ Mult e2 e22)
+                        _              -> Exp e1 e2
+expNorm e            = e
 
 {- | Normalize an addition Expression
     Always converts a Add Expression to antoher Add expression in normalized form
