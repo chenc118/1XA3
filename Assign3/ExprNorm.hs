@@ -37,8 +37,10 @@ instance (Ord a,Num a) => Ord (Expr a) where
                                             m1 = multNorm (Mult e11 e12)
                                             m2 = multNorm (Mult e21 e22)
                                         in case (m1,m2) of
-                                            (Mult e1 _, Mult e2 _) -> compare e1 e2
-                                            (e1,e2)                -> compare e1 e2
+                                            (Mult e11 e21, Mult e21 e22) -> let
+                                                                res = compare e11 e21
+                                                                in if res == EQ then compare e21 e22 else res
+                                            (e1,e2)                      -> compare e1 e2
     compare (Mult _ _) _                  = LT
     compare _ (Mult _ _)                  = GT
     compare (Add e11 e12) (Add e21 e22)   = let 
