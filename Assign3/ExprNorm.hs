@@ -38,7 +38,7 @@ instance (Ord a,Num a) => Ord (Expr a) where
                                             m2 = multNorm (Mult e21 e22)
                                         in case (m1,m2) of
                                             (Mult e1 _, Mult e2 _) -> compare e1 e2
-                                            _                      -> error "Error in comparing Multiplication stuff"
+                                            (e1,e2)                -> compare e1 e2
     compare (Mult _ _) _                  = LT
     compare _ (Mult _ _)                  = GT
     compare (Add e11 e12) (Add e21 e22)   = let 
@@ -46,6 +46,7 @@ instance (Ord a,Num a) => Ord (Expr a) where
                                             a2 = addNorm (Add e21 e22)
                                         in case (a1,a2) of
                                             (Add e1 _,Add e2 _)    -> compare e1 e2
+                                            (e1,e2)                -> compare e1 e2
                                             _                      -> error "Error in comparing Addition stuff"
     compare (Add _ _) _                   = LT
     compare _ (Add _ _)                   = GT
@@ -59,7 +60,7 @@ instance (Ord a,Num a) => Ord (Expr a) where
     Always converts a Mult Expression to another Mult Expression in normalized form
 -}
 multNorm :: (Ord a,Num a)=> Expr a -- ^ An Expression of form ('Mult' e1 e2) any other form will return itself
-                        -> Expr a  -- ^ A normalized form of ('Mult' e1 e2) or the input
+                        -> Expr a  -- ^ A normalized form of ('Mult' e1 e2) or a Constant if it is a multiplication of constants else the input
 multNorm (Mult e1 e2) = case (e1,e2) of 
                         (Mult e11 e12, Mult e21 e22) -> let 
                                                         m1 = multNorm (Mult e11 e12)
@@ -73,7 +74,7 @@ multNorm (Mult e1 e2) = case (e1,e2) of
                                                                                             (Mult e11 (multNorm $ Mult e21 (Mult e12 e22)))
                                                                                         else 
                                                                                             multNorm $ Mult (Exp e11 (Const 2)) (Mult e12 e22)
-                                                        _                            -> error "Error in normalizing Multiplication"
+                                                        (m1,m2)                      -> multNorm $ Mult m1 m2
                         (Mult e11 e12, e2)           -> case (multNorm $ Mult e11 e12) of
                                                         (Mult e1' e2') -> let 
                                                                         res = compare e2 e1'
@@ -82,7 +83,7 @@ multNorm (Mult e1 e2) = case (e1,e2) of
                                                                     else if res == GT then
                                                                         Mult e1' (multNorm $ Mult e2 e2')
                                                                     else multNorm (Mult (Exp e2 (Const 2)) e2')
-                                                        _              -> error "Error normalizing Multiplication"
+                                                        m1             -> m1
                         (e1, Mult e21 e22)           -> case (multNorm $ Mult e21 e22) of
                                                         (Mult e1' e2') -> let
                                                                         res = compare e1 e1'
@@ -91,7 +92,7 @@ multNorm (Mult e1 e2) = case (e1,e2) of
                                                                     else if res == GT then
                                                                         Mult e1' (multNorm $ Mult e1 e2')
                                                                     else multNorm (Mult (Exp e1 (Const 2)) e2')
-                                                        _              -> error "Error normalizing Multiplication"
+                                                        m1             -> m1
                         (Const a, Const b)           -> Const (a*b)
                         (e1, e2)                     -> let
                                                         res = compare e1 e2
