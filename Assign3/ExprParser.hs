@@ -18,25 +18,25 @@ import Text.Parsec.String
 
 parseExprD :: String -- ^ The string to be parsed 
             -> Expr Double -- ^ The resulting parsed Double Expr
-parseExprD ss = case parse dFactor "" ss of
+parseExprD ss = case parse dFactor "" "("++ss++")" of
                     Left err -> error (show err)
                     Right expr -> expr
 
 parseExprF:: String  -- ^ The string to be parsed 
             -> Expr Float -- ^ The resulting parsed Float Expr
-parseExprF ss = case parse fFactor "" ss of
+parseExprF ss = case parse fFactor "" "("++ss++")" of
                     Left err -> error (show err)
                     Right expr -> expr
 
 parseExprI:: String -- ^ The string to be parsed
             -> Expr Integer -- ^ The resulting parsed Integer Expr
-parseExprI ss = case parse iFactor "" ss of 
+parseExprI ss = case parse iFactor "" "("++ss++")" of 
                     Left err -> error (show err)
                     Right expr -> expr
 
 parseExprInt :: String -- ^ The string to be parsed
             -> Expr Int -- ^ The resulting parsed Int Expr
-parseExprInt ss = case parse intFactor "" ss of
+parseExprInt ss = case parse intFactor "" "("++ss++")" of
                     Left err -> error (show err)
                     Right expr -> expr
 
