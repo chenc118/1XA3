@@ -4,6 +4,7 @@ import ExprType
 import ExprDiff
 import ExprParser
 import ExprPretty
+import ExprNorm
 
 import qualified  Data.Map as Map
 
@@ -23,10 +24,10 @@ mathExamQuestion :: Expr Double
 mathExamQuestion = (((var "v") !+ (var "u")) !* (Exp ((Var "u") !* (Exp (Var "v") (Const 2.0))) (Const $ -1.0)))
 
 
-{- | Question = d^2g(u,v)/dudv where g (u,v) = (u+v) / (uv^2) where u = 1, v = 3,
- 	answer found = 1/9 (was C or D on version 4) (forgot if it was -1/9 or 1/9, w/e was on the Exam, there was only 1 Answer w/ 1/9 as absolute value)
- 	(Assuming 1/9 cause that's what this program got) 
- 	(If I got the values of u and v confused still doesn't matter for some reason swapping the two gets 1/9 as well)-}
+{- | Question = d^2g(u,v)\/dudv where g (u,v) = (u+v) \/ (uv^2) where u = 1, v = 3,
+ 	answer found = 1\/9 (was C or D on version 4) (forgot if it was -1\/9 or 1\/9, w\/e was on the Exam, there was only 1 Answer w\/ 1\/9 as absolute value)
+ 	(Assuming 1\/9 cause that's what this program got) 
+ 	(If I got the values of u and v confused still doesn't matter for some reason swapping the two gets 1\/9 as well)-}
 verifyExamQuestion :: Bool
 verifyExamQuestion =let 
                     ans = eval (Map.fromList [("u",1.0),("v",3.0)]) $ partDiff "u" $ partDiff "v" mathExamQuestion

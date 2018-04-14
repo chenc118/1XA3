@@ -90,6 +90,11 @@ addOp :: Parser (Expr a -> Expr a -> Expr a)
 addOp = do {symbol "!+";
             return (Add)}
 
+-- | attempt to parse an exponentiation operation consisting of the symbol !^
+expOp :: Parser (Expr a -> Expr a -> Expr a)
+expOp = do {symbol "!^";
+            return (Exp)}
+
 -- generic trig operation stuffs cause only diff = log, vs sin, vs cos etc
 trigOp :: String ->
             (Expr a -> Expr a) ->
@@ -103,7 +108,10 @@ expr :: Parser (Expr a) -> Parser (Expr a)
 expr factor = (term factor) `chainl1` addOp
 -- | Attempt to parse a term consisting of trig expressions separated by multiplication operations
 term :: Parser (Expr a) -> Parser (Expr a)
-term factor = (trig factor) `chainl1` multOp
+term factor = (expo factor) `chainl1` multOp
+
+expo :: Parser (Expr a) -> Parser (Expr a)
+expo factor = (trig factor) `chainl1` expOp
 {- | Attemtpt to parse a trig operation which is any operation of the form `name(Expr...)` wherein name
     of the trig operation and Expr... is the nestled expressions within
 -}
