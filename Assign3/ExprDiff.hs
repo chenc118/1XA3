@@ -15,6 +15,7 @@ TODO write a longer description of the module, containing some commentary with @
 module ExprDiff where
 
 import ExprType
+import ExprNorm
 
 import qualified Data.Map as Map
 
@@ -39,8 +40,8 @@ import qualified Data.Map as Map
 -- | This class operates over the 'Expr' data type
 class DiffExpr a where 
     eval :: Map.Map String a -> Expr a -> a
-    simplify :: (Eq a) => Map.Map String a -> Expr a -> Expr a
-    usimplify :: (Eq a) => Expr a -> Expr a -- ^ Unary simplification, uses an empty map
+    simplify :: (Ord a) => Map.Map String a -> Expr a -> Expr a
+    usimplify :: (Ord a) => Expr a -> Expr a -- ^ Unary simplification, uses an empty map
     usimplify = simplify (Map.fromList [])
     partDiff :: String -> Expr a -> Expr a
     {-Default Methods-}
@@ -93,7 +94,7 @@ instance (ShoeHornFloating a) => DiffExpr a where
                                             (_,Const 0)       -> Const 0
                                             (Const 1,se2)     -> se2
                                             (se1,Const 1)     -> se1
-                                            (se1,se2)         -> Mult se1 se2
+                                            (se1,se2)         -> multNorm $ Mult se1 se2
     simplify vrs (NExp e1)                 = let
                                             s1 = simplify vrs e1
                                         in case s1 of
