@@ -151,11 +151,11 @@ multNorm (Mult e1 e2) = case (e1,e2) of
 multNorm e            = e -- Do nothing for expressions that are not multiplication 
 
 
--- | Converts a list of expressions into a multiplication expression
-fromListMult :: Num a => [Expr a] -> Expr a
+-- | Converts a list of expressions into a multiplication expression, fails if given an empty list
+fromListMult :: [Expr a] -> Expr a
 fromListMult (e:[]) = e
 fromListMult (e:es) = Mult e $ fromListMult es
-fromListMult []   = Const 1
+fromListMult [] = error "List cannot be empty"
 
 -- | Converts a multiplication Expression 'Mult' into a list of its components
 toListMult :: Expr a -> [Expr a]
@@ -241,3 +241,18 @@ addNorm (Add e1 e2) = case (e1,e2) of
                                                     else 
                                                         multNorm $ Mult e1 $ Const 2
 addNorm e           = e
+
+-- | Converts a list of expressions into an addition expression, fails if given an empty list
+fromListAdd :: [Expr a] -> Expr a
+fromListAdd (e:[]) = e
+fromListAdd (e:es) = Add e $ fromListAdd es
+fromListAdd []     = error "List cannot be empty"
+
+-- | Converts an addition Expression 'Add' into a list of its components
+toListAdd :: Expr a -> [Expr a]
+toListAdd (Add e1 e2) = (toListAdd e1)++(toListAdd e2)
+toListAdd e           = [e]
+
+addNorml :: [Expr a] -> [Expr a]
+addNorml = undefined
+
