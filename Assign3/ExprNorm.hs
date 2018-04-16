@@ -2,6 +2,8 @@ module ExprNorm where
 
 import ExprType
 
+import Data.List
+
 
 {- ExprNorm: Module that contains a bunch of instances and functions
    that help normalize an Expression. Used by the simplify function 
@@ -72,10 +74,12 @@ instance (Ord a,Num a) => Ord (Expr a) where
 {- | Normalize a multiplication Expression
     Always converts a Mult Expression to another Mult Expression or Const Expression in normalized form.
     This is a recursive normalization function, there is an alternate multiplication normalization function that uses lists.
-    
 -}
 multNorm :: (Ord a,Num a)=> Expr a -- ^ An Expression of form ('Mult' e1 e2) any other form will return itself
                         -> Expr a  -- ^ A normalized form of ('Mult' e1 e2) or a Constant if it is a multiplication of constants else the input
+{-  Hello person reading source code, welcome to a world of confusion, thanks to how many separate cases there are to consider, when normalizing a multiplication expression
+    Just look at the list based normalization and it's basically the same thing but no lists, just constant recursions to itself.
+-}
 multNorm (Mult e1 e2) = case (e1,e2) of 
                         (Mult e11 e12, Mult e21 e22) -> let 
                                                         m1 = multNorm (Mult e11 e12)
@@ -147,6 +151,43 @@ multNorm (Mult e1 e2) = case (e1,e2) of
 multNorm e            = e -- Do nothing for expressions that are not multiplication 
 
 
+-- | Converts a list of expressions into a multiplication expression
+fromListMult :: Num a => [Expr a] -> Expr a
+fromListMult (e:[]) = e
+fromListMult (e:es) = Mult e $ fromListMult es
+fromListMult []   = Const 1
+
+-- | Converts a multiplication Expression 'Mult' into a list of its components
+toListMult :: Expr a -> [Expr a]
+toListMult (Mult e1 e2) = (toListMult e1) ++ (toListMult e2)
+toListMult e            = [e]
+
+{- | Normalize a multiplication Expression
+    Always converts a Mult Expression to another Mult Expression or Const Expression in normalized form.
+    This is a normalization function using lists, use this to understand tha basics of how this multiplication normalization works 'multNorm' is basically this but w/o lists
+
+-}
+multNorml :: (Ord a,Num a) => [Expr a] -> [Expr a]
+multNorml [] = []
+multNorml l = let
+            e1:es = sort l -- seriously why does elm use :: instead of : for list comprehension, literally wrote this section initially using :: instead of : cause of Elm
+            in case es of 
+                [] -> [e1]
+                (e2:es) -> case (e1,e2) of
+                    (Const a, Const b)         -> (Const (a*b)):(multNorml es)
+                    (Exp e11 e12, Exp e21 e22) -> case compare e11 e21 of
+                                                    EQ -> multNorml $ (expNorm $ Exp e11 $ addNorm $ Add e12 e22):(multNorml es)
+                                                    _  -> e1:(multNorml (e2:es))
+                    (Exp e11 e12, _)           -> case compare e11 e2 of 
+                                                    EQ -> multNorml $ (expNorm $ Exp e11 $ addNorm $ Add e12 $ Const 1):(multNorml es)
+                                                    _  -> e1:(multNorml (e2:es))
+                    (_,Exp e21 e22)            -> case compare e21 e1 of
+                                                    EQ -> multNorml $ (expNorm $ Exp e21 $ addNorm $ Add e22 $ Const 1):(multNorml es)
+                                                    _  -> e1:(multNorml (e2:es))
+                    (_,_)                      -> case compare e1 e2 of
+                                                    EQ -> multNorml $ (expNorm $ Exp e1 $ Const 2):(multNorml es) 
+                                                    _  -> e1:(multNorml (e2:es))
+
 expNorm :: (Num a,Ord a) => Expr a -> Expr a
 expNorm (Exp e1 e2) = case e1 of 
                         (Exp e21 e22)  -> expNorm $ Exp e21 (multNorm $ Mult e2 e22)
@@ -154,8 +195,8 @@ expNorm (Exp e1 e2) = case e1 of
 expNorm e            = e
 
 {- | Normalize an addition Expression
-    Always converts a Add Expression to antoher Add expression in normalized form
-
+    Always converts a Add Expression to antoher Add expression in normalized form.
+    Note : a pure recursive normalization cannot (at least w/o using a ton of helper functions that are essentially lists) fully normalize an expression
 -}
 addNorm :: (Ord a,Num a) => Expr a -> Expr a
 addNorm (Add e1 e2) = case (e1,e2) of
