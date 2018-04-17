@@ -79,6 +79,7 @@ multNorm :: (Ord a,Num a)=> Expr a -- ^ An Expression of form ('Mult' e1 e2) any
                         -> Expr a  -- ^ A normalized form of ('Mult' e1 e2) or a Constant if it is a multiplication of constants else the input
 {-  Hello person reading source code, welcome to a world of confusion, thanks to how many separate cases there are to consider, when normalizing a multiplication expression
     Just look at the list based normalization and it's basically the same thing but no lists, just constant recursions to itself.
+    There are over 50 end points of which about 50% recurse back onto this function.
 -}
 multNorm (Mult e1 e2) = case (e1,e2) of 
                         (Mult e11 e12, Mult e21 e22) -> let 
@@ -214,8 +215,8 @@ multNorm (Mult e1 e2) = case (e1,e2) of
 multNorm e            = e -- Do nothing for expressions that are not multiplication 
 
 -- | Expands an exponent with multiplication inside to have multiplication outside
-expandExp :: Expr a -> Expr a
-expandExp (Exp (Mult e11 e12) e2) = Mult (expandExp $ Exp e11 e2) (expandExp $ Exp e12 e2)
+expandExp :: (Num a,Ord a) => Expr a -> Expr a
+expandExp (Exp (Mult e11 e12) e2) = Mult (expandExp $ expNorm $ Exp e11 e2) (expandExp $ expNorm $ Exp e12 e2)
 expandExp (Exp e1 e2)             = Exp e1 e2
 expandExp e                       = e
 
