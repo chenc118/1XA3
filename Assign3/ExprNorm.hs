@@ -240,10 +240,13 @@ multNorml :: (Ord a,Num a) => [Expr a] -> [Expr a]
 multNorml [] = []
 multNorml l = let
             e1:es = sort l -- seriously why does elm use :: instead of : for list comprehension, literally wrote this section initially using :: instead of : cause of Elm
-            in case es of 
-                [] -> [e1]
+            es' = multNorml es
+            in case es' of 
+                [] -> case e1 of
+                    (Exp (Mult _ _) e12) -> multNorml $ (toListMult (expandExp e1))
+                    _                    -> [e1]
                 (e2:es) -> case (e1,e2) of
-                    (Const a, Const b)           -> (Const (a*b)):(multNorml es)
+                    (Const a, Const b)           -> (Const (a*b)):es
                     (Exp (Mult e111 e112) e12,_) -> multNorml $ (toListMult $ expandExp e1)++(e2:es)
                     (Exp e11 e12, Exp e21 e22)   -> case compare e11 e21 of
                                                     EQ -> multNorml $ (expNorm $ Exp e11 $ addNorm $ Add e12 e22):es
