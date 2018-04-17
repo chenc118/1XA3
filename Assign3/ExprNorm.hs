@@ -88,9 +88,9 @@ multNorm (Mult e1 e2) = case (e1,e2) of
                                                         (Mult e11 e12, Mult e21 e22) -> let 
                                                                                         res = compare e11 e21
                                                                                     in if res == GT then
-                                                                                            (Mult e21 (multNorm $ Mult e11 (Mult e12 e22)))
+                                                                                            multNorm $ Mult e21 $ Mult e11 $ Mult e12 e22
                                                                                         else if res == LT then
-                                                                                            (Mult e11 (multNorm $ Mult e21 (Mult e12 e22)))
+                                                                                            multNorm $ Mult e11 $ Mult e21 $ Mult e12 e22
                                                                                         else 
                                                                                             multNorm $ Mult (expNorm $ Exp e11 (Const 2)) (Mult e12 e22)
                                                         (m1,m2)                      -> multNorm $ Mult m1 m2
