@@ -19,9 +19,9 @@ instance (Ord a,Num a) => Ord (Expr a) where
     -- arranged in order of least to greatest, if cons == then test the item that is wrapped
     -- Exp shoved at the head for special ordering such that the exponent is "near" their term such that they can be grouped easily
     compare (Exp e11 e12) (Exp e21 e22)   = let
-                                            res = compare e12 e22
-                                        in if res == EQ then -- Compare exponent first as that is a better indicator of which is greater
-                                                compare e11 e21
+                                            res = compare e11 e21
+                                        in if res == EQ then 
+                                                compare e12 e22
                                             else res
     compare (Exp e11 e12) e2              = case compare e11 e2 of
                                         LT -> LT
@@ -99,19 +99,33 @@ multNorm (Mult e1 e2) = case (e1,e2) of
                                                                         res = compare e2 e1'
                                                                     in if res == LT then
                                                                         case e1' of 
-                                                                            (Exp e11' e12') -> let 
-                                                                                            res = compare e2 e11'
-                                                                                            in case res of 
-                                                                                                EQ -> multNorm $ Mult (expNorm $ Exp e11' (addNorm $ Add e12' $ Const 1)) e2'
-                                                                                                _  -> Mult e2 (multNorm $ Mult e1' e2')
+                                                                            (Exp (Mult e111' e112') e12') -> multNorm $ Mult (e2') $ Mult (e2) $ expandExp e1' 
+                                                                            (Exp e11' e12') -> case e2 of
+                                                                                            (Exp e21 e22) -> let
+                                                                                                        res = compare e21 e11'
+                                                                                                        in case res of
+                                                                                                            EQ -> multNorm $ Mult (expNorm $ Exp e11' (addNorm $ Add e12' e22)) e2'
+                                                                                                            _  -> Mult e2 (multNorm $ Mult e1' e2')
+                                                                                            _             -> let 
+                                                                                                        res = compare e2 e11'
+                                                                                                        in case res of 
+                                                                                                            EQ -> multNorm $ Mult (expNorm $ Exp e11' (addNorm $ Add e12' $ Const 1)) e2'
+                                                                                                            _  -> Mult e2 (multNorm $ Mult e1' e2')
                                                                             _               -> Mult e2 (multNorm $ Mult e1' e2')
                                                                     else if res == GT then
                                                                         case e1' of 
-                                                                            (Exp e11' e12') -> let
-                                                                                            res = compare e2 e11'
-                                                                                            in case res of
-                                                                                                EQ -> multNorm $ Mult (expNorm $ Exp e11' (addNorm $ Add e12' $ Const 1)) e2'
-                                                                                                _  -> Mult e1' (multNorm $ Mult e2 e2')
+                                                                            (Exp (Mult e111' e112') e12') -> multNorm $ Mult (e2') $ Mult (e2) $ expandExp e1'
+                                                                            (Exp e11' e12') -> case e2 of
+                                                                                            (Exp e21 e22) -> let
+                                                                                                        res = compare e21 e11'
+                                                                                                        in case res of
+                                                                                                            EQ -> multNorm $ Mult (expNorm $ Exp e11' (addNorm $ Add e12' e22)) e2'
+                                                                                                            _  -> Mult e1' (multNorm $ Mult e2 e2')
+                                                                                            _             -> let
+                                                                                                        res = compare e2 e11'
+                                                                                                        in case res of
+                                                                                                            EQ -> multNorm $ Mult (expNorm $ Exp e11' (addNorm $ Add e12' $ Const 1)) e2'
+                                                                                                            _  -> Mult e1' (multNorm $ Mult e2 e2')
                                                                             _               -> Mult e1' (multNorm $ Mult e2 e2')
                                                                     else multNorm (Mult (expNorm $ Exp e2 (Const 2)) e2')
                                                         m1             -> multNorm $ Mult e2 m1
@@ -120,19 +134,33 @@ multNorm (Mult e1 e2) = case (e1,e2) of
                                                                         res = compare e1 e1'
                                                                     in if res == LT then
                                                                         case e1' of 
-                                                                            (Exp e11' e12') -> let
-                                                                                        res = compare e1 e11'
-                                                                                        in case res of 
-                                                                                            EQ -> multNorm $ Mult (expNorm $ Exp e11' (addNorm $ Add e12' $ Const 1)) e2'
-                                                                                            _  -> Mult e1 (multNorm $ Mult e1' e2')
+                                                                            (Exp (Mult e111' e112') e12') -> multNorm $ Mult (e2') $ Mult (e1) $ expandExp e1'
+                                                                            (Exp e11' e12') -> case e1 of 
+                                                                                            (Exp e11 e12) -> let
+                                                                                                        res = compare e11 e11'
+                                                                                                        in case res of
+                                                                                                            EQ -> multNorm $ Mult (expNorm $ Exp e11' (addNorm $ Add e12' e12)) e2'
+                                                                                                            _  -> Mult e1 (multNorm $ Mult e1' e2')
+                                                                                            _             -> let
+                                                                                                        res = compare e1 e11'
+                                                                                                        in case res of 
+                                                                                                            EQ -> multNorm $ Mult (expNorm $ Exp e11' (addNorm $ Add e12' $ Const 1)) e2'
+                                                                                                            _  -> Mult e1 (multNorm $ Mult e1' e2')
                                                                             _                -> Mult e1 (multNorm $ Mult e1' e2')
                                                                     else if res == GT then
                                                                         case e1' of 
-                                                                            (Exp e11' e12') -> let
-                                                                                        res = compare e1 e11'
-                                                                                        in case res of
-                                                                                            EQ -> multNorm $ Mult (expNorm $ Exp e11' (addNorm $ Add e12' $ Const 1)) e2'
-                                                                                            _  -> Mult e1' (multNorm $ Mult e1 e2')
+                                                                            (Exp (Mult e111' e112') e12') -> multNorm $ Mult (e2') $ Mult (e1) $ expandExp e1'
+                                                                            (Exp e11' e12') -> case e1 of
+                                                                                            (Exp e11 e12) -> let
+                                                                                                        res = compare e11 e11'
+                                                                                                        in case res of
+                                                                                                            EQ -> multNorm $ Mult (expNorm $ Exp e11' (addNorm $ Add e12' e12)) e2'
+                                                                                                            _  -> Mult e1' (multNorm $ Mult e1 e2')
+                                                                                            _             -> let
+                                                                                                        res = compare e1 e11'
+                                                                                                        in case res of
+                                                                                                            EQ -> multNorm $ Mult (expNorm $ Exp e11' (addNorm $ Add e12' $ Const 1)) e2'
+                                                                                                            _  -> Mult e1' (multNorm $ Mult e1 e2')
                                                                             _               -> Mult e1' (multNorm $ Mult e1 e2')
                                                                     else multNorm (Mult (expNorm $ Exp e1 (Const 2)) e2')
                                                         m1             -> multNorm $ Mult e1 m1 
@@ -142,13 +170,22 @@ multNorm (Mult e1 e2) = case (e1,e2) of
                                                     in case res of 
                                                         EQ -> expNorm $ Exp e1 $ Const 2
                                                         e  -> case e1 of 
+                                                            (Exp (Mult e111 e112) e12) -> multNorm $ Mult e2 $ expandExp e1
                                                             (Exp e11 e12) -> case e2 of 
+                                                                        (Exp (Mult e211 e212) e22) -> multNorm $ Mult e1 $ expandExp e2
                                                                         (Exp e21 e22) -> if compare e11 e21 == EQ then expNorm $ Exp e11 $ addNorm $ Add e12 e22 else if res == GT then Mult e2 e1 else Mult e1 e2
                                                                         _             -> if compare e11 e2 == EQ then expNorm $ Exp e11 $ addNorm $ Add e12 $ Const 1 else if res == GT then Mult e2 e1 else Mult e1 e2
                                                             _             -> case e2 of 
+                                                                        (Exp (Mult e211 e212) e22) -> multNorm $ Mult e1 $ expandExp e2
                                                                         (Exp e21 e22) -> if compare e21 e1 == EQ then expNorm $ Exp e21 $ addNorm $ Add e22 $ Const 1 else if res == GT then Mult e2 e1 else Mult e1 e2
                                                                         _             -> if res == GT then Mult e2 e1 else Mult e1 e2
 multNorm e            = e -- Do nothing for expressions that are not multiplication 
+
+-- | Expands an exponent with multiplication inside to have multiplication outside
+expandExp :: Expr a -> Expr a
+expandExp (Exp (Mult e11 e12) e2) = Mult (expandExp $ Exp e11 e2) (expandExp $ Exp e12 e2)
+expandExp (Exp e1 e2)             = Exp e1 e2
+expandExp e                       = e
 
 
 -- | Converts a list of expressions into a multiplication expression, fails if given an empty list
