@@ -95,8 +95,10 @@ multNorm (Mult e1 e2) = case (e1,e2) of
                                                                                         else 
                                                                                             multNorm $ Mult (expNorm $ Exp e11 (Const 2)) (Mult e12 e22)
                                                         (m1,m2)                      -> multNorm $ Mult m1 m2
-                        (Mult e11 e12, e2)           -> case (multNorm $ Mult e11 e12) of
-                                                        (Mult e1' e2') -> let 
+                        (Mult e11 e12, e2_)           -> case (multNorm $ Mult e11 e12) of
+                                                        (Mult e1'_ e2') -> let 
+                                                                        e2 = expNorm e2_
+                                                                        e1' = expNorm e1'_
                                                                         res = compare e2 e1'
                                                                     in if res == LT then
                                                                         case e1' of 
@@ -146,8 +148,10 @@ multNorm (Mult e1 e2) = case (e1,e2) of
                                                                                             _             -> Mult e1' (multNorm $ Mult e2 e2')
                                                                     else multNorm (Mult (expNorm $ Exp e2 (Const 2)) e2')
                                                         m1             -> multNorm $ Mult e2 m1
-                        (e1, Mult e21 e22)           -> case (multNorm $ Mult e21 e22) of
-                                                        (Mult e1' e2') -> let
+                        (e1_, Mult e21 e22)           -> case (multNorm $ Mult e21 e22) of
+                                                        (Mult e1'_ e2') -> let
+                                                                        e1 = expNorm e1_
+                                                                        e1' = expNorm e1'_
                                                                         res = compare e1 e1'
                                                                     in if res == LT then
                                                                         case e1' of 
@@ -198,7 +202,9 @@ multNorm (Mult e1 e2) = case (e1,e2) of
                                                                     else multNorm (Mult (expNorm $ Exp e1 (Const 2)) e2')
                                                         m1             -> multNorm $ Mult e1 m1 
                         (Const a, Const b)           -> Const (a*b)
-                        (e1, e2)                     -> let
+                        (e1_, e2_)                     -> let
+                                                        e1 = expNorm e1_
+                                                        e2 = expNorm e2_
                                                         res = compare e1 e2
                                                     in case res of 
                                                         EQ -> expNorm $ Exp e1 $ Const 2
@@ -240,13 +246,16 @@ toListMult e            = [e]
 multNorml :: (Ord a,Num a) => [Expr a] -> [Expr a]
 multNorml [] = []
 multNorml l = let
-            e1:es = sort l -- seriously why does elm use :: instead of : for list comprehension, literally wrote this section initially using :: instead of : cause of Elm
+            e1_:es = sort l -- seriously why does elm use :: instead of : for list comprehension, literally wrote this section initially using :: instead of : cause of Elm
+            e1 = expNorm e1_
             es' = multNorml es
             in case es' of 
                 [] -> case e1 of
                     (Exp (Mult _ _) e12) -> multNorml $ (toListMult (expandExp e1))
                     _                    -> [e1]
-                (e2:es) -> case (e1,e2) of
+                (e2_:es) -> let
+                    e2 = expNorm e2_
+                  in case (e1,e2) of
                     (Const a, Const b)           -> (Const (a*b)):es
                     (Exp (Mult e111 e112) e12,_) -> multNorml $ (toListMult $ expandExp e1)++(e2:es)
                     (Exp e11 e12, Exp e21 e22)   -> case compare e11 e21 of
