@@ -305,7 +305,7 @@ addNorm (Add e1 e2) = case (e1,e2) of
                                                                             Add e1' (addNorm $ Add e2 e2')
                                                                         else addNorm (Add (multNorm $ Mult e2 $ Const 2) e2')
                                                         a1             -> addNorm $ Add e2 a1
-                        (e1, Mult e21 e22)         -> case (addNorm $ Add e21 e22) of
+                        (e1, Add e21 e22)         -> case (addNorm $ Add e21 e22) of
                                                         (Add e1' e2')  -> let
                                                                         res = compare e1' e1
                                                                         in if res == LT then
