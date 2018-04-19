@@ -238,8 +238,8 @@ multNorml l = let
                                                     _  -> e1:(multNorml (e2:es))
 
 expNorm :: (Num a,Ord a) => Expr a -> Expr a
-expNorm (Exp e1 (Const 0))     = Const 1
-expNorm (Exp e1 (Const 1))     = e1
+--expNorm (Exp e1 (Const 0))     = Const 1
+--expNorm (Exp e1 (Const 1))     = e1
 expNorm (Exp (Exp e11 e12) e2) = expNorm $ Exp e11 $ multNorm $ Mult e2 e12
 expNorm (Exp e1 e2)            = Exp e1 e2
 expNorm e                      = e

@@ -95,6 +95,16 @@ instance (ShoeHornFloating a) => DiffExpr a where
                                             (Const 1,se2)     -> se2
                                             (se1,Const 1)     -> se1
                                             (se1,se2)         -> multNorm $ Mult se1 se2
+    simplify vrs (Cos e1)                  = let
+                                            s1 = simplify vrs e1
+                                        in case s1 of
+                                            (Const a)   -> Const $ eval vrs (Cos e1)
+                                            se1         -> Cos se1
+    simplify vrs (Sin e1)                  = let
+                                            s1 = simplify vrs e1
+                                        in case s1 of
+                                            (Const a)   -> Const $ eval vrs (Sin e1)
+                                            se1         -> Sin se1 
     simplify vrs (NExp e1)                 = let
                                             s1 = simplify vrs e1
                                         in case s1 of
@@ -111,13 +121,15 @@ instance (ShoeHornFloating a) => DiffExpr a where
                                             s1 = simplify vrs e1
                                             s2 = simplify vrs e2
                                         in case (s1,s2) of
+                                            (_,Const 0)       -> Const 1
+                                            (e1,Const 1)       -> e1
                                             (Const a,Const b) -> Const $ eval vrs (Exp s1 s2)
                                             (se1,se2)         -> Exp se1 se2
 
+    simplify vrs (Const a)                 = Const a -- no simplification really needed here
     simplify vrs (Var x)                   = case Map.lookup x vrs of
                                                         Just v -> Const v
                                                         Nothing -> Var x
-    simplify _ e = e
 
     partDiff ss (Add e1 e2) = Add (partDiff ss e1) (partDiff ss e2)
     partDiff ss (Mult e1 e2) = Add (Mult e1 (partDiff ss e2)) (Mult e2 (partDiff ss e1))
