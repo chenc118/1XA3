@@ -1,3 +1,4 @@
+{-# LANGUAGE ParallelListComp #-}
 module ExprTest where
 
 import ExprType
@@ -15,6 +16,24 @@ sampleExpr :: Expr Double
 sampleExpr = (var "x") !+ (var "y")
 
 --exprProp :: Expr Double -> Bool
+
+-- | a function to split lists modified slightly from <https://stackoverflow.com/a/22594891>
+splits :: [a] -> [([a],[a])]
+splits xx = zipWith splitAt [1..((length xx)-1)] (repeat xx)
+
+-- | a function to flat map stuff taken from <https://stackoverflow.com/questions/2986787/haskell-flatmap>
+flatMap :: (t -> [a]) -> [t] -> [a]
+flatMap _ [] = []
+flatMap f (x:xs) = f x ++ flatMap f xs
+
+
+-- | Generates all possible ways to distribute a list of either a Mult or Add expression
+genBranches :: (Expr a -> Expr a -> Expr a) -> [Expr a] -> [Expr a]
+genBranches expr (e:[])  = [e]
+genBranches expr (e:es)  = let
+		(a,b) = unzip $ splits (e:es)
+		ab_ = zip [genBranches expr a' | a' <- a] [genBranches expr b' | b' <- b]
+	in flatMap id [[ expr a''' b''' | a''' <- a'' , b''' <- b'' ] | (a'',b'') <- ab_ ]
 
 listToExpr1 :: [Double] -> Expr Double
 listToExpr1 xs = undefined
@@ -37,5 +56,6 @@ verifyExamQuestion =let
 -- copied ~ < 1hour after Math Exam
 -- eval (Map.fromList [("u",1.0),("v",3.0)]) $ simplify (Map.fromList []) $ partDiff "u" $ partDiff "v" (((var "v") !+ (var "u")) !* (Exp ((Var "u") !* (Exp (Var "v") (Const 2.0))) (Const $ -1.0)))
 --  etc and run quickCheck over those
+
 
 --instance Arbitrary (Expr a) where
