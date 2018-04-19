@@ -100,6 +100,7 @@ multNorm (Mult e1 e2) = case (e1,e2) of
                                                                         e1 = expNorm e1_
                                                                         e1' = expNorm e1'_
                                                                         res = compare e1 e1'
+
                                                                     in if res == LT then
                                                                         case e1' of 
                                                                             (Exp (Mult e111' e112') e12') -> multNorm $ Mult (e2') $ Mult (e1) $ expandExp e1'
@@ -237,10 +238,11 @@ multNorml l = let
                                                     _  -> e1:(multNorml (e2:es))
 
 expNorm :: (Num a,Ord a) => Expr a -> Expr a
-expNorm (Exp e1 e2) = case e1 of 
-                        (Exp e21 e22)  -> expNorm $ Exp e21 (multNorm $ Mult e2 e22)
-                        _              -> Exp e1 e2
-expNorm e            = e
+expNorm (Exp e1 (Const 0))     = Const 1
+expNorm (Exp e1 (Const 1))     = e1
+expNorm (Exp (Exp e11 e12) e2) = expNorm $ Exp e11 $ multNorm $ Mult e2 e12
+expNorm (Exp e1 e2)            = Exp e1 e2
+expNorm e                      = e
 
 {- | Normalize an addition Expression
     Always converts a Add Expression to antoher Add expression in normalized form.

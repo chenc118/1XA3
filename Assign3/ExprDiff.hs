@@ -86,8 +86,8 @@ instance (ShoeHornFloating a) => DiffExpr a where
                                             (se1,Const 0)       -> se1
                                             (se1,se2)           -> Add se1 se2
     simplify vrs (Mult e1 e2)              = let
-                                            s1 = simplify vrs e1
-                                            s2 = simplify vrs e2 
+                                            s1 = simplify vrs $ multNorm e1
+                                            s2 = simplify vrs $ multNorm e2 
                                         in case (s1,s2) of
                                             (Const a,Const b) -> Const (a*b)
                                             (Const 0,_)       -> Const 0
