@@ -117,7 +117,8 @@ instance (ShoeHornFloating a) => DiffExpr a where
                                             (Const 1)         -> Const 0
                                             (Const a)         -> Const $ eval vrs (Ln s1)
                                             (se1)             -> Ln se1
-    simplify vrs (Exp e1 e2)               = let
+    simplify vrs (Exp e1_ e2_)               = let
+                                            (Exp e1 e2) = expNorm $ (Exp e1_ e2_)
                                             s1 = simplify vrs e1
                                             s2 = simplify vrs e2
                                         in case (s1,s2) of

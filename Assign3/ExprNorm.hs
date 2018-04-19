@@ -71,7 +71,8 @@ instance (Ord a,Num a) => Ord (Expr a) where
     compare _ (Add _ _)                   = GT-}
     
 {- | Normalize a multiplication Expression
-    Always converts a Mult Expression to another Mult Expression or Const Expression in normalized form.
+    Always converts a Mult Expression to another Mult Expression or Const Expression in normalized form. (Note this isn't a proper normalized form in terms of 
+    rewrite functions but normalizes it to a form that 'simplify' can normalize)
     This is a recursive normalization function, there is an alternate multiplication normalization function that uses lists.
 -}
 multNorm :: (Ord a,Num a)=> Expr a -- ^ An Expression of form ('Mult' e1 e2) any other form will return itself
