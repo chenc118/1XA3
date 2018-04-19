@@ -32,30 +32,30 @@ flatMap f (x:xs) = f x ++ flatMap f xs
 genBranches :: Eq a => (Expr a -> Expr a -> Expr a) -> [Expr a] -> [Expr a]
 genBranches expr (e:[])  = [e]
 genBranches expr (e:es)  = let
-        (a,b) = unzip $ splits (e:es)
-        ab_ = zip [genBranches expr a' | a' <- a] [genBranches expr b' | b' <- b]
-        ba_ = zip [genBranches expr b' | b' <- b] [genBranches expr a' | a' <- a]
-    in nub $ flatMap id [[ expr a''' b''' | a''' <- a'' , b''' <- b'' ] | (a'',b'') <- (ab_++ba_) ]
+        (a,b) = unzip $ splits (e:es) -- get all possible ways to split a list in 2 non-zero lists
+        ab_ = zip [genBranches expr a' | a' <- a] [genBranches expr b' | b' <- b] -- generate all possible ways each sub tree may be arranged
+        ba_ = zip [genBranches expr b' | b' <- b] [genBranches expr a' | a' <- a] -- same as above except swap left w/ right
+    in nub $ flatMap id [[ expr a''' b''' | a''' <- a'' , b''' <- b'' ] | (a'',b'') <- (ab_++ba_) ] -- construct the list of expressions with all the generated stuff
 
+-- | Verifies that an addition expression will normalize the same way no matter how the binary Add tree may be distributed
 verifyAddNormality :: (Show a,Ord a,Num a) => Expr a -> Bool
 verifyAddNormality ex = verifyNormality addNorm Add toListAdd ex
 
+-- | Verifies that a multiplication expression will normalize the same way no matter how the binary Mult tree may be distributed
 verifyMultNormality ::(Show a, Ord a, Num a) => Expr a -> Bool
 verifyMultNormality ex = verifyNormality multNorm Mult toListMult ex
 
+-- | Generic verify that some expression with a binary tree structure will normalize to the same thing
 verifyNormality :: (Show a, Ord a, Num a) => (Expr a -> Expr a) -> (Expr a -> Expr a -> Expr a) -> (Expr a -> [Expr a]) -> Expr a -> Bool
 verifyNormality norm expr toList test = let
                         normal = (norm test)
                         in vnHelper (genBranches expr (toList test)) norm (norm test)
-
+-- | Helper for the verify normality functions, spits a verbose error detailing edge case if it finds something wrong
 vnHelper :: (Show a,Eq a) => [Expr a] ->(Expr a -> Expr a) -> Expr a -> Bool
 vnHelper (e:es) norm normal = case (norm e)==normal of
                         True -> vnHelper es norm normal
                         False -> error ("Normality check failed on "++(show e)++" got "++(show $ norm e)++" expected "++(show normal))
 vnHelper [] _ _             = True
-
-listToExpr1 :: [Double] -> Expr Double
-listToExpr1 xs = undefined
 
 -- | A question on the 1ZB3 Exam, copied after having to take derivative multiple times in order to verify it (gets very messy)
 mathExamQuestion :: Expr Double
