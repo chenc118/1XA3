@@ -190,7 +190,7 @@ multNorm (Mult e1 e2) = case (e1,e2) of
                                                                                             (Exp e11 e12) -> let
                                                                                                         res = compare e11 e1'
                                                                                                         in case res of 
-                                                                                                            EQ -> multNorm $ Mult (expNorm $ Exp e11 (addNorm $ Add e22 $ Const 1)) e2'
+                                                                                                            EQ -> multNorm $ Mult (expNorm $ Exp e11 (addNorm $ Add e12 $ Const 1)) e2'
                                                                                                             _  -> Mult e1 (multNorm $ Mult e1' e2')
                                                                                             (Const b)     -> Mult (Const (a*b)) e2'
                                                                                             _             -> Mult e1 (multNorm $ Mult e1' e2')
@@ -199,7 +199,7 @@ multNorm (Mult e1 e2) = case (e1,e2) of
                                                                                             (Exp e11 e12) -> let
                                                                                                         res = compare e11 e1'
                                                                                                         in case res of 
-                                                                                                            EQ -> multNorm $ Mult (expNorm $ Exp e11 (addNorm $ Add e22 $ Const 1)) e2'
+                                                                                                            EQ -> multNorm $ Mult (expNorm $ Exp e11 (addNorm $ Add e12 $ Const 1)) e2'
                                                                                                             _  -> Mult e1 (multNorm $ Mult e1' e2')
                                                                                             _             -> Mult e1 (multNorm $ Mult e1' e2')
                                                                     else if res == GT then
@@ -222,7 +222,7 @@ multNorm (Mult e1 e2) = case (e1,e2) of
                                                                                             (Exp e11 e12) -> let
                                                                                                         res = compare e11 e1'
                                                                                                         in case res of
-                                                                                                            EQ  -> multNorm $ Mult (expNorm $ Exp e11 (addNorm $ Add e22 $ Const 1)) e2'
+                                                                                                            EQ  -> multNorm $ Mult (expNorm $ Exp e11 (addNorm $ Add e12 $ Const 1)) e2'
                                                                                                             _   -> Mult e1' (multNorm $ Mult e1 e2')
                                                                                             (Const b)     -> Mult (Const (a*b)) e2'
                                                                                             _             -> Mult e1' (multNorm $ Mult e1 e2')
@@ -231,7 +231,7 @@ multNorm (Mult e1 e2) = case (e1,e2) of
                                                                                             (Exp e11 e12) -> let
                                                                                                         res = compare e11 e1'
                                                                                                         in case res of
-                                                                                                            EQ  -> multNorm $ Mult (expNorm $ Exp e11 (addNorm $ Add e22 $ Const 1)) e2'
+                                                                                                            EQ  -> multNorm $ Mult (expNorm $ Exp e11 (addNorm $ Add e12 $ Const 1)) e2'
                                                                                                             _   -> Mult e1' (multNorm $ Mult e1 e2')
                                                                                             _             -> Mult e1' (multNorm $ Mult e1 e2')
                                                                     else multNorm (Mult (expNorm $ Exp e1 (Const 2)) e2')
