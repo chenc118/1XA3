@@ -70,7 +70,6 @@ instance (Ord a,Num a) => Ord (Expr a) where
     {-compare (Add _ _) _                   = LT
     compare _ (Add _ _)                   = GT-}
     
-
 {- | Normalize a multiplication Expression
     Always converts a Mult Expression to another Mult Expression or Const Expression in normalized form.
     This is a recursive normalization function, there is an alternate multiplication normalization function that uses lists.
