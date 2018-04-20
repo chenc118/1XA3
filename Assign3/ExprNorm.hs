@@ -80,7 +80,7 @@ multNorm :: (Ord a,Num a)=> Expr a -- ^ An Expression of form ('Mult' e1 e2) any
                         -> Expr a  -- ^ A normalized form of ('Mult' e1 e2) or a Constant if it is a multiplication of constants else the input
 {-  Hello person reading source code, welcome to a world of confusion, thanks to how many separate cases there are to consider, when normalizing a multiplication expression
     Just look at the list based normalization and it's basically the same thing but no lists, just constant recursions to itself.
-    There are over 50 end points of which about 50% recurse back onto this function.
+    There are over 25 end points of which about 50% recurse back onto this function.
 -}
 multNorm (Mult e1_ e2_) = let 
                     e1 = lnNorm e1_
@@ -218,7 +218,7 @@ multNorml :: (Ord a,Num a) => [Expr a] -> [Expr a]
 multNorml [] = []
 multNorml l = let
             e1_:es = sort l -- seriously why does elm use :: instead of : for list comprehension, literally wrote this section initially using :: instead of : cause of Elm
-            e1 = expNorm e1_
+            e1 = lnNorm $ expNorm e1_
             es' = multNorml es
             in case es' of 
                 [] -> case e1 of
@@ -285,14 +285,24 @@ addNorml l = let
                                 (Mult _ _, _)     -> if e2 `elem` l1 then addNorml $ (expandMult ((Const 2):l1))++es else e1:(addNorml $ (expandMult l1)++(e2:es)) where l1 = toListMult e1
                                 (_,_)             -> e1:(addNorml $ (e2:es))
 
-
-expandMult :: [Expr a] -> [Expr a]
+-- | Takes a list of expressions multiplied and returns a list of addition expanding any Add within the list of multiplication
+expandMult :: (Eq a)=> [Expr a] -> [Expr a]
 expandMult m  = let
-            (a,b) = partition (\x -> case x of 
-                                            (Add _ _) -> True
-                                            _         -> False) m
-            a'    = flatMap id $  fmap toListAdd a
-            in  [(fromListMult (a'':b)) | a'' <- a']
+            am x = case x of
+                        (Add _ _) -> True
+                        _         -> False 
+            a  = find am m
+            m' = case a of 
+                Just a  -> delete a m
+                Nothing -> m
+            nn l = case l of 
+                        [] -> [[]]
+                        _  -> l
+            in case a of
+                Nothing -> case m' of
+                            []    -> []
+                            _     -> [fromListMult m']
+                Just a  -> [ fromListMult (a':m'') | a' <- toListAdd a, m''<-(nn $ fmap toListMult $ expandMult m') ]
 
 -- | Normalizes a Ln expresssion by expanding Multiplication within and bringing down the exponent for exponents within
 lnNorm :: Expr a -> Expr a
