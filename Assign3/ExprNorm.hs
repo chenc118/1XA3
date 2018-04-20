@@ -5,6 +5,10 @@ Copyright: (c) chenc118 @ 2018
 License : WTFPL
 Stability : experimental
 Portability : MSDOS
+
+Constains some helper functions used by 'simplify' in "ExprDiff".
+
+Used to normalize expressions to a constant form that can be further reduced by 'simplify' easily
 -}
 module ExprNorm where
 
@@ -18,7 +22,6 @@ import Data.List
    in ExprDiff.hs
 -}
 
--- * Section : Ordering definition
 
 {- | Basic ordering, wherein things are sorted from least to greatest from most specific to least
     'Const' < 'Var' < 'Cos' < 'Sin' < 'Ln' < 'NExp' < 'Add' < 'Mult' < 'Exp' 
@@ -77,7 +80,8 @@ instance (Ord a,Num a) => Ord (Expr a) where
                                             (e1,e2)                -> compare e1 e2
     {-compare (Add _ _) _                   = LT
     compare _ (Add _ _)                   = GT-}
-    
+
+-- ** Multiplication Normalization
 {- | Normalize a multiplication Expression
     Always converts a Mult Expression to another Mult Expression or Const Expression in normalized form. (Note this isn't a proper normalized form in terms of 
     rewrite functions but normalizes it to a form that 'simplify' can normalize)
@@ -221,7 +225,8 @@ toListMult e            = [e]
     This is a normalization function using lists, use this to understand tha basics of how this multiplication normalization works 'multNorm' is basically this but w/o lists
     
 -}
-multNorml :: (Ord a,Num a) => [Expr a] -> [Expr a]
+multNorml :: (Ord a,Num a) => [Expr a] -- ^ list of expressions multiplied together, use 'toListMult' to convert from an @Expr a@ 
+                            -> [Expr a] -- ^ list of expressions multiplied together, use 'fromListMult' to convert to an @Expr a@
 multNorml [] = []
 multNorml l = let
             e1_:es = sort l -- seriously why does elm use :: instead of : for list comprehension, literally wrote this section initially using :: instead of : cause of Elm
@@ -249,16 +254,18 @@ multNorml l = let
                                                     EQ -> multNorml $ (expNorm $ Exp e1 $ Const 2):es
                                                     _  -> e1:(multNorml (e2:es))
 
-expNorm :: (Num a,Ord a) => Expr a -> Expr a
---expNorm (Exp e1 (Const 0))     = Const 1
---expNorm (Exp e1 (Const 1))     = e1
+-- ** Exponent Normalization
+
+-- | Normalize an exponent. Always converts an exponent to another exponent
+expNorm :: (Num a,Ord a) => Expr a -- ^ Exp a b expression, any other types are ignored
+                        -> Expr a -- ^ Normalized form of Exp expression
 expNorm (Exp (Exp e11 e12) e2) = expNorm $ Exp e11 $ multNorm $ Mult e2 e12
 expNorm (Exp e1 e2)            = Exp e1 e2
 expNorm e                      = e
+-- ** Addition Normalization
 
 {- | Normalize an addition Expression
-    Always converts a Add Expression to antoher Add expression in normalized form.
-    Note : a pure recursive normalization cannot (at least w/o using a ton of helper functions that are essentially lists) fully normalize an expression
+    Always converts a Add Expression to antoher Add expression in normalized form. See 'addNorml'
 -}
 addNorm :: (Ord a,Num a) => Expr a -> Expr a
 addNorm e           = fromListAdd $ addNorml $ toListAdd e
@@ -274,7 +281,13 @@ toListAdd :: Expr a -> [Expr a]
 toListAdd (Add e1 e2) = (toListAdd e1)++(toListAdd e2)
 toListAdd e           = [e]
 
-addNorml :: (Ord a,Num a) => [Expr a] -> [Expr a]
+{- | Normalize an addition Expression
+     Always converts an Add Expression to another Add Expression or Const Expression in normalized form. (Note this isn't a proper normalized form in terms of 
+    rewrite functions but normalizes it to a form that 'simplify' can normalize)
+    Uses lists as that's the easiest way to normalize for addition.
+-}
+addNorml :: (Ord a,Num a) => [Expr a] -- ^ list of expressions that will be added together, use 'toListAdd' to convert from @Expr a@ 
+                        -> [Expr a] -- ^ list of expressions that will be added together, use 'fromListAdd' to convert to @Expr a@
 addNorml [] = []
 addNorml l = let 
             addSort a_ b_ =let
@@ -346,8 +359,18 @@ almostEqual a_ b_ = let
                         (Mult (Const a) e12,_)                  -> if compare e12 b == EQ then True else False
                         (_,Mult (Const b) e22)                  -> if compare a e22 == EQ then True else False
                         (_,_)                                   -> if compare a b == EQ then True else False
+
 -- | Extract coefficient from multipication term
-mCoef :: (Ord a, Num a) => Expr a -> a
+--
+-- For a multiplication expression this is either the constant value or 1.
+-- For any other expressions this is 1
+--
+-- i.e. coef of \[5x\] is 5
+--
+-- >>> mCoef (Mult (Const 5) (Var "x"))
+-- 5
+mCoef :: (Ord a, Num a) => Expr a -- ^ Expression to extract coefficient from
+                        -> a -- ^ Coefficient
 mCoef (Mult e1 e2) = let 
                     m1 = multNorm (Mult e1 e2)
                     in case m1 of
@@ -356,7 +379,16 @@ mCoef (Mult e1 e2) = let
 mCoef _            = 1
 
 -- | Extract Term from a multiplication term
-mTerm :: (Ord a, Num a) => Expr a -> Expr a
+--
+-- For a mutliplication expression this is everything except the constants.
+-- FOr any other expression this is itself
+--
+-- i.e. term of \[5x\] is x
+--
+-- >>> mTerm (Mult (Const 5) (Var "x"))
+-- (var "x")
+mTerm :: (Ord a, Num a) => Expr a -- ^ Expression to extrac the term from 
+                        -> Expr a -- ^ Extracted term
 mTerm (Mult e1 e2) = let 
                     m1 = multNorm (Mult e1 e2)
                     in case m1 of 
@@ -366,7 +398,8 @@ mTerm e             = e
 
 
 -- | Takes a list of expressions multiplied and returns a list of addition expanding any Add within the list of multiplication
-expandMult :: (Eq a)=> [Expr a] -> [Expr a]
+expandMult :: (Eq a)=> [Expr a] -- ^ list of expressions that will be multiplied together, use 'toListMult' to convert from an @Expr a@ 
+                    -> [Expr a] -- ^ list of expressions that will be added together, use 'fromListAdd' to convert to an @Expr a@ form
 expandMult m  = let
             am x = case x of
                         (Add _ _) -> True
@@ -383,6 +416,8 @@ expandMult m  = let
                             []    -> []
                             _     -> [fromListMult m']
                 Just a  -> [ fromListMult (a':m'') | a' <- toListAdd a, m''<-(nn $ fmap toListMult $ expandMult m') ]
+
+-- ** Ln Normalization
 
 -- | Normalizes a Ln expresssion by expanding Multiplication within and bringing down the exponent for exponents within
 lnNorm :: Expr a -> Expr a
