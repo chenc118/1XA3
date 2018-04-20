@@ -254,8 +254,7 @@ expNorm e                      = e
     Note : a pure recursive normalization cannot (at least w/o using a ton of helper functions that are essentially lists) fully normalize an expression
 -}
 addNorm :: (Ord a,Num a) => Expr a -> Expr a
-addNorm (Add e1 e2) = fromListAdd $ addNorml $ toListAdd (Add e1 e2)
-addNorm e           = e
+addNorm e           = fromListAdd $ addNorml $ toListAdd e
 
 -- | Converts a list of expressions into an addition expression, fails if given an empty list
 fromListAdd :: [Expr a] -> Expr a
@@ -274,7 +273,7 @@ addNorml l = let
             addSort a_ b_ =let
                 a = multNorm a_
                 b = multNorm b_
-                in case (a,b) of -- customized sort of the already customized ordering stuff, makes the mult "close" to 
+                in case (a,b) of -- customized sort of the already customized ordering stuff, makes the mult "close" to its term
                             (Mult a1 a2,Mult b1 b2) -> case (a1,b1) of
                                                         (Const a,Const b) -> let 
                                                                             res = compare a2 b2

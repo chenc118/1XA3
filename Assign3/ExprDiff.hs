@@ -39,10 +39,17 @@ import qualified Data.Map as Map
 
 -- | This class operates over the 'Expr' data type
 class DiffExpr a where 
+    -- | Evaluate an expression fully, values for all variables of the expression must be supplied otherwise or an error will be thrown use 'simplify' if you cannot supply all values
     eval :: Map.Map String a -> Expr a -> a
+    -- | Simplifies an expressions replacing variables the values in the given map, and partially evaluating when possible
     simplify :: (Ord a) => Map.Map String a -> Expr a -> Expr a
-    usimplify :: (Ord a) => Expr a -> Expr a -- ^ Unary simplification, uses an empty map
+    {- | Unary simplification, uses an empty map.
+        Equivalent to 
+        > simplify (Map.fromList [])
+    -}
+    usimplify :: (Ord a) => Expr a -> Expr a 
     usimplify = simplify (Map.fromList [])
+    -- | performs partial differentiation with respect to the given String identifier for a variable
     partDiff :: String -> Expr a -> Expr a
     {-Default Methods-}
     (!+) :: Expr a -> Expr a -> Expr a
@@ -90,7 +97,7 @@ instance (ShoeHornFloating a) => DiffExpr a where
                                                 (se1,se2)           -> addNorm $ Add se1 se2
                                         e             -> simplify vrs e
     simplify vrs (Mult e1 e2)              = let
-                                        m1 = multNorm (Mult e1 e2)
+                                        m1 = addNorm $ multNorm (Mult e1 e2)
                                         in case m1 of
                                         (Mult e1 e2) -> let
                                                 s1 = simplify vrs $ multNorm e1
@@ -101,7 +108,7 @@ instance (ShoeHornFloating a) => DiffExpr a where
                                                 (_,Const 0)       -> Const 0
                                                 (Const 1,se2)     -> se2
                                                 (se1,Const 1)     -> se1
-                                                (se1,se2)         -> multNorm $ Mult se1 se2
+                                                (se1,se2)         ->  Mult se1 se2
                                         e            -> simplify vrs e 
     simplify vrs (Cos e1)                  = let
                                             s1 = simplify vrs e1
