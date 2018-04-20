@@ -38,6 +38,7 @@ data Expr a = Add (Expr a) (Expr a) -- ^ Binary Addition
         Retrieves variable identifiers from an Expr
 -}
 -- * Section: Aux values 
+-- | Gets the variables within a given expression as a list of strings
 getVars :: Expr a-> [String]
 getVars (Add e1 e2)  = (getVars e1) `union` (getVars e2)
 getVars (Mult e1 e2) = (getVars e1) `union` (getVars e2)

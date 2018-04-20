@@ -102,7 +102,7 @@ to parse \[ e^{(2+x)} \]
 
 @
 >>> parseExprI "e^(2!+x)"
-(e^((val 2)!+(Var "x")))
+(exNExp((val 2)!+(Var "x")))
 @
 
 
