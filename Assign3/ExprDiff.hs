@@ -5,12 +5,11 @@
 {-|
 Module : ExprDiff
 Description: Contains a type class an dinstances for differentiable expressions
-Copyright: (c) no one
-License : WTFPL aka do WTF you want with it
+Copyright: (c) chenc118 @ 2018
+License : WTFPL
 Maintainer : no one
-Stability : None
+Stability : experimental
 Portability : MSDOS
-TODO write a longer description of the module, containing some commentary with @some markup@.
 -}
 module ExprDiff where
 

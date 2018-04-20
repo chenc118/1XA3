@@ -1,3 +1,11 @@
+{-|
+Module : ExprNorm
+Description: Contains external generic utility functions
+Copyright: (c) see the source for each function
+License : WTFPL
+Stability : experimental
+Portability : MSDOS
+-}
 module ExprUtil where
 
 -- | a function to split lists modified slightly from <https://stackoverflow.com/a/22594891>

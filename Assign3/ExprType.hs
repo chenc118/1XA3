@@ -1,3 +1,11 @@
+{-|
+Module : ExprNorm
+Description: Declares the 'Expr' type
+Copyright: (c) chenc118 @ 2018
+License : WTFPL
+Stability : experimental
+Portability : MSDOS
+-}
 module ExprType where
 
 import Data.List

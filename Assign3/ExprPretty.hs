@@ -1,3 +1,11 @@
+{-|
+Module : ExprNorm
+Description: The show instance for 'Expr' types
+Copyright: (c) chenc118 @ 2018
+License : WTFPL
+Stability : experimental
+Portability : MSDOS
+-}
 module ExprPretty () where
 
 import ExprType

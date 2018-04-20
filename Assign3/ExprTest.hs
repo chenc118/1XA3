@@ -1,4 +1,12 @@
 {-# LANGUAGE ParallelListComp #-}
+{-|
+Module : ExprTest
+Description: A class containing various test cases for the code
+Copyright: (c) chenc118 @ 2018
+License : WTFPL
+Stability : experimental
+Portability : MSDOS
+-}
 module ExprTest where
 
 import ExprType

@@ -1,3 +1,11 @@
+{-|
+Module : ExprNorm
+Description: A class that containing the parsers for various basic 'Expr' types
+Copyright: (c) chenc118 @ 2018
+License : WTFPL
+Stability : experimental
+Portability : MSDOS
+-}
 module ExprParser (parseExprD,parseExprF,parseExprI,parseExprInt) where
 
 import ExprType

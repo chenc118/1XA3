@@ -1,10 +1,17 @@
+{-|
+Module : ExprNorm
+Description: A class that contains some helper functions to normalize expressions
+Copyright: (c) chenc118 @ 2018
+License : WTFPL
+Stability : experimental
+Portability : MSDOS
+-}
 module ExprNorm where
 
 import ExprType
 import ExprUtil
 
 import Data.List
-
 
 {- ExprNorm: Module that contains a bunch of instances and functions
    that help normalize an Expression. Used by the simplify function 
