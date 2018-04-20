@@ -82,7 +82,10 @@ multNorm :: (Ord a,Num a)=> Expr a -- ^ An Expression of form ('Mult' e1 e2) any
     Just look at the list based normalization and it's basically the same thing but no lists, just constant recursions to itself.
     There are over 50 end points of which about 50% recurse back onto this function.
 -}
-multNorm (Mult e1 e2) = case (e1,e2) of 
+multNorm (Mult e1_ e2_) = let 
+                    e1 = lnNorm e1_
+                    e2 = lnNorm e2_
+                    in case (e1,e2) of 
                         (Mult e11 e12, Mult e21 e22) -> let 
                                                         m1 = multNorm (Mult e11 e12)
                                                         m2 = multNorm (Mult e21 e22)
@@ -290,3 +293,10 @@ expandMult m  = let
                                             _         -> False) m
             a'    = flatMap id $  fmap toListAdd a
             in  [(fromListMult (a'':b)) | a'' <- a']
+
+-- | Normalizes a Ln expresssion by expanding Multiplication within and bringing down the exponent for exponents within
+lnNorm :: Expr a -> Expr a
+lnNorm (Ln (Mult e11 e12)) = Add (lnNorm $ Ln e11) (lnNorm $ Ln e12)
+lnNorm (Ln (Exp e11 e12))  = Mult (e12) (lnNorm $ Ln e11)
+lnNorm (Ln e1)             = Ln e1
+lnNorm e                   = e
