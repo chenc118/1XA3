@@ -278,8 +278,8 @@ addNorml l = let
                 (e2_:es) -> let 
                         e2 = multNorm e2_
                         in case (e1,e2) of 
-                                (Const a,Const b) -> Const (a+b)
-                                (Mult _ _, _)     -> addNorml $ (expandMult $ toListMult $ multNorm e1)++(e2:es)
+                                (Const a,Const b) -> (Const (a+b)):(addNorml (e2:es))
+                                (Mult _ _, _)     -> if e2 `elem` l1 then addNorml $ (expandMult ((Const 2):l1))++es else e1:(addNorml $ (expandMult l1)++(e2:es)) where l1 = toListMult e1
                                 (_,_)             -> e1:(addNorml $ (e2:es))
 
 
