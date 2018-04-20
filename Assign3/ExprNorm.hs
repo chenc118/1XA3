@@ -80,7 +80,7 @@ multNorm :: (Ord a,Num a)=> Expr a -- ^ An Expression of form ('Mult' e1 e2) any
                         -> Expr a  -- ^ A normalized form of ('Mult' e1 e2) or a Constant if it is a multiplication of constants else the input
 {-  Hello person reading source code, welcome to a world of confusion, thanks to how many separate cases there are to consider, when normalizing a multiplication expression
     Just look at the list based normalization and it's basically the same thing but no lists, just constant recursions to itself.
-    There are over 25 end points of which about 50% recurse back onto this function.
+    There are over 25 end points of which about 50% recurse back onto this function. See also <https://www.xkcd.com/1960/>
 -}
 multNorm (Mult e1_ e2_) = let 
                     e1 = lnNorm e1_
@@ -271,19 +271,93 @@ toListAdd e           = [e]
 addNorml :: (Ord a,Num a) => [Expr a] -> [Expr a]
 addNorml [] = []
 addNorml l = let 
-            e1_:es = sort l
-            e1  = multNorm e1
+            addSort a_ b_ =let
+                a = multNorm a_
+                b = multNorm b_
+                in case (a,b) of -- customized sort of the already customized ordering stuff, makes the mult "close" to 
+                            (Mult a1 a2,Mult b1 b2) -> case (a1,b1) of
+                                                        (Const a,Const b) -> let 
+                                                                            res = compare a2 b2
+                                                                            in if res == EQ then compare a b else res
+                                                        (Const a,_)       -> let
+                                                                            res = compare a2 (Mult b1 b2)
+                                                                            in if res == EQ then compare a 1 else res
+                                                        (_,Const b)       -> let 
+                                                                            res = compare (Mult a1 a2) b2
+                                                                            in if res == EQ then compare 1 b else res
+                                                        (_,_)             -> compare a b
+                            (Mult a1 a2, _)         -> case a1 of
+                                                        (Const a)  -> let
+                                                                    res = compare a2 b
+                                                                    in if res == EQ then GT else res
+                                                        _          -> compare a b
+                            (_,Mult b1 b2)          -> case b1 of
+                                                        (Const b)  -> let
+                                                                    res = compare a b2
+                                                                    in if res == EQ then LT else res
+                                                        _          -> compare a b
+                            (_,_)                   -> compare a b
+
+            e1_:es = sortBy addSort l
+            e1  = multNorm e1_
             es' = addNorml es
             in case es' of 
                 []      -> case e1 of 
-                            (Mult _ _) -> expandMult $ toListMult e1
-                            _          -> [e1]
+                            (Mult _ _)  -> let
+                                            (m1:m1s) = expandMult $ toListMult e1
+                                            in if length m1s > 0 then addNorml $ (m1:m1s) else [m1]
+                            _           -> [e1]
                 (e2_:es) -> let 
                         e2 = multNorm e2_
                         in case (e1,e2) of 
-                                (Const a,Const b) -> (Const (a+b)):(addNorml (e2:es))
-                                (Mult _ _, _)     -> if e2 `elem` l1 then addNorml $ (expandMult ((Const 2):l1))++es else e1:(addNorml $ (expandMult l1)++(e2:es)) where l1 = toListMult e1
-                                (_,_)             -> e1:(addNorml $ (e2:es))
+                                (Const a,Const b)   -> (Const (a+b)):(addNorml es)
+                                (Mult _ _,Mult _ _) -> let
+                                                    (m1:m1s) = expandMult $ toListMult e1
+                                                    (m2:m2s) = expandMult $ toListMult e2
+                                                in if length m1s > 0 || length m2s > 0 then addNorml $ (m1:m1s)++(m2:m2s)++es 
+                                                    else if almostEqual m1 m2 then addNorml $ (Mult (Const $ (mCoef m1)+(mCoef m2)) (mTerm m1)):(addNorml es)
+                                                        else m1:(addNorml (m2:es))
+                                (Mult _ _,_)        -> let
+                                                    (m1:m1s) = expandMult $ toListMult e1
+                                                    in if length m1s > 0 then addNorml $ (m1:m1s)++(e2:es)
+                                                        else if almostEqual m1 e2 then addNorml $ (Mult (Const $ (mCoef m1)+(mCoef e2)) (mTerm m1)):(addNorml es)
+                                                            else m1:(addNorml (e2:es))
+                                (_ , Mult _ _)      -> let
+                                                    (m2:m2s) = expandMult $ toListMult e2
+                                                    in if length m2s > 0 then addNorml $ (e1:m2:m2s)++es
+                                                        else if almostEqual e1 m2 then addNorml $ (Mult (Const $ (mCoef e1)+(mCoef m2)) (mTerm m2)):(addNorml es)
+                                                            else e1:(addNorml (m2:es))
+                                (_,_)               -> if almostEqual e1 e2 then addNorml $ (Mult (Const $ (mCoef e1)+(mCoef e2)) (mTerm e1)):(addNorml es) 
+                                                       else e1:(addNorml (e2:es))
+
+-- | A function whose name gives you no idea what the heck it's for (you always have to have nonsensical names in your code)
+almostEqual :: (Ord a, Num a) => Expr a -> Expr a -> Bool
+almostEqual a_ b_ = let
+                    a = multNorm a_
+                    b = multNorm b_
+                    in case (a,b) of 
+                        (Mult (Const a) e12,Mult (Const b) e22) -> if compare e12 e22 == EQ then True else False
+                        (Mult (Const a) e12,_)                  -> if compare e12 b == EQ then True else False
+                        (_,Mult (Const b) e22)                  -> if compare a e22 == EQ then True else False
+                        (_,_)                                   -> if compare a b == EQ then True else False
+-- | Extract coefficient from multipication term
+mCoef :: (Ord a, Num a) => Expr a -> a
+mCoef (Mult e1 e2) = let 
+                    m1 = multNorm (Mult e1 e2)
+                    in case m1 of
+                        (Mult (Const a) e2) -> a
+                        _                   -> 1
+mCoef _            = 1
+
+-- | Extract Term from a multiplication term
+mTerm :: (Ord a, Num a) => Expr a -> Expr a
+mTerm (Mult e1 e2) = let 
+                    m1 = multNorm (Mult e1 e2)
+                    in case m1 of 
+                        (Mult (Const a) e2) -> e2
+                        _                   -> m1
+mTerm e             = e
+
 
 -- | Takes a list of expressions multiplied and returns a list of addition expanding any Add within the list of multiplication
 expandMult :: (Eq a)=> [Expr a] -> [Expr a]
