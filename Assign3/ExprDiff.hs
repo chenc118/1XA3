@@ -78,23 +78,31 @@ instance (ShoeHornFloating a) => DiffExpr a where
                             Nothing -> error "Failed lookup in eval"
 
     simplify vrs (Add e1 e2)               = let
-                                            s1 = simplify vrs $ addNorm e1
-                                            s2 = simplify vrs $ addNorm e2
-                                        in case (s1,s2) of 
-                                            (Const a,Const b)   -> Const (a+b)
-                                            (Const 0,se2)       -> se2
-                                            (se1,Const 0)       -> se1
-                                            (se1,se2)           -> addNorm $ Add se1 se2
+                                        a1 = addNorm (Add e1 e2)
+                                        in case a1 of
+                                        (Add e1 e2)  -> let
+                                                s1 = simplify vrs $ addNorm e1
+                                                s2 = simplify vrs $ addNorm e2
+                                            in case (s1,s2) of 
+                                                (Const a,Const b)   -> Const (a+b)
+                                                (Const 0,se2)       -> se2
+                                                (se1,Const 0)       -> se1
+                                                (se1,se2)           -> addNorm $ Add se1 se2
+                                        e             -> simplify vrs e
     simplify vrs (Mult e1 e2)              = let
-                                            s1 = simplify vrs $ multNorm e1
-                                            s2 = simplify vrs $ multNorm e2 
-                                        in case (s1,s2) of
-                                            (Const a,Const b) -> Const (a*b)
-                                            (Const 0,_)       -> Const 0
-                                            (_,Const 0)       -> Const 0
-                                            (Const 1,se2)     -> se2
-                                            (se1,Const 1)     -> se1
-                                            (se1,se2)         -> multNorm $ Mult se1 se2
+                                        m1 = multNorm (Mult e1 e2)
+                                        in case m1 of
+                                        (Mult e1 e2) -> let
+                                                s1 = simplify vrs $ multNorm e1
+                                                s2 = simplify vrs $ multNorm e2 
+                                            in case (s1,s2) of
+                                                (Const a,Const b) -> Const (a*b)
+                                                (Const 0,_)       -> Const 0
+                                                (_,Const 0)       -> Const 0
+                                                (Const 1,se2)     -> se2
+                                                (se1,Const 1)     -> se1
+                                                (se1,se2)         -> multNorm $ Mult se1 se2
+                                        e            -> simplify vrs e 
     simplify vrs (Cos e1)                  = let
                                             s1 = simplify vrs e1
                                         in case s1 of
@@ -123,7 +131,7 @@ instance (ShoeHornFloating a) => DiffExpr a where
                                             s2 = simplify vrs e2
                                         in case (s1,s2) of
                                             (_,Const 0)       -> Const 1
-                                            (e1,Const 1)       -> e1
+                                            (e1,Const 1)      -> e1
                                             (Const a,Const b) -> Const $ eval vrs (Exp s1 s2)
                                             (se1,se2)         -> Exp se1 se2
 
