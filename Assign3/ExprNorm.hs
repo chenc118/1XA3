@@ -1,6 +1,7 @@
 module ExprNorm where
 
 import ExprType
+import ExprUtil
 
 import Data.List
 
@@ -250,47 +251,7 @@ expNorm e                      = e
     Note : a pure recursive normalization cannot (at least w/o using a ton of helper functions that are essentially lists) fully normalize an expression
 -}
 addNorm :: (Ord a,Num a) => Expr a -> Expr a
-addNorm (Add e1 e2) = case (e1,e2) of
-                        (Add e11 e12, Add e21 e22) -> let
-                                                    a1 = addNorm $ Add e11 e12
-                                                    a2 = addNorm $ Add e21 e22
-                                                    in case (a1,a2) of 
-                                                        (Add e11 e12, Add e21 e22) -> let
-                                                                                    res = compare e11 e21
-                                                                                    in if res == GT then
-                                                                                        (Add e21 (addNorm $ Add e11 (Add e12 e22)))
-                                                                                    else if res == LT then
-                                                                                        (Add e11 (addNorm $ Add e21 (Add e12 e22)))
-                                                                                    else 
-                                                                                        addNorm $ Add (multNorm $ Mult e11 $ Const 2) (Add e12 e22)
-                                                        (a1,a2)                    -> addNorm $ Add a1 a2
-                        (Add e11 e12, e2)          -> case (addNorm $ Add e11 e12) of
-                                                        (Add e1' e2')  -> let 
-                                                                        res = compare e1' e2
-                                                                        in if res == LT then
-                                                                            Add e2 (addNorm $ Add e1' e2')
-                                                                        else if res == GT then
-                                                                            Add e1' (addNorm $ Add e2 e2')
-                                                                        else addNorm (Add (multNorm $ Mult e2 $ Const 2) e2')
-                                                        a1             -> addNorm $ Add e2 a1
-                        (e1, Add e21 e22)         -> case (addNorm $ Add e21 e22) of
-                                                        (Add e1' e2')  -> let
-                                                                        res = compare e1' e1
-                                                                        in if res == LT then
-                                                                            Add e1 (addNorm $ Add e1' e2')
-                                                                        else if res == GT then
-                                                                            Add e1' (addNorm $ Add e1 e2')
-                                                                        else addNorm (Add (multNorm $ Mult e1 $ Const 2) e2')
-                                                        a1             -> addNorm $ Add a1 e1
-                        (Const a, Const b)         -> Const (a+b)
-                        (e1,e2)                    -> let 
-                                                    res = compare e1 e2
-                                                    in if res == GT then
-                                                        Add e2 e1
-                                                    else if res == LT then
-                                                        Add e1 e2
-                                                    else 
-                                                        multNorm $ Mult e1 $ Const 2
+addNorm (Add e1 e2) = fromListAdd $ addNorml $ toListAdd (Add e1 e2)
 addNorm e           = e
 
 -- | Converts a list of expressions into an addition expression, fails if given an empty list
@@ -304,6 +265,28 @@ toListAdd :: Expr a -> [Expr a]
 toListAdd (Add e1 e2) = (toListAdd e1)++(toListAdd e2)
 toListAdd e           = [e]
 
-addNorml :: [Expr a] -> [Expr a]
-addNorml = undefined
+addNorml :: (Ord a,Num a) => [Expr a] -> [Expr a]
+addNorml [] = []
+addNorml l = let 
+            e1_:es = sort l
+            e1  = multNorm e1
+            es' = addNorml es
+            in case es' of 
+                []      -> case e1 of 
+                            (Mult _ _) -> expandMult $ toListMult e1
+                            _          -> [e1]
+                (e2_:es) -> let 
+                        e2 = multNorm e2_
+                        in case (e1,e2) of 
+                                (Const a,Const b) -> Const (a+b)
+                                (Mult _ _, _)     -> addNorml $ (expandMult $ toListMult $ multNorm e1)++(e2:es)
+                                (_,_)             -> e1:(addNorml $ (e2:es))
 
+
+expandMult :: [Expr a] -> [Expr a]
+expandMult m  = let
+            (a,b) = partition (\x -> case x of 
+                                            (Add _ _) -> True
+                                            _         -> False) m
+            a'    = flatMap id $  fmap toListAdd a
+            in  [(fromListMult (a'':b)) | a'' <- a']
