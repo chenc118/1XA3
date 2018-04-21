@@ -30,6 +30,37 @@ import Test.QuickCheck
 sampleExpr :: Expr Double
 sampleExpr = (var "x") !+ (var "y")
 
+-- | Sample tests (To make sure any changes don't break basic cases)
+
+-- | Tests that \[x + x\] normalizes to \[2x\]
+sampleAddNorm1 :: Bool
+sampleAddNorm1 = sampleAdd ((val 2)!*(var "x")) (addNorm $ parseExprI "x!+x")
+
+-- | Tests that \[(x+y)(x+z)\] normalizes to \[x^2 + xy + xz + yz\]
+sampleAddNorm2 :: Bool
+sampleAddNorm2 = sampleAdd (((Var "x")!^(val 2))!+(((Var "x")!*(Var "y"))!+(((Var "x")!*(Var "z"))!+((Var "y")!*(Var "z"))))) (addNorm $ parseExprI "(x!+y)!*(x!+z)")
+
+-- | Tests that \[2xy + 2x(x+y)\] normalizes to \[5x^2+7xy\]
+sampleAddNorm3 :: Bool
+sampleAddNorm3 = sampleAdd (((val 5)!*((Var "x")!^(val 2)))!+((val 7)!*((Var "x")!*(Var "y")))) $ addNorm $ parseExprI "(2!*x!*y)!+(5!*x!*(x!+y))"
+
+-- | Tests that \[5 * x * cos (5) * x^2 \] normalizes to \[5x^3cos(5)\]
+sampleMultNorm1 :: Bool
+sampleMultNorm1 = sampleMult ((val 5)!*(((Var "x")!^(val 3))!*(exCos(val 5)))) (multNorm $ parseExprI "5!*x!*cos5!*x!^2")
+
+
+
+-- * Various Stuff to help test things
+
+-- | Basic testing of a sample add expression tests all possible branches
+sampleAdd :: (Show a,Ord a,Num a) => Expr a -> Expr a -> Bool
+sampleAdd simp reg = simp == reg && (verifyAddNormality simp)
+
+-- | Basic testing of a sample mult expression tests all possible branches of both list and normal form
+sampleMult :: (Show a,Ord a,Num a) => Expr a -> Expr a -> Bool
+sampleMult simp reg = simp == reg && (verifyMultNormality simp) && (verifyMultNormlality simp)
+
+
 -- | Generates all possible ways to distribute a list of either a Mult or Add expression (turns out there's a lot of different ways) Approximate complexity formula ~= 2*(n!)
 genBranches :: Eq a => (Expr a -> Expr a -> Expr a) -> [Expr a] -> [Expr a]
 genBranches expr (e:[])  = [e]
@@ -48,8 +79,8 @@ verifyMultNormality ::(Show a, Ord a, Num a) => Expr a -> Bool
 verifyMultNormality ex = verifyNormality multNorm Mult toListMult ex
 
 -- | verifies that a multiplication expression will normalize the same way no matter how the binary Mult tree may be distributed
-verifyAddNormlality :: (Show a, Ord a, Num a) => Expr a -> Bool
-verifyAddNormlality ex = verifyNormality (fromListMult . multNorml . toListMult) Mult toListMult ex
+verifyMultNormlality :: (Show a, Ord a, Num a) => Expr a -> Bool
+verifyMultNormlality ex = verifyNormality (fromListMult . multNorml . toListMult) Mult toListMult ex
 
 -- | Generic verify that some expression with a binary tree structure will normalize to the same thing
 verifyNormality :: (Show a, Ord a, Num a) => (Expr a -> Expr a) -> (Expr a -> Expr a -> Expr a) -> (Expr a -> [Expr a]) -> Expr a -> Bool

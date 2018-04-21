@@ -335,19 +335,43 @@ addNorml l = let
                                                     (m2:m2s) = expandMult $ toListMult e2
                                                 in if length m1s > 0 || length m2s > 0 then addNorml $ (m1:m1s)++(m2:m2s)++es 
                                                     else if almostEqual m1 m2 then addNorml $ (Mult (Const $ (mCoef m1)+(mCoef m2)) (mTerm m1)):(addNorml es)
-                                                        else m1:(addNorml (m2:es))
+                                                        else let
+                                                                t1 = mTerm e1
+                                                                t2 = mTerm e2
+                                                                in case compare t1 t2 of
+                                                                    EQ -> addNorml $ (Mult (Const $ (mCoef e1)+(mCoef e2)) (mTerm e1)):(addNorml es)
+                                                                    LT -> e1:(addNorml (e2:es))
+                                                                    GT -> e2:(addNorml (e1:es))
                                 (Mult _ _,_)        -> let
                                                     (m1:m1s) = expandMult $ toListMult e1
                                                     in if length m1s > 0 then addNorml $ (m1:m1s)++(e2:es)
                                                         else if almostEqual m1 e2 then addNorml $ (Mult (Const $ (mCoef m1)+(mCoef e2)) (mTerm m1)):(addNorml es)
-                                                            else m1:(addNorml (e2:es))
+                                                            else let
+                                                                t1 = mTerm e1
+                                                                t2 = mTerm e2
+                                                                in case compare t1 t2 of
+                                                                    EQ -> addNorml $ (Mult (Const $ (mCoef e1)+(mCoef e2)) (mTerm e1)):(addNorml es)
+                                                                    LT -> e1:(addNorml (e2:es))
+                                                                    GT -> e2:(addNorml (e1:es))
                                 (_ , Mult _ _)      -> let
                                                     (m2:m2s) = expandMult $ toListMult e2
                                                     in if length m2s > 0 then addNorml $ (e1:m2:m2s)++es
                                                         else if almostEqual e1 m2 then addNorml $ (Mult (Const $ (mCoef e1)+(mCoef m2)) (mTerm m2)):(addNorml es)
-                                                            else e1:(addNorml (m2:es))
-                                (_,_)               -> if almostEqual e1 e2 then addNorml $ (Mult (Const $ (mCoef e1)+(mCoef e2)) (mTerm e1)):(addNorml es) 
-                                                       else e1:(addNorml (e2:es))
+                                                            else let
+                                                                t1 = mTerm e1
+                                                                t2 = mTerm e2
+                                                                in case compare t1 t2 of
+                                                                    EQ -> addNorml $ (Mult (Const $ (mCoef e1)+(mCoef e2)) (mTerm e1)):(addNorml es)
+                                                                    LT -> e1:(addNorml (e2:es))
+                                                                    GT -> e2:(addNorml (e1:es))
+                                (_,_)               -> let
+                                                    t1 = mTerm e1
+                                                    t2 = mTerm e2
+                                                    in case compare t1 t2 of
+                                                        EQ -> addNorml $ (Mult (Const $ (mCoef e1)+(mCoef e2)) (mTerm e1)):(addNorml es)
+                                                        LT -> e1:(addNorml (e2:es))
+                                                        GT -> e2:(addNorml (e1:es))
+
 
 -- | A function whose name gives you no idea what the heck it's for (you always have to have nonsensical names in your code)
 almostEqual :: (Ord a, Num a) => Expr a -> Expr a -> Bool
