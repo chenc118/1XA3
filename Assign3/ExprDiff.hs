@@ -42,34 +42,48 @@ class DiffExpr a where
     eval :: Map.Map String a -> Expr a -> a
     -- | Simplifies an expressions replacing variables the values in the given map, and partially evaluating when possible
     simplify :: (Ord a) => Map.Map String a -> Expr a -> Expr a
-    {- | Unary simplification, uses an empty map.
-        Equivalent to 
-        > simplify (Map.fromList [])
-    -}
+    -- | Unary simplification, uses an empty map.
+    --
+    --    Equivalent to
+    -- 
+    -- > simplify (Map.fromList [])
     usimplify :: (Ord a) => Expr a -> Expr a 
     usimplify = simplify (Map.fromList [])
     -- | performs partial differentiation with respect to the given String identifier for a variable
     partDiff :: String -> Expr a -> Expr a
     {-Default Methods-}
+    -- | Equivalent to 'Add' constructor
     (!+) :: Expr a -> Expr a -> Expr a
     e1 !+ e2  = Add e1 e2
+    -- | Equivalent to 'Mult' constructor
     (!*) :: Expr a -> Expr a -> Expr a
     e1 !* e2  = Mult e1 e2
+    -- | Equivalent to 'Cos' constructor
     exCos :: Expr a -> Expr a
     exCos e1 = Cos e1
+    -- | Equivalent to 'Sin' constructor
     exSin :: Expr a -> Expr a
     exSin e1 = Sin e1
+    -- | Equivalent to 'NExp' constructor
     exNExp :: Expr a -> Expr a
     exNExp e1 = NExp e1
+    -- | Equivalent to 'Ln' constructor
     exLn :: Expr a -> Expr a
     exLn e1 = Ln e1
+    -- | Equivalent to 'Exp' constructor
     (!^) :: Expr a -> Expr a -> Expr a
     (!^) e1 e2 = Exp e1 e2
+    -- | Equivalent to 'Const' constructor
     val :: a -> Expr a
     val x = Const x
+    -- | Equivalent to 'Var' constructor
     var :: String -> Expr a
     var x = Var x
 
+
+-- | Generic instance for Differential Expressions
+-- 
+-- Create an instance of 'ShoeHornFloating' to define some of the basic Floating functions used
 instance (ShoeHornFloating a) => DiffExpr a where
     eval vrs (Add e1 e2) = eval vrs e1 + eval vrs e2
     eval vrs (Mult e1 e2) = eval vrs e1 * eval vrs e2
@@ -163,12 +177,18 @@ instance (ShoeHornFloating a) => DiffExpr a where
 -- You can tell how annoyed I am with this based on the naming
 -- | A class to shoehorn the integral types into the floating type (for some function)
 class (Num a) => ShoeHornFloating a where
-    shoeHornCos :: a -> a -- ^ Cosine function
-    shoeHornSin :: a -> a -- ^ sine function
-    shoeHornLn :: a -> a  -- ^ Natural logarithm function aka ln(x) in haskell log
-    shoeHornNExp :: a -> a  -- ^ Natural Exponentiation function aka e^x in haskell exp
-    shoeHornExp :: a -> a -> a  -- ^ Exponentiation function a^b (**) in haskell
+    -- | Cosine function
+    shoeHornCos :: a -> a
+    -- | Sine function
+    shoeHornSin :: a -> a
+    -- | Natural Logarithm function, in haskell 'log' 
+    shoeHornLn :: a -> a
+    -- | Natural Exponentiation functoion, in haskell 'exp' 
+    shoeHornNExp :: a -> a
+    -- | Exponentiation function, in Haskell '(**)'
+    shoeHornExp :: a -> a -> a
 
+-- | basically uses the Floating methods for Double
 instance ShoeHornFloating Double where
     shoeHornCos x   = cos x
     shoeHornSin x   = sin x
@@ -176,6 +196,7 @@ instance ShoeHornFloating Double where
     shoeHornNExp x  = exp x
     shoeHornExp a b = a**b
 
+-- | basically uses the Floating methods for Float
 instance ShoeHornFloating Float where
     shoeHornCos x   = cos x
     shoeHornSin x   = sin x
@@ -183,6 +204,7 @@ instance ShoeHornFloating Float where
     shoeHornNExp x  = exp x
     shoeHornExp a b = a**b
 
+-- | converts to a double to compute the math in Floating then rounds
 instance ShoeHornFloating Integer where
     shoeHornCos x   = round $ cos $ fromInteger x
     shoeHornSin x   = round $ sin $ fromInteger x
@@ -190,6 +212,7 @@ instance ShoeHornFloating Integer where
     shoeHornNExp x  = round $ exp $ fromInteger x
     shoeHornExp a b = round $ (fromIntegral a) ** (fromIntegral b)
 
+-- | converts to a double to compute the math in floating then rounds
 instance ShoeHornFloating Int where
     shoeHornCos x   = round $ cos $ fromIntegral x
     shoeHornSin x   = round $ sin $ fromIntegral x
