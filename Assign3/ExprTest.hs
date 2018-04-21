@@ -42,14 +42,35 @@ sampleAddNorm2 = sampleAdd (((Var "x")!^(val 2))!+(((Var "x")!*(Var "y"))!+(((Va
 
 -- | Tests that \[2xy + 2x(x+y)\] normalizes to \[5x^2+7xy\]
 sampleAddNorm3 :: Bool
-sampleAddNorm3 = sampleAdd (((val 5)!*((Var "x")!^(val 2)))!+((val 7)!*((Var "x")!*(Var "y")))) $ addNorm $ parseExprI "(2!*x!*y)!+(5!*x!*(x!+y))"
+sampleAddNorm3 = sampleAdd (((val 5)!*((Var "x")!^(val 2)))!+((val 7)!*((Var "x")!*(Var "y")))) (addNorm $ parseExprI "(2!*x!*y)!+(5!*x!*(x!+y))")
+
+-- | Tests that \[5ln(xy)+5+ln(x)\] normalizes to \[5 + 6ln(x) + 5ln(y)\]
+sampleAddNorm4 :: Bool
+sampleAddNorm4 = sampleAdd ((Var "x")!+(((val 6)!*(exLn(Var "x")))!+((val 5)!*(exLn(Var "y"))))) (addNorm $ parseExprI "ln(x!*y)!*5!+x!+lnx")
+
+-- | Tests that \[98x(5+i+ln(y)+z)+xln(xy)\] normalizes to \[490x + 98ix + 98xz + xln(x) + 99xln(y)\]
+sampleAddNorm5 :: Bool
+sampleAddNorm5 = sampleAdd (((val 490)!*(Var "x"))!+(((val 98)!*((Var "i")!*(Var "x")))!+(((val 98)!*((Var "x")!*(Var "z")))!+(((Var "x")!*(exLn(Var "x")))!+((val 99)!*((Var "x")!*(exLn(Var "y")))))))) (addNorm $ parseExprI "98!*x!*(5!+i!+lny!+z)!+x!*ln(x!*y)")
 
 -- | Tests that \[5 * x * cos (5) * x^2 \] normalizes to \[5x^3cos(5)\]
 sampleMultNorm1 :: Bool
 sampleMultNorm1 = sampleMult ((val 5)!*(((Var "x")!^(val 3))!*(exCos(val 5)))) (multNorm $ parseExprI "5!*x!*cos5!*x!^2")
 
+-- | Tests that \[25xy*cos(x)*(x^{2^{2^{2^{2^2}}}})*(x^32)\] normalizes to \[25x^{65}y cos(x)\]
+sampleMultNorm2 :: Bool
+sampleMultNorm2 = sampleMult ((val 25)!*(((Var "x")!^(val 65))!*((Var "y")!*(exCos(Var "x"))))) (multNorm $ parseExprI "25!*x!*y!*cosx!*x!^2!^2!^2!^2!^2!*x!^32")
 
+-- | Tests that \[ln(x^2)*4*x^3*x^4\] normalizes to \[8 x^7 ln(x)\]
+sampleMultNorm3 :: Bool
+sampleMultNorm3 = sampleMult ((val 8)!*(((Var "x")!^(val 7))!*(exLn(Var "x")))) (multNorm $ parseExprI "ln(x!^2)!*4!*x!^3!*x!^4")
 
+-- | Tests all the SampleAddNorms
+addNormGauntlet :: Bool
+addNormGauntlet = sampleAddNorm1 && sampleAddNorm2 && sampleAddNorm3 && sampleAddNorm4 && sampleAddNorm5
+
+-- | Tests all the SampleMultNorms
+multNormGauntlet :: Bool
+multNormGauntlet = sampleMultNorm1 && sampleMultNorm2 && sampleMultNorm3
 -- * Various Stuff to help test things
 
 -- | Basic testing of a sample add expression tests all possible branches
@@ -132,16 +153,16 @@ isNan (Cos e1)      = isNan e1
 isNan (Sin e1)      = isNan e1
 
 
-
+-- | generic arbitrary double
 instance Arbitrary (Expr Double) where 
   arbitrary = genericArbitraryRec uniform `withBaseCase` return (Const 1)
-
+-- | generic arbitrary float
 instance Arbitrary (Expr Float) where
     arbitrary = genericArbitraryRec uniform `withBaseCase` return (Const 1)
-
+-- | generic arbitrary integer
 instance Arbitrary (Expr Integer) where
     arbitrary = genericArbitraryRec uniform `withBaseCase` return (Const 1)
-
+-- | generic arbitrary int
 instance Arbitrary (Expr Int) where
     arbitrary = genericArbitraryRec uniform `withBaseCase` return (Const 1)
 
