@@ -8,6 +8,7 @@ Copyright: (c) chenc118 @ 2018
 License : WTFPL
 Stability : experimental
 Portability : MSDOS
+Note not a lot of testing has been done due to running out of time, most of the basic cases should be covered, and the code here contains some things to test things further.
 -}
 module ExprTest where
 
@@ -87,6 +88,7 @@ simplifyProp expr = let
             s2 = (usimplify $ usimplify expr)
             in if isNan s1 then isNan s2 else s1==s2
 
+-- | Check if a constant in an expression is NaN, entire function will likely eval to NaN
 isNan :: (RealFloat a) => Expr a -> Bool
 isNan (Const a)     = isNaN a
 isNan (Var _)       = False
