@@ -1,4 +1,6 @@
 {-# LANGUAGE ParallelListComp #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-|
 Module : ExprTest
 Description: A class containing various test cases for the code
@@ -14,20 +16,18 @@ import ExprDiff
 import ExprParser
 import ExprPretty
 import ExprNorm
+import ExprUtil
 
 import qualified  Data.Map as Map
+import Generic.Random
+import GHC.Generics
 import Data.List
 
 import Test.QuickCheck
-import ExprUtil
 
+-- | Random sample expression \[x + y\]
 sampleExpr :: Expr Double
 sampleExpr = (var "x") !+ (var "y")
-
---exprProp :: Expr Double -> Bool
-
-
-
 
 -- | Generates all possible ways to distribute a list of either a Mult or Add expression (turns out there's a lot of different ways) Approximate complexity formula ~= 2*(n!)
 genBranches :: Eq a => (Expr a -> Expr a -> Expr a) -> [Expr a] -> [Expr a]
@@ -45,6 +45,10 @@ verifyAddNormality ex = verifyNormality addNorm Add toListAdd ex
 -- | Verifies that a multiplication expression will normalize the same way no matter how the binary Mult tree may be distributed
 verifyMultNormality ::(Show a, Ord a, Num a) => Expr a -> Bool
 verifyMultNormality ex = verifyNormality multNorm Mult toListMult ex
+
+-- | verifies that a multiplication expression will normalize the same way no matter how the binary Mult tree may be distributed
+verifyAddNormlality :: (Show a, Ord a, Num a) => Expr a -> Bool
+verifyAddNormlality ex = verifyNormality (fromListMult . multNorml . toListMult) Mult toListMult ex
 
 -- | Generic verify that some expression with a binary tree structure will normalize to the same thing
 verifyNormality :: (Show a, Ord a, Num a) => (Expr a -> Expr a) -> (Expr a -> Expr a -> Expr a) -> (Expr a -> [Expr a]) -> Expr a -> Bool
@@ -75,7 +79,36 @@ verifyExamQuestion =let
 
 -- copied ~ < 1hour after Math Exam
 -- eval (Map.fromList [("u",1.0),("v",3.0)]) $ simplify (Map.fromList []) $ partDiff "u" $ partDiff "v" (((var "v") !+ (var "u")) !* (Exp ((Var "u") !* (Exp (Var "v") (Const 2.0))) (Const $ -1.0)))
---  etc and run quickCheck over those
 
 
---instance Arbitrary (Expr a) where
+simplifyProp :: Expr Double -> Bool
+simplifyProp expr = let
+            s1 = (usimplify $ expr) 
+            s2 = (usimplify $ usimplify expr)
+            in if isNan s1 then isNan s2 else s1==s2
+
+isNan :: (RealFloat a) => Expr a -> Bool
+isNan (Const a)     = isNaN a
+isNan (Var _)       = False
+isNan (Mult e1 e2)  = isNan e1 || isNan e2
+isNan (Add e1 e2)   = isNan e1 || isNan e2
+isNan (Exp e1 e2)   = isNan e1 || isNan e2
+isNan (Ln e1)       = isNan e1
+isNan (NExp e1)     = isNan e1
+isNan (Cos e1)      = isNan e1
+isNan (Sin e1)      = isNan e1
+
+
+
+instance Arbitrary (Expr Double) where 
+  arbitrary = genericArbitraryRec uniform `withBaseCase` return (Const 1)
+
+instance Arbitrary (Expr Float) where
+    arbitrary = genericArbitraryRec uniform `withBaseCase` return (Const 1)
+
+instance Arbitrary (Expr Integer) where
+    arbitrary = genericArbitraryRec uniform `withBaseCase` return (Const 1)
+
+instance Arbitrary (Expr Int) where
+    arbitrary = genericArbitraryRec uniform `withBaseCase` return (Const 1)
+

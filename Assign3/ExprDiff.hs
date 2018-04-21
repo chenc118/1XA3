@@ -98,7 +98,9 @@ instance (ShoeHornFloating a) => DiffExpr a where
                             Nothing -> error "Failed lookup in eval"
 
     simplify vrs (Add e1 e2)               = let
-                                        a1 = addNorm (Add e1 e2)
+                                        s1 = simplify vrs e1
+                                        s2 = simplify vrs e2
+                                        a1 = addNorm (Add s1 s2)
                                         in case a1 of
                                         (Add e1 e2)  -> let
                                                 s1 = simplify vrs $ addNorm e1
@@ -110,7 +112,9 @@ instance (ShoeHornFloating a) => DiffExpr a where
                                                 (se1,se2)           -> addNorm $ Add se1 se2
                                         e             -> simplify vrs e
     simplify vrs (Mult e1 e2)              = let
-                                        m1 = addNorm $ multNorm (Mult e1 e2)
+                                        s1 = simplify vrs e1
+                                        s2 = simplify vrs e2
+                                        m1 = addNorm $ multNorm (Mult s1 s2)
                                         in case m1 of
                                         (Mult e1 e2) -> let
                                                 s1 = simplify vrs $ multNorm e1
@@ -139,12 +143,17 @@ instance (ShoeHornFloating a) => DiffExpr a where
                                             (Const 0)         -> Const 1
                                             (Const a)         -> Const $ eval vrs (NExp s1)
                                             (se1)             -> NExp se1
-    simplify vrs (Ln e1)                   = let 
+    simplify vrs (Ln e1)                   = let
                                             s1 = simplify vrs e1
-                                        in case s1 of
-                                            (Const 1)         -> Const 0
-                                            (Const a)         -> Const $ eval vrs (Ln s1)
-                                            (se1)             -> lnNorm $ Ln se1
+                                            l1 = lnNorm (Ln e1)
+                                        in case l1 of
+                                            (Ln e1) ->let 
+                                                s1 = simplify vrs e1
+                                                    in case s1 of
+                                                        (Const 1)         -> Const 0
+                                                        (Const a)         -> Const $ eval vrs (Ln s1)
+                                                        (se1)             -> lnNorm $ Ln se1
+                                            e       -> simplify vrs e
     simplify vrs (Exp e1_ e2_)               = let
                                             (Exp e1 e2) = expNorm $ (Exp e1_ e2_)
                                             s1 = simplify vrs e1

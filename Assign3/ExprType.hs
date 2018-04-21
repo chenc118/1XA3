@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveGeneric #-}
 {-|
 Module : ExprNorm
 Description: Declares the 'Expr' type
@@ -9,7 +10,8 @@ Portability : MSDOS
 module ExprType where
 
 import Data.List
-
+import Generic.Random
+import GHC.Generics
 {-
     Expression data type
     -------------------
@@ -31,7 +33,7 @@ data Expr a = Add (Expr a) (Expr a) -- ^ Binary Addition
             | Exp (Expr a) (Expr a) -- ^ Exponentiate a function using where Exp a b = a ^ b
             | Const a               -- ^ Wrap a constant value
             | Var String            -- ^ Wrap a variable identifier
-            deriving Eq
+            deriving (Eq,Generic)
 --Library provides default values for e and pi 
 
 {-getVars :
