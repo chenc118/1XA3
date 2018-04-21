@@ -130,12 +130,12 @@ instance (ShoeHornFloating a) => DiffExpr a where
     simplify vrs (Cos e1)                  = let
                                             s1 = simplify vrs e1
                                         in case s1 of
-                                            (Const a)   -> Const $ eval vrs (Cos e1)
+                                            (Const a)   -> Const $ eval vrs (Cos s1)
                                             se1         -> Cos se1
     simplify vrs (Sin e1)                  = let
                                             s1 = simplify vrs e1
                                         in case s1 of
-                                            (Const a)   -> Const $ eval vrs (Sin e1)
+                                            (Const a)   -> Const $ eval vrs (Sin s1)
                                             se1         -> Sin se1 
     simplify vrs (NExp e1)                 = let
                                             s1 = simplify vrs e1

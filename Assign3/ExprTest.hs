@@ -80,7 +80,7 @@ verifyExamQuestion =let
 -- copied ~ < 1hour after Math Exam
 -- eval (Map.fromList [("u",1.0),("v",3.0)]) $ simplify (Map.fromList []) $ partDiff "u" $ partDiff "v" (((var "v") !+ (var "u")) !* (Exp ((Var "u") !* (Exp (Var "v") (Const 2.0))) (Const $ -1.0)))
 
-
+-- | Simplify property, once simplified you cannot simplify any further, Causes frequent stack overflows.
 simplifyProp :: Expr Double -> Bool
 simplifyProp expr = let
             s1 = (usimplify $ expr) 
