@@ -1,5 +1,8 @@
 ### Assignment 3
 
+
+[Documentation](https://chenc118.github.io/projects/Haskell.sMath/docs/index.html)
+
 ## Files
 
 Basic explanation of the files
