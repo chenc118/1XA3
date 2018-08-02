@@ -16,6 +16,7 @@ module ExprDiff where
 import ExprType
 import ExprNorm
 
+import Data.Set
 import qualified Data.Map as Map
 
 
@@ -52,6 +53,12 @@ class DiffExpr a where
     -- | performs partial differentiation with respect to the given String identifier for a variable
     partDiff :: String -> Expr a -> Expr a
     {-Default Methods-}
+    {-multEval :: (Ord a) => Expr a -> Map.Map String (Expr a) -> Map.Map String a -> Expr a
+    multEval e exps vrs = let 
+                        (a,b) = partition (\x -> (keys vrs) `subset` (getVars x)) exps
+                        in case (a,b) of
+                            ([],_)   -> eval vrs e
+                            (_,_)    -> multEval e b (fmap (\x -> ) vrs-}
     -- | Equivalent to 'Add' constructor
     (!+) :: Expr a -> Expr a -> Expr a
     e1 !+ e2  = Add e1 e2

@@ -30,7 +30,7 @@ import Test.QuickCheck
 sampleExpr :: Expr Double
 sampleExpr = (var "x") !+ (var "y")
 
--- | Sample tests (To make sure any changes don't break basic cases)
+-- * Sample tests (To make sure any changes don't break basic cases)
 
 -- | Tests that \[x + x\] normalizes to \[2x\]
 sampleAddNorm1 :: Bool
@@ -40,7 +40,7 @@ sampleAddNorm1 = sampleAdd ((val 2)!*(var "x")) (addNorm $ parseExprI "x!+x")
 sampleAddNorm2 :: Bool
 sampleAddNorm2 = sampleAdd (((Var "x")!^(val 2))!+(((Var "x")!*(Var "y"))!+(((Var "x")!*(Var "z"))!+((Var "y")!*(Var "z"))))) (addNorm $ parseExprI "(x!+y)!*(x!+z)")
 
--- | Tests that \[2xy + 2x(x+y)\] normalizes to \[5x^2+7xy\]
+-- | Tests that \[2xy + 5x(x+y)\] normalizes to \[5x^2+7xy\]
 sampleAddNorm3 :: Bool
 sampleAddNorm3 = sampleAdd (((val 5)!*((Var "x")!^(val 2)))!+((val 7)!*((Var "x")!*(Var "y")))) (addNorm $ parseExprI "(2!*x!*y)!+(5!*x!*(x!+y))")
 
